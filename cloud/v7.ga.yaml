@@ -20,12 +20,17 @@ tags:
   - name: Servers
   - name: CD-ROMs
   - name: Network interfaces
+  - name: Virtual routers
+  - name: Virtual routes
   - name: Images
   - name: Volumes
   - name: Snapshots
   - name: IP blocks
   - name: LANs
   - name: Security Groups
+  - name: Flow Logs
+  - name: Requests
+  - name: Templates
 paths:
   /:
     get:
@@ -739,7 +744,6 @@ paths:
         - name: vpcId
           in: query
           description: The unique ID of the vpc.
-          required: true
           schema:
             type: string
         - name: pretty
@@ -1071,155 +1075,18 @@ paths:
          >Note that 'locations' are read-only and cannot be changed.
       operationId: locationsGet
       parameters:
-        - name: pretty
-          in: query
-          description: >-
-            Controls whether the response is pretty-printed (with indentations
-            and new lines).
-          schema:
-            type: boolean
-            default: true
-        - name: X-Contract-Number
-          in: header
-          description: >-
-            Users with multiple contracts must provide the contract number, for
-            which all API requests are to be executed.
-          schema:
-            type: integer
-            format: int32
-      responses:
-        '200':
-          description: Successful operation
-          headers:
-            X-RateLimit-Remaining:
-              description: >-
-                The number of requests that can still be made without triggering
-                a failure response.
-              schema:
-                type: integer
-                format: int32
-            X-RateLimit-Limit:
-              description: The average number of requests per minute allowed.
-              schema:
-                type: integer
-                format: int32
-            X-RateLimit-Burst:
-              description: The maximum number of concurrent API requests allowed.
-              schema:
-                type: integer
-                format: int32
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Locations'
-        default:
-          description: >-
-            Any erroneous status code: 400 (parse error), 401 (auth error), 402
-            (trial access), 403 (insufficient privileges), 404 (not found), 405
-            (unsupported HTTP method), 415 (unsupported content type, 422
-            (validation error), 429 (request rate limit exceeded), 500 (server
-            error), or 503 (maintenance).
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-      security:
-        - BasicAuthentication: []
-        - TokenAuthentication: []
-  /locations/{regionId}:
-    get:
-      tags:
-        - Locations
-      summary: Get Locations within a Region
-      description: >-
-        Retrieves the available locations in a region specified by its ID. The
-        'regionId' consists of the two character identifier of the region
-        (country), e.g., 'de'.
-      operationId: locationsFindByRegionId
-      parameters:
         - name: regionId
-          in: path
+          in: query
           description: The unique ID of the region.
           required: true
           schema:
             type: string
-        - name: pretty
-          in: query
-          description: >-
-            Controls whether the response is pretty-printed (with indentations
-            and new lines).
-          schema:
-            type: boolean
-            default: true
-        - name: X-Contract-Number
-          in: header
-          description: >-
-            Users with multiple contracts must provide the contract number, for
-            which all API requests are to be executed.
-          schema:
-            type: integer
-            format: int32
-      responses:
-        '200':
-          description: Successful operation
-          headers:
-            X-RateLimit-Remaining:
-              description: >-
-                The number of requests that can still be made without triggering
-                a failure response.
-              schema:
-                type: integer
-                format: int32
-            X-RateLimit-Limit:
-              description: The average number of requests per minute allowed.
-              schema:
-                type: integer
-                format: int32
-            X-RateLimit-Burst:
-              description: The maximum number of concurrent API requests allowed.
-              schema:
-                type: integer
-                format: int32
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Locations'
-        default:
-          description: >-
-            Any erroneous status code: 400 (parse error), 401 (auth error), 402
-            (trial access), 403 (insufficient privileges), 404 (not found), 405
-            (unsupported HTTP method), 415 (unsupported content type, 422
-            (validation error), 429 (request rate limit exceeded), 500 (server
-            error), or 503 (maintenance).
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-      security:
-        - BasicAuthentication: []
-        - TokenAuthentication: []
-  /locations/{locationId}:
-    get:
-      tags:
-        - Locations
-      summary: Get Location by ID
-      description: >-
-        Retrieves the information about the location specified by its ID. The
-        'locationId' consists of the three-digit identifier of the city
-        according to the IATA code.
-      operationId: locationsFindById
-      parameters:
         - name: locationId
-          in: path
+          in: query
           description: The unique ID of the location.
           required: true
           schema:
             type: string
-        - name: regionId
-          in: query
-          description: The unique ID of the region.
-          schema:
-            type: string
         - name: pretty
           in: query
           description: >-
@@ -1260,7 +1127,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Location'
+                $ref: '#/components/schemas/Locations'
         default:
           description: >-
             Any erroneous status code: 400 (parse error), 401 (auth error), 402
@@ -5331,7 +5198,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/LanNics'
+                $ref: '#/components/schemas/Nics'
         default:
           description: >-
             Any erroneous status code: 400 (parse error), 401 (auth error), 402
@@ -5832,6 +5699,1017 @@ paths:
         - BasicAuthentication: []
         - TokenAuthentication: []
       x-codegen-request-body-name: nic
+  /routers:
+    get:
+      tags:
+        - Virtual routers
+      summary: List virtual routers
+      description: Retrieves all virtual routers within the data center.
+      operationId: routersGet
+      parameters:
+        - name: vpcId
+          in: query
+          description: The unique ID of the vpc.
+          required: true
+          schema:
+            type: string
+        - name: datacenterId
+          in: query
+          description: The unique ID of the data center.
+          required: true
+          schema:
+            type: string
+        - name: pretty
+          in: query
+          description: >-
+            Controls whether the response is pretty-printed (with indentations
+            and new lines).
+          schema:
+            type: boolean
+            default: true
+        - name: offset
+          in: query
+          description: >-
+            The first element (from the complete list of the elements) to
+            include in the response (used together with <b><i>limit</i></b> for
+            pagination).
+          schema:
+            minimum: 0
+            type: integer
+            format: int32
+            default: 0
+        - name: limit
+          in: query
+          description: >-
+            The maximum number of elements to return (use together with offset
+            for pagination).
+          schema:
+            maximum: 10000
+            minimum: 1
+            type: integer
+            format: int32
+            default: 1000
+      responses:
+        '200':
+          description: Successful operation
+          headers:
+            X-RateLimit-Remaining:
+              description: >-
+                The number of requests that can still be made without triggering
+                a failure response.
+              schema:
+                type: integer
+                format: int32
+            X-RateLimit-Limit:
+              description: The average number of requests per minute allowed.
+              schema:
+                type: integer
+                format: int32
+            X-RateLimit-Burst:
+              description: The maximum number of concurrent API requests allowed.
+              schema:
+                type: integer
+                format: int32
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VirtualRouters'
+        default:
+          description: >-
+            Any erroneous status code: 400 (parse error), 401 (auth error), 402
+            (trial access), 403 (insufficient privileges), 404 (not found), 405
+            (unsupported HTTP method), 415 (unsupported content type, 422
+            (validation error), 429 (request rate limit exceeded), 500 (server
+            error), or 503 (maintenance).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - BasicAuthentication: []
+        - TokenAuthentication: []
+    post:
+      tags:
+        - Virtual routers
+      summary: Create a virtual router
+      description: Creates a virtual router within the specified data center.
+      operationId: routersPost
+      parameters:
+        - name: vpcId
+          in: query
+          description: The unique ID of the vpc.
+          required: true
+          schema:
+            type: string
+        - name: datacenterId
+          in: query
+          description: The unique ID of the data center.
+          required: true
+          schema:
+            type: string
+        - name: pretty
+          in: query
+          description: >-
+            Controls whether the response is pretty-printed (with indentations
+            and new lines).
+          schema:
+            type: boolean
+            default: true
+      requestBody:
+        description: The virtual router to be created.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VirtualRouterRequest'
+        required: true
+      responses:
+        '202':
+          description: Successful operation
+          headers:
+            X-RateLimit-Remaining:
+              description: >-
+                The number of requests that can still be made without triggering
+                a failure response.
+              schema:
+                type: integer
+                format: int32
+            X-RateLimit-Limit:
+              description: The average number of requests per minute allowed.
+              schema:
+                type: integer
+                format: int32
+            X-RateLimit-Burst:
+              description: The maximum number of concurrent API requests allowed.
+              schema:
+                type: integer
+                format: int32
+            Location:
+              description: Callback URL to poll async operation status.
+              schema:
+                pattern: https://[apiBaseUri]/requests/[requestId]/status
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VirtualRouter'
+        default:
+          description: >-
+            Any erroneous status code: 400 (parse error), 401 (auth error), 402
+            (trial access), 403 (insufficient privileges), 404 (not found), 405
+            (unsupported HTTP method), 415 (unsupported content type, 422
+            (validation error), 429 (request rate limit exceeded), 500 (server
+            error), or 503 (maintenance).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - BasicAuthentication: []
+        - TokenAuthentication: []
+      x-codegen-request-body-name: router
+  /routers/{routerId}:
+    get:
+      tags:
+        - Virtual routers
+      summary: Retrieve a virtual router
+      description: Retrieves the properties of the specified virtual router.
+      operationId: routersFindById
+      parameters:
+        - name: vpcId
+          in: query
+          description: The unique ID of the vpc.
+          required: true
+          schema:
+            type: string
+        - name: datacenterId
+          in: query
+          description: The unique ID of the data center.
+          required: true
+          schema:
+            type: string
+        - name: routerId
+          in: path
+          description: The unique ID of the virtual router.
+          required: true
+          schema:
+            type: string
+        - name: pretty
+          in: query
+          description: >-
+            Controls whether the response is pretty-printed (with indentations
+            and new lines).
+          schema:
+            type: boolean
+            default: true
+      responses:
+        '200':
+          description: Successful operation
+          headers:
+            X-RateLimit-Remaining:
+              description: >-
+                The number of requests that can still be made without triggering
+                a failure response.
+              schema:
+                type: integer
+                format: int32
+            X-RateLimit-Limit:
+              description: The average number of requests per minute allowed.
+              schema:
+                type: integer
+                format: int32
+            X-RateLimit-Burst:
+              description: The maximum number of concurrent API requests allowed.
+              schema:
+                type: integer
+                format: int32
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VirtualRouter'
+        default:
+          description: >-
+            Any erroneous status code: 400 (parse error), 401 (auth error), 402
+            (trial access), 403 (insufficient privileges), 404 (not found), 405
+            (unsupported HTTP method), 415 (unsupported content type, 422
+            (validation error), 429 (request rate limit exceeded), 500 (server
+            error), or 503 (maintenance).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - BasicAuthentication: []
+        - TokenAuthentication: []
+    put:
+      tags:
+        - Virtual routers
+      summary: Modify a virtual router
+      description: Modifies the properties of the specified virtual router.
+      operationId: routersPut
+      parameters:
+        - name: vpcId
+          in: query
+          description: The unique ID of the vpc.
+          required: true
+          schema:
+            type: string
+        - name: datacenterId
+          in: query
+          description: The unique ID of the data center.
+          required: true
+          schema:
+            type: string
+        - name: routerId
+          in: path
+          description: The unique ID of the virtual router.
+          required: true
+          schema:
+            type: string
+        - name: pretty
+          in: query
+          description: >-
+            Controls whether the response is pretty-printed (with indentations
+            and new lines).
+          schema:
+            type: boolean
+            default: true
+      requestBody:
+        description: The modified virtual router
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VirtualRouterRequest'
+        required: true
+      responses:
+        '202':
+          description: Successful operation
+          headers:
+            X-RateLimit-Remaining:
+              description: >-
+                The number of requests that can still be made without triggering
+                a failure response.
+              schema:
+                type: integer
+                format: int32
+            X-RateLimit-Limit:
+              description: The average number of requests per minute allowed.
+              schema:
+                type: integer
+                format: int32
+            X-RateLimit-Burst:
+              description: The maximum number of concurrent API requests allowed.
+              schema:
+                type: integer
+                format: int32
+            Location:
+              description: Callback URL to poll async operation status.
+              schema:
+                pattern: https://[apiBaseUri]/requests/[requestId]/status
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VirtualRouter'
+        default:
+          description: >-
+            Any erroneous status code: 400 (parse error), 401 (auth error), 402
+            (trial access), 403 (insufficient privileges), 404 (not found), 405
+            (unsupported HTTP method), 415 (unsupported content type, 422
+            (validation error), 429 (request rate limit exceeded), 500 (server
+            error), or 503 (maintenance).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - BasicAuthentication: []
+        - TokenAuthentication: []
+      x-codegen-request-body-name: router
+    patch:
+      tags:
+        - Virtual routers
+      summary: Partially modify a virtual router
+      description: Modifies the properties of the specified virtual router.
+      operationId: routersPatch
+      parameters:
+        - name: vpcId
+          in: query
+          description: The unique ID of the vpc.
+          required: true
+          schema:
+            type: string
+        - name: datacenterId
+          in: query
+          description: The unique ID of the data center.
+          required: true
+          schema:
+            type: string
+        - name: routerId
+          in: path
+          description: The unique ID of the virtual router.
+          required: true
+          schema:
+            type: string
+        - name: pretty
+          in: query
+          description: >-
+            Controls whether the response is pretty-printed (with indentations
+            and new lines).
+          schema:
+            type: boolean
+            default: true
+      requestBody:
+        description: The properties of the virtual router to be updated.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VirtualRouterRequestProperties'
+        required: true
+      responses:
+        '202':
+          description: Successful operation
+          headers:
+            X-RateLimit-Remaining:
+              description: >-
+                The number of requests that can still be made without triggering
+                a failure response.
+              schema:
+                type: integer
+                format: int32
+            X-RateLimit-Limit:
+              description: The average number of requests per minute allowed.
+              schema:
+                type: integer
+                format: int32
+            X-RateLimit-Burst:
+              description: The maximum number of concurrent API requests allowed.
+              schema:
+                type: integer
+                format: int32
+            Location:
+              description: Callback URL to poll async operation status.
+              schema:
+                pattern: https://[apiBaseUri]/requests/[requestId]/status
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VirtualRouter'
+        default:
+          description: >-
+            Any erroneous status code: 400 (parse error), 401 (auth error), 402
+            (trial access), 403 (insufficient privileges), 404 (not found), 405
+            (unsupported HTTP method), 415 (unsupported content type, 422
+            (validation error), 429 (request rate limit exceeded), 500 (server
+            error), or 503 (maintenance).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - BasicAuthentication: []
+        - TokenAuthentication: []
+      x-codegen-request-body-name: router
+    delete:
+      tags:
+        - Virtual routers
+      summary: Delete a virtual router
+      description: >-
+        Removes the specified virtual router from the data center. Virtual router
+        can be deleted only if it is not assigned to any LANs or NICs and if it
+        is not a default router. 
+        Once the virtual router is deleted, all it's virtual routes will also be 
+        removed.
+      operationId: routersDelete
+      parameters:
+        - name: vpcId
+          in: query
+          description: The unique ID of the vpc.
+          required: true
+          schema:
+            type: string
+        - name: datacenterId
+          in: query
+          description: The unique ID of the data center.
+          required: true
+          schema:
+            type: string
+        - name: routerId
+          in: path
+          description: The unique ID of the virtual router.
+          required: true
+          schema:
+            type: string
+        - name: pretty
+          in: query
+          description: >-
+            Controls whether the response is pretty-printed (with indentations
+            and new lines).
+          schema:
+            type: boolean
+            default: true
+      responses:
+        '202':
+          description: Successful operation
+          headers:
+            X-RateLimit-Remaining:
+              description: >-
+                The number of requests that can still be made without triggering
+                a failure response.
+              schema:
+                type: integer
+                format: int32
+            X-RateLimit-Limit:
+              description: The average number of requests per minute allowed.
+              schema:
+                type: integer
+                format: int32
+            X-RateLimit-Burst:
+              description: The maximum number of concurrent API requests allowed.
+              schema:
+                type: integer
+                format: int32
+            Location:
+              description: Callback URL to poll async operation status.
+              schema:
+                pattern: https://[apiBaseUri]/requests/[requestId]/status
+                type: string
+          content: { }
+        default:
+          description: >-
+            Any erroneous status code: 400 (parse error), 401 (auth error), 402
+            (trial access), 403 (insufficient privileges), 404 (not found), 405
+            (unsupported HTTP method), 415 (unsupported content type, 422
+            (validation error), 429 (request rate limit exceeded), 500 (server
+            error), or 503 (maintenance).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - BasicAuthentication: []
+        - TokenAuthentication: []
+  /routes:
+    get:
+      tags:
+        - Virtual routes
+      summary: List virtual routes
+      description: Retrieves all virtual routes for the specified virtual router.
+      operationId: routesGet
+      parameters:
+        - name: vpcId
+          in: query
+          description: The unique ID of the vpc.
+          required: true
+          schema:
+            type: string
+        - name: datacenterId
+          in: query
+          description: The unique ID of the data center.
+          required: true
+          schema:
+            type: string
+        - name: routerId
+          in: query
+          description: The unique ID of the virtual router.
+          required: true
+          schema:
+            type: string
+        - name: pretty
+          in: query
+          description: >-
+            Controls whether the response is pretty-printed (with indentations
+            and new lines).
+          schema:
+            type: boolean
+            default: true
+        - name: offset
+          in: query
+          description: >-
+            The first element (from the complete list of the elements) to
+            include in the response (used together with <b><i>limit</i></b> for
+            pagination).
+          schema:
+            minimum: 0
+            type: integer
+            format: int32
+            default: 0
+        - name: limit
+          in: query
+          description: >-
+            The maximum number of elements to return (use together with offset
+            for pagination).
+          schema:
+            maximum: 10000
+            minimum: 1
+            type: integer
+            format: int32
+            default: 1000
+      responses:
+        '200':
+          description: Successful operation
+          headers:
+            X-RateLimit-Remaining:
+              description: >-
+                The number of requests that can still be made without triggering
+                a failure response.
+              schema:
+                type: integer
+                format: int32
+            X-RateLimit-Limit:
+              description: The average number of requests per minute allowed.
+              schema:
+                type: integer
+                format: int32
+            X-RateLimit-Burst:
+              description: The maximum number of concurrent API requests allowed.
+              schema:
+                type: integer
+                format: int32
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VirtualRoutes'
+        default:
+          description: >-
+            Any erroneous status code: 400 (parse error), 401 (auth error), 402
+            (trial access), 403 (insufficient privileges), 404 (not found), 405
+            (unsupported HTTP method), 415 (unsupported content type, 422
+            (validation error), 429 (request rate limit exceeded), 500 (server
+            error), or 503 (maintenance).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - BasicAuthentication: []
+        - TokenAuthentication: []
+    post:
+      tags:
+        - Virtual routes
+      summary: Create a virtual route
+      description: Creates a virtual route for the specified virtual Router.
+      operationId: routesPost
+      parameters:
+        - name: vpcId
+          in: query
+          description: The unique ID of the vpc.
+          required: true
+          schema:
+            type: string
+        - name: datacenterId
+          in: query
+          description: The unique ID of the data center.
+          required: true
+          schema:
+            type: string
+        - name: routerId
+          in: query
+          description: The unique ID of the virtual router.
+          required: true
+          schema:
+            type: string
+        - name: pretty
+          in: query
+          description: >-
+            Controls whether the response is pretty-printed (with indentations
+            and new lines).
+          schema:
+            type: boolean
+            default: true
+      requestBody:
+        description: The virtual route to be created.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VirtualRoute'
+        required: true
+      responses:
+        '202':
+          description: Successful operation
+          headers:
+            X-RateLimit-Remaining:
+              description: >-
+                The number of requests that can still be made without triggering
+                a failure response.
+              schema:
+                type: integer
+                format: int32
+            X-RateLimit-Limit:
+              description: The average number of requests per minute allowed.
+              schema:
+                type: integer
+                format: int32
+            X-RateLimit-Burst:
+              description: The maximum number of concurrent API requests allowed.
+              schema:
+                type: integer
+                format: int32
+            Location:
+              description: Callback URL to poll async operation status.
+              schema:
+                pattern: https://[apiBaseUri]/requests/[requestId]/status
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VirtualRoute'
+        default:
+          description: >-
+            Any erroneous status code: 400 (parse error), 401 (auth error), 402
+            (trial access), 403 (insufficient privileges), 404 (not found), 405
+            (unsupported HTTP method), 415 (unsupported content type, 422
+            (validation error), 429 (request rate limit exceeded), 500 (server
+            error), or 503 (maintenance).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - BasicAuthentication: []
+        - TokenAuthentication: []
+      x-codegen-request-body-name: route
+  /routes/{routeId}:
+    get:
+      tags:
+        - Virtual routes
+      summary: Retrieve a virtual route
+      description: Retrieves the properties of the specified virtual route.
+      operationId: routesFindById
+      parameters:
+        - name: vpcId
+          in: query
+          description: The unique ID of the vpc.
+          required: true
+          schema:
+            type: string
+        - name: datacenterId
+          in: query
+          description: The unique ID of the data center.
+          required: true
+          schema:
+            type: string
+        - name: routerId
+          in: query
+          description: The unique ID of the virtual router.
+          required: true
+          schema:
+            type: string
+        - name: routeId
+          in: path
+          description: The unique ID of the virtual route.
+          required: true
+          schema:
+            type: string
+        - name: pretty
+          in: query
+          description: >-
+            Controls whether the response is pretty-printed (with indentations
+            and new lines).
+          schema:
+            type: boolean
+            default: true
+      responses:
+        '200':
+          description: Successful operation
+          headers:
+            X-RateLimit-Remaining:
+              description: >-
+                The number of requests that can still be made without triggering
+                a failure response.
+              schema:
+                type: integer
+                format: int32
+            X-RateLimit-Limit:
+              description: The average number of requests per minute allowed.
+              schema:
+                type: integer
+                format: int32
+            X-RateLimit-Burst:
+              description: The maximum number of concurrent API requests allowed.
+              schema:
+                type: integer
+                format: int32
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VirtualRoute'
+        default:
+          description: >-
+            Any erroneous status code: 400 (parse error), 401 (auth error), 402
+            (trial access), 403 (insufficient privileges), 404 (not found), 405
+            (unsupported HTTP method), 415 (unsupported content type, 422
+            (validation error), 429 (request rate limit exceeded), 500 (server
+            error), or 503 (maintenance).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - BasicAuthentication: []
+        - TokenAuthentication: []
+    put:
+      tags:
+        - Virtual routes
+      summary: Modify a virtual route
+      description: Modifies the properties of the specified virtual route.
+      operationId: routesPut
+      parameters:
+        - name: vpcId
+          in: query
+          description: The unique ID of the vpc.
+          required: true
+          schema:
+            type: string
+        - name: datacenterId
+          in: query
+          description: The unique ID of the data center.
+          required: true
+          schema:
+            type: string
+        - name: routerId
+          in: query
+          description: The unique ID of the virtual router.
+          required: true
+          schema:
+            type: string
+        - name: routeId
+          in: path
+          description: The unique ID of the virtual route.
+          required: true
+          schema:
+            type: string
+        - name: pretty
+          in: query
+          description: >-
+            Controls whether the response is pretty-printed (with indentations
+            and new lines).
+          schema:
+            type: boolean
+            default: true
+      requestBody:
+        description: The modified virtual route.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VirtualRoute'
+        required: true
+      responses:
+        '202':
+          description: Successful operation
+          headers:
+            X-RateLimit-Remaining:
+              description: >-
+                The number of requests that can still be made without triggering
+                a failure response.
+              schema:
+                type: integer
+                format: int32
+            X-RateLimit-Limit:
+              description: The average number of requests per minute allowed.
+              schema:
+                type: integer
+                format: int32
+            X-RateLimit-Burst:
+              description: The maximum number of concurrent API requests allowed.
+              schema:
+                type: integer
+                format: int32
+            Location:
+              description: Callback URL to poll async operation status.
+              schema:
+                pattern: https://[apiBaseUri]/requests/[requestId]/status
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VirtualRoute'
+        default:
+          description: >-
+            Any erroneous status code: 400 (parse error), 401 (auth error), 402
+            (trial access), 403 (insufficient privileges), 404 (not found), 405
+            (unsupported HTTP method), 415 (unsupported content type, 422
+            (validation error), 429 (request rate limit exceeded), 500 (server
+            error), or 503 (maintenance).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - BasicAuthentication: []
+        - TokenAuthentication: []
+      x-codegen-request-body-name: route
+    patch:
+      tags:
+        - Virtual routes
+      summary: Partially modify a virtual route
+      description: Modifies the properties of the specified virtual route.
+      operationId: routesPatch
+      parameters:
+        - name: vpcId
+          in: query
+          description: The unique ID of the vpc.
+          required: true
+          schema:
+            type: string
+        - name: datacenterId
+          in: query
+          description: The unique ID of the data center.
+          required: true
+          schema:
+            type: string
+        - name: routerId
+          in: query
+          description: The unique ID of the virtual router.
+          required: true
+          schema:
+            type: string
+        - name: routeId
+          in: path
+          description: The unique ID of the virtual route.
+          required: true
+          schema:
+            type: string
+        - name: pretty
+          in: query
+          description: >-
+            Controls whether the response is pretty-printed (with indentations
+            and new lines).
+          schema:
+            type: boolean
+            default: true
+      requestBody:
+        description: The properties of the virtual route to be updated.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VirtualRouteProperties'
+        required: true
+      responses:
+        '202':
+          description: Successful operation
+          headers:
+            X-RateLimit-Remaining:
+              description: >-
+                The number of requests that can still be made without triggering
+                a failure response.
+              schema:
+                type: integer
+                format: int32
+            X-RateLimit-Limit:
+              description: The average number of requests per minute allowed.
+              schema:
+                type: integer
+                format: int32
+            X-RateLimit-Burst:
+              description: The maximum number of concurrent API requests allowed.
+              schema:
+                type: integer
+                format: int32
+            Location:
+              description: Callback URL to poll async operation status.
+              schema:
+                pattern: https://[apiBaseUri]/requests/[requestId]/status
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VirtualRoute'
+        default:
+          description: >-
+            Any erroneous status code: 400 (parse error), 401 (auth error), 402
+            (trial access), 403 (insufficient privileges), 404 (not found), 405
+            (unsupported HTTP method), 415 (unsupported content type, 422
+            (validation error), 429 (request rate limit exceeded), 500 (server
+            error), or 503 (maintenance).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - BasicAuthentication: []
+        - TokenAuthentication: []
+      x-codegen-request-body-name: route
+    delete:
+      tags:
+        - Virtual routes
+      summary: Delete a virtual route
+      description: Removes the specified virtual route from the virtual router.
+      operationId: routesDelete
+      parameters:
+        - name: vpcId
+          in: query
+          description: The unique ID of the vpc.
+          required: true
+          schema:
+            type: string
+        - name: datacenterId
+          in: query
+          description: The unique ID of the data center.
+          required: true
+          schema:
+            type: string
+        - name: routerId
+          in: query
+          description: The unique ID of the virtual router.
+          required: true
+          schema:
+            type: string
+        - name: routeId
+          in: path
+          description: The unique ID of the virtual route.
+          required: true
+          schema:
+            type: string
+        - name: pretty
+          in: query
+          description: >-
+            Controls whether the response is pretty-printed (with indentations
+            and new lines).
+          schema:
+            type: boolean
+            default: true
+      responses:
+        '202':
+          description: Successful operation
+          headers:
+            X-RateLimit-Remaining:
+              description: >-
+                The number of requests that can still be made without triggering
+                a failure response.
+              schema:
+                type: integer
+                format: int32
+            X-RateLimit-Limit:
+              description: The average number of requests per minute allowed.
+              schema:
+                type: integer
+                format: int32
+            X-RateLimit-Burst:
+              description: The maximum number of concurrent API requests allowed.
+              schema:
+                type: integer
+                format: int32
+            Location:
+              description: Callback URL to poll async operation status.
+              schema:
+                pattern: https://[apiBaseUri]/requests/[requestId]/status
+                type: string
+          content: {}
+        default:
+          description: >-
+            Any erroneous status code: 400 (parse error), 401 (auth error), 402
+            (trial access), 403 (insufficient privileges), 404 (not found), 405
+            (unsupported HTTP method), 415 (unsupported content type, 422
+            (validation error), 429 (request rate limit exceeded), 500 (server
+            error), or 503 (maintenance).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - BasicAuthentication: []
+        - TokenAuthentication: []
   /flowlogs:
     get:
       tags:
@@ -6486,23 +7364,20 @@ paths:
           in: query
           description: >-
             Filter the list by request status [QUEUED, RUNNING, DONE, FAILED].
-            Filter is not affected by the depth query parameter.
           schema:
             type: string
         - name: filter.createdAfter
           in: query
           description: >-
             Filter the list to only include the requests created after the date,
-            specified in the yyyy-MM-dd HH:mm:ss format. Filter is not affected
-            by the depth query parameter.
+            specified in the yyyy-MM-dd HH:mm:ss format.
           schema:
             type: string
         - name: filter.createdBefore
           in: query
           description: >-
             Filter the list to only include the requests created before the
-            date, specified in the yyyy-MM-dd HH:mm:ss format. Filter is not
-            affected by the depth query parameter.
+            date, specified in the yyyy-MM-dd HH:mm:ss format.
           schema:
             type: string
         - name: filter.createdDate
@@ -6510,8 +7385,7 @@ paths:
           description: >-
             Filter the list to only include the requests that contain the
             createdDate, specified in the yyyy-MM-dd HH:mm:ss format. The value
-            is not case-sensitive, and the filter requires that the depth query
-            parameter value is greater than zero.
+            is not case-sensitive.
           schema:
             type: string
         - name: filter.createdBy
@@ -6519,57 +7393,49 @@ paths:
           description: >-
             Filter the list to only include the requests that contain the
             createdBy, specified in the yyyy-MM-dd HH:mm:ss format. The value is
-            not case-sensitive, and the filter requires that the depth query
-            parameter value is greater than zero.
+            not case-sensitive.
           schema:
             type: string
         - name: filter.etag
           in: query
           description: >-
             Filter the list to only include the requests that contain the
-            specified etag. The value is not case-sensitive, and the filter
-            requires that the depth query parameter value is greater than zero.
+            specified etag. The value is not case-sensitive.
           schema:
             type: string
         - name: filter.requestStatus
           in: query
           description: >-
             Filter the list to only include the requests that contain the
-            specified requestStatus. The value is not case-sensitive, and the
-            filter requires that the depth query parameter value is greater than
-            zero.
+            specified requestStatus. The value is not case-sensitive.
           schema:
             type: string
         - name: filter.method
           in: query
           description: >-
             Filter the list to only include the requests that contain the
-            specified method. The value is not case-sensitive, and the filter
-            requires that the depth query parameter value is greater than zero.
+            specified method. The value is not case-sensitive.
           schema:
             type: string
         - name: filter.headers
           in: query
           description: >-
             Filter the list to only include the requests that contain the
-            specified headers. The value is not case-sensitive, and the filter
-            requires that the depth query parameter value is greater than zero.
+            specified headers. The value is not case-sensitive.
           schema:
             type: string
         - name: filter.body
           in: query
           description: >-
             Filter the list to only include the requests that contain the
-            specified body. The value is not case-sensitive, and the filter
-            requires that the depth query parameter value is greater than zero.
+            specified body. The value is not case-sensitive.
           schema:
             type: string
         - name: filter.url
           in: query
           description: >-
             Filter the list to only include the requests that contain the
-            specified URL. The value is not case-sensitive, and the filter
-            requires that the depth query parameter value is greater than zero.
+            specified URL. The value is not case-sensitive.
           schema:
             type: string
         - name: offset
@@ -6688,524 +7554,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RequestStatus'
-        default:
-          description: >-
-            Any erroneous status code: 400 (parse error), 401 (auth error), 402
-            (trial access), 403 (insufficient privileges), 404 (not found), 405
-            (unsupported HTTP method), 415 (unsupported content type, 422
-            (validation error), 429 (request rate limit exceeded), 500 (server
-            error), or 503 (maintenance).
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-      security:
-        - BasicAuthentication: []
-        - TokenAuthentication: []
-  /labels:
-    get:
-      tags:
-        - Labels
-      summary: List data center labels
-      description: List all the the labels for the specified resource.
-      operationId: labelsGet
-      parameters:
-        - name: vpcId
-          in: query
-          description: The unique ID of the vpc.
-          schema:
-            type: string
-        - name: datacenterId
-          in: query
-          description: The unique ID of the data center.
-          schema:
-            type: string
-        - name: serverId
-          in: query
-          description: The unique ID of the server.
-          schema:
-            type: string
-        - name: volumeId
-          in: query
-          description: The unique ID of the volume.
-          schema:
-            type: string
-        - name: snapshotId
-          in: query
-          description: The unique ID of the snapshot.
-          schema:
-            type: string
-        - name: ipblockId
-          in: query
-          description: The unique ID of the IP block.
-          schema:
-            type: string
-        - name: imageId
-          in: query
-          description: The unique ID of the image.
-          schema:
-            type: string
-        - name: pretty
-          in: query
-          description: >-
-            Controls whether the response is pretty-printed (with indentations
-            and new lines).
-          schema:
-            type: boolean
-            default: true
-        - name: X-Contract-Number
-          in: header
-          description: >-
-            Users with multiple contracts must provide the contract number, for
-            which all API requests are to be executed.
-          schema:
-            type: integer
-            format: int32
-      responses:
-        '200':
-          description: Successful operation
-          headers:
-            X-RateLimit-Remaining:
-              description: >-
-                The number of requests that can still be made without triggering
-                a failure response.
-              schema:
-                type: integer
-                format: int32
-            X-RateLimit-Limit:
-              description: The average number of requests per minute allowed.
-              schema:
-                type: integer
-                format: int32
-            X-RateLimit-Burst:
-              description: The maximum number of concurrent API requests allowed.
-              schema:
-                type: integer
-                format: int32
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/LabelResources'
-        default:
-          description: >-
-            Any erroneous status code: 400 (parse error), 401 (auth error), 402
-            (trial access), 403 (insufficient privileges), 404 (not found), 405
-            (unsupported HTTP method), 415 (unsupported content type, 422
-            (validation error), 429 (request rate limit exceeded), 500 (server
-            error), or 503 (maintenance).
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-      security:
-        - BasicAuthentication: []
-        - TokenAuthentication: []
-    post:
-      tags:
-        - Labels
-      summary: Create a Data Center Label
-      description: Adds a new label to the specified resource.
-      operationId: labelsPost
-      parameters:
-        - name: vpcId
-          in: query
-          description: The unique ID of the vpc.
-          schema:
-            type: string
-        - name: datacenterId
-          in: query
-          description: The unique ID of the data center.
-          schema:
-            type: string
-        - name: serverId
-          in: query
-          description: The unique ID of the server.
-          schema:
-            type: string
-        - name: volumeId
-          in: query
-          description: The unique ID of the volume.
-          schema:
-            type: string
-        - name: snapshotId
-          in: query
-          description: The unique ID of the snapshot.
-          schema:
-            type: string
-        - name: ipblockId
-          in: query
-          description: The unique ID of the IP block.
-          schema:
-            type: string
-        - name: imageId
-          in: query
-          description: The unique ID of the image.
-          schema:
-            type: string
-        - name: pretty
-          in: query
-          description: >-
-            Controls whether the response is pretty-printed (with indentations
-            and new lines).
-          schema:
-            type: boolean
-            default: true
-        - name: X-Contract-Number
-          in: header
-          description: >-
-            Users with multiple contracts must provide the contract number, for
-            which all API requests are to be executed.
-          schema:
-            type: integer
-            format: int32
-      requestBody:
-        description: The label to create.
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/LabelResource'
-        required: true
-      responses:
-        '201':
-          description: Successful operation
-          headers:
-            X-RateLimit-Remaining:
-              description: >-
-                The number of requests that can still be made without triggering
-                a failure response.
-              schema:
-                type: integer
-                format: int32
-            X-RateLimit-Limit:
-              description: The average number of requests per minute allowed.
-              schema:
-                type: integer
-                format: int32
-            X-RateLimit-Burst:
-              description: The maximum number of concurrent API requests allowed.
-              schema:
-                type: integer
-                format: int32
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/LabelResource'
-        default:
-          description: >-
-            Any erroneous status code: 400 (parse error), 401 (auth error), 402
-            (trial access), 403 (insufficient privileges), 404 (not found), 405
-            (unsupported HTTP method), 415 (unsupported content type, 422
-            (validation error), 429 (request rate limit exceeded), 500 (server
-            error), or 503 (maintenance).
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-      security:
-        - BasicAuthentication: []
-        - TokenAuthentication: []
-      x-codegen-request-body-name: label
-  /labels/{key}:
-    get:
-      tags:
-        - Labels
-      summary: Retrieve data center labels
-      description: Retrieve the properties of the specified label.
-      operationId: labelsFindByKey
-      parameters:
-        - name: vpcId
-          in: query
-          description: The unique ID of the vpc.
-          schema:
-            type: string
-        - name: datacenterId
-          in: query
-          description: The unique ID of the data center.
-          schema:
-            type: string
-        - name: serverId
-          in: query
-          description: The unique ID of the server.
-          schema:
-            type: string
-        - name: volumeId
-          in: query
-          description: The unique ID of the volume.
-          schema:
-            type: string
-        - name: snapshotId
-          in: query
-          description: The unique ID of the snapshot.
-          schema:
-            type: string
-        - name: ipblockId
-          in: query
-          description: The unique ID of the IP block.
-          schema:
-            type: string
-        - name: imageId
-          in: query
-          description: The unique ID of the image.
-          schema:
-            type: string
-        - name: key
-          in: path
-          description: The label key
-          required: true
-          schema:
-            type: string
-        - name: pretty
-          in: query
-          description: >-
-            Controls whether the response is pretty-printed (with indentations
-            and new lines).
-          schema:
-            type: boolean
-            default: true
-        - name: X-Contract-Number
-          in: header
-          description: >-
-            Users with multiple contracts must provide the contract number, for
-            which all API requests are to be executed.
-          schema:
-            type: integer
-            format: int32
-      responses:
-        '200':
-          description: Successful operation
-          headers:
-            X-RateLimit-Remaining:
-              description: >-
-                The number of requests that can still be made without triggering
-                a failure response.
-              schema:
-                type: integer
-                format: int32
-            X-RateLimit-Limit:
-              description: The average number of requests per minute allowed.
-              schema:
-                type: integer
-                format: int32
-            X-RateLimit-Burst:
-              description: The maximum number of concurrent API requests allowed.
-              schema:
-                type: integer
-                format: int32
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/LabelResource'
-        default:
-          description: >-
-            Any erroneous status code: 400 (parse error), 401 (auth error), 402
-            (trial access), 403 (insufficient privileges), 404 (not found), 405
-            (unsupported HTTP method), 415 (unsupported content type, 422
-            (validation error), 429 (request rate limit exceeded), 500 (server
-            error), or 503 (maintenance).
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-      security:
-        - BasicAuthentication: []
-        - TokenAuthentication: []
-    put:
-      tags:
-        - Labels
-      summary: Modify a Data Center Label by Key
-      description: Modifies the specified label.
-      operationId: labelsPut
-      parameters:
-        - name: vpcId
-          in: query
-          description: The unique ID of the vpc.
-          schema:
-            type: string
-        - name: datacenterId
-          in: query
-          description: The unique ID of the data center.
-          schema:
-            type: string
-        - name: serverId
-          in: query
-          description: The unique ID of the server.
-          schema:
-            type: string
-        - name: volumeId
-          in: query
-          description: The unique ID of the volume.
-          schema:
-            type: string
-        - name: snapshotId
-          in: query
-          description: The unique ID of the snapshot.
-          schema:
-            type: string
-        - name: ipblockId
-          in: query
-          description: The unique ID of the IP block.
-          schema:
-            type: string
-        - name: imageId
-          in: query
-          description: The unique ID of the image.
-          schema:
-            type: string
-        - name: key
-          in: path
-          description: The label key
-          required: true
-          schema:
-            type: string
-        - name: pretty
-          in: query
-          description: >-
-            Controls whether the response is pretty-printed (with indentations
-            and new lines).
-          schema:
-            type: boolean
-            default: true
-        - name: X-Contract-Number
-          in: header
-          description: >-
-            Users with multiple contracts must provide the contract number, for
-            which all API requests are to be executed.
-          schema:
-            type: integer
-            format: int32
-      requestBody:
-        description: The modified label
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/LabelResource'
-        required: true
-      responses:
-        '200':
-          description: Successful operation
-          headers:
-            X-RateLimit-Remaining:
-              description: >-
-                The number of requests that can still be made without triggering
-                a failure response.
-              schema:
-                type: integer
-                format: int32
-            X-RateLimit-Limit:
-              description: The average number of requests per minute allowed.
-              schema:
-                type: integer
-                format: int32
-            X-RateLimit-Burst:
-              description: The maximum number of concurrent API requests allowed.
-              schema:
-                type: integer
-                format: int32
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/LabelResource'
-        default:
-          description: >-
-            Any erroneous status code: 400 (parse error), 401 (auth error), 402
-            (trial access), 403 (insufficient privileges), 404 (not found), 405
-            (unsupported HTTP method), 415 (unsupported content type, 422
-            (validation error), 429 (request rate limit exceeded), 500 (server
-            error), or 503 (maintenance).
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-      security:
-        - BasicAuthentication: []
-        - TokenAuthentication: []
-      x-codegen-request-body-name: label
-    delete:
-      tags:
-        - Labels
-      summary: Delete data center labels
-      description: Delete the specified label.
-      operationId: labelsDelete
-      parameters:
-        - name: vpcId
-          in: query
-          description: The unique ID of the vpc.
-          schema:
-            type: string
-        - name: datacenterId
-          in: query
-          description: The unique ID of the data center.
-          schema:
-            type: string
-        - name: serverId
-          in: query
-          description: The unique ID of the server.
-          schema:
-            type: string
-        - name: volumeId
-          in: query
-          description: The unique ID of the volume.
-          schema:
-            type: string
-        - name: snapshotId
-          in: query
-          description: The unique ID of the snapshot.
-          schema:
-            type: string
-        - name: ipblockId
-          in: query
-          description: The unique ID of the IP block.
-          schema:
-            type: string
-        - name: imageId
-          in: query
-          description: The unique ID of the image.
-          schema:
-            type: string
-        - name: key
-          in: path
-          description: The label key
-          required: true
-          schema:
-            type: string
-        - name: pretty
-          in: query
-          description: >-
-            Controls whether the response is pretty-printed (with indentations
-            and new lines).
-          schema:
-            type: boolean
-            default: true
-        - name: X-Contract-Number
-          in: header
-          description: >-
-            Users with multiple contracts must provide the contract number, for
-            which all API requests are to be executed.
-          schema:
-            type: integer
-            format: int32
-      responses:
-        '200':
-          description: Successful operation
-          headers:
-            X-RateLimit-Remaining:
-              description: >-
-                The number of requests that can still be made without triggering
-                a failure response.
-              schema:
-                type: integer
-                format: int32
-            X-RateLimit-Limit:
-              description: The average number of requests per minute allowed.
-              schema:
-                type: integer
-                format: int32
-            X-RateLimit-Burst:
-              description: The maximum number of concurrent API requests allowed.
-              schema:
-                type: integer
-                format: int32
-          content: {}
         default:
           description: >-
             Any erroneous status code: 400 (parse error), 401 (auth error), 402
@@ -8036,23 +8384,6 @@ paths:
           schema:
             type: boolean
             default: true
-        - name: depth
-          in: query
-          description: >-
-            Controls the detail depth of the response objects.
-            GET /datacenters/[ID]
-              - depth=0: Only direct properties are included;
-                         children (servers and other elements) are not included.
-              - depth=1: Direct properties and children references are included.
-              - depth=2: Direct properties and children properties are included.
-              - depth=3: Direct properties and children properties and children's children are included.
-              - depth=... and so on
-          schema:
-            maximum: 10
-            minimum: 0
-            type: integer
-            format: int32
-            default: 0
       responses:
         '200':
           description: Successful operation
@@ -8397,9 +8728,7 @@ components:
           type: string
           description: >-
             Resource's Entity Tag as defined in
-            http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.11 
-            Entity Tag is also added as an 'ETag response header to requests
-            which don't use 'depth' parameter.
+            http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.11
           readOnly: true
           example: 45480eb3fbfc31f1d916c1eaa4abdcc3
         createdDate:
@@ -8488,9 +8817,7 @@ components:
           type: string
           description: >-
             Resource's Entity Tag as defined in
-            http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.11 
-            Entity Tag is also added as an 'ETag response header to requests
-            which don't use 'depth' parameter.
+            http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.11
           readOnly: true
           example: 45480eb3fbfc31f1d916c1eaa4abdcc3
         createdDate:
@@ -8572,136 +8899,6 @@ components:
             - MAINTENANCE
             - FAILED_MAINTENANCE
             - UNKNOWN
-    KubernetesNodeMetadata:
-      type: object
-      properties:
-        etag:
-          type: string
-          description: >-
-            The resource entity tag as defined in
-            http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.11 
-            Entity tags are also added as 'ETag' response headers to requests
-            that do not use the 'depth' parameter.
-          readOnly: true
-          example: 45480eb3fbfc31f1d916c1eaa4abdcc3
-        createdDate:
-          type: string
-          description: The date the resource was created.
-          format: date-time
-          readOnly: true
-          example: '2015-12-04T14:34:09.809Z'
-        lastModifiedDate:
-          type: string
-          description: The date the resource was last modified.
-          format: date-time
-          readOnly: true
-          example: '2015-12-04T14:34:09.809Z'
-        state:
-          type: string
-          description: The resource state.
-          readOnly: true
-          example: READY
-          enum:
-            - PROVISIONING
-            - PROVISIONED
-            - READY
-            - TERMINATING
-            - REBUILDING
-            - BUSY
-        lastSoftwareUpdatedDate:
-          type: string
-          description: The date when the software on the node was last updated.
-          format: date-time
-          readOnly: true
-          example: '2015-12-04T14:34:09.809Z'
-    S3KeyMetadata:
-      type: object
-      properties:
-        etag:
-          type: string
-          description: >-
-            Resource's Entity Tag as defined in
-            http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.11 
-            Entity Tag is also added as an 'ETag response header to requests
-            which don't use 'depth' parameter.
-          readOnly: true
-          example: 45480eb3fbfc31f1d916c1eaa4abdcc3
-        createdDate:
-          type: string
-          description: The time when the Object storage key was created.
-          format: date-time
-          readOnly: true
-          example: '2015-12-04T14:34:09.809Z'
-        createdBy:
-          type: string
-          description: Unique name of the identity that created the resource.
-          readOnly: true
-          example: ionos:identity:::users/63cef532-26fe-4a64-a4e0-de7c8a506c90
-        createdByUserId:
-          type: string
-          description: The unique ID of the user who created the Object storage key.
-          readOnly: true
-          example: 63cef532-26fe-4a64-a4e0-de7c8a506c90
-        lastModifiedDate:
-          type: string
-          description: The last time the Object storage key was modified.
-          format: date-time
-          readOnly: true
-          example: '2015-12-04T14:34:09.809Z'
-        lastModifiedBy:
-          type: string
-          description: Unique name of the identity that last modified the Object storage key.
-          readOnly: true
-          example: ionos:identity:::users/63cef532-26fe-4a64-a4e0-de7c8a506c90
-        lastModifiedByUserId:
-          type: string
-          description: The unique ID of the user who last modified the Object storage key.
-          readOnly: true
-          example: 63cef532-26fe-4a64-a4e0-de7c8a506c90
-    NoStateMetaData:
-      type: object
-      properties:
-        etag:
-          type: string
-          description: >-
-            Resource's Entity Tag as defined in
-            http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.11 
-            Entity Tag is also added as an 'ETag response header to requests
-            which don't use 'depth' parameter.
-          readOnly: true
-          example: 45480eb3fbfc31f1d916c1eaa4abdcc3
-        createdDate:
-          type: string
-          description: The time when the resource was created.
-          format: date-time
-          readOnly: true
-          example: '2015-12-04T14:34:09.809Z'
-        createdBy:
-          type: string
-          description: The user who has created the resource.
-          readOnly: true
-          example: user@example.com
-        createdByUserId:
-          type: string
-          description: The unique ID of the user who created the resource.
-          readOnly: true
-          example: user@example.com
-        lastModifiedDate:
-          type: string
-          description: The last time the resource was modified.
-          format: date-time
-          readOnly: true
-          example: '2015-12-04T14:34:09.809Z'
-        lastModifiedBy:
-          type: string
-          description: The user who last modified the resource.
-          readOnly: true
-          example: user@example.com
-        lastModifiedByUserId:
-          type: string
-          description: The unique ID of the user who last modified the resource.
-          readOnly: true
-          example: 63cef532-26fe-4a64-a4e0-de7c8a506c90
     VolumeProperties:
       required:
         - size
@@ -9144,12 +9341,6 @@ components:
         - hddLimitPerContract
         - hddLimitPerVolume
         - hddVolumeProvisioned
-        - k8sClusterLimitTotal
-        - k8sClustersProvisioned
-        - natGatewayLimitTotal
-        - natGatewayProvisioned
-        - nlbLimitTotal
-        - nlbProvisioned
         - ramPerContract
         - ramPerServer
         - ramProvisioned
@@ -9260,38 +9451,6 @@ components:
           description: The number of static public IP addresses in use.
           format: int32
           example: 0
-        k8sClusterLimitTotal:
-          type: integer
-          description: >-
-            The maximum number of Kubernetes clusters that can be created under
-            this contract.
-          format: int32
-          example: 5
-        k8sClustersProvisioned:
-          type: integer
-          description: The amount of Kubernetes clusters that is currently provisioned.
-          format: int32
-          example: 0
-        nlbLimitTotal:
-          type: integer
-          description: The NLB total limit.
-          format: int32
-          example: 5
-        nlbProvisioned:
-          type: integer
-          description: The NLBs provisioned.
-          format: int32
-          example: 0
-        natGatewayLimitTotal:
-          type: integer
-          description: The NAT Gateway total limit.
-          format: int32
-          example: 5
-        natGatewayProvisioned:
-          type: integer
-          description: The NAT Gateways provisioned.
-          format: int32
-          example: 0
         securityGroupsPerVdc:
           type: integer
           description: The maximum number of security groups per VDC.
@@ -9312,8 +9471,8 @@ components:
     VpcEntities:
       type: object
       properties:
-        servers:
-          $ref: '#/components/schemas/Vpcs'
+        datacenters:
+          $ref: '#/components/schemas/Datacenter'
     VpcProperties:
       required:
         - location
@@ -9338,8 +9497,7 @@ components:
         ipv4CidrBlock:
           type: string
           description: >-
-            For public LANs this property is null,
-            for private LANs it contains the private IPv4 CIDR range.
+            It contains the private IPv4 CIDR range on this virtual private cloud.
             This property is a read only property.
           readOnly: true
           nullable: true
@@ -9349,7 +9507,7 @@ components:
           type: string
           description: >-
             This value is either 'null' or contains an automatically-assigned
-            /56 IPv6 CIDR block if IPv6 is enabled on this virtual data center.
+            /56 IPv6 CIDR block if IPv6 is enabled on this virtual private cloud.
             It can neither be changed nor removed.
           nullable: true
           readOnly: true
@@ -9380,6 +9538,15 @@ components:
           description: >-
             Only settable for VPC and VPC-lite type. Unique identifier for virtual network address.
           example: 15f67991-0f51-4efc-a8ad-ef1fb31a480c
+        ipv4CidrBlock:
+          type: string
+          description: >-
+            It contains the private IPv4 CIDR range on this virtual private cloud.
+            This property is a read only property.
+          readOnly: true
+          nullable: true
+          example: 10.8.130.0/23
+          x-prerelease: true
         ipv6CidrBlock:
           type: string
           description: >-
@@ -9415,6 +9582,15 @@ components:
           description: >-
             Only settable for VPC and VPC-lite type. Unique identifier for virtual network address.
           example: 15f67991-0f51-4efc-a8ad-ef1fb31a480c
+        ipv4CidrBlock:
+          type: string
+          description: >-
+            It contains the private IPv4 CIDR range on this virtual private cloud.
+            This property is a read only property.
+          readOnly: true
+          nullable: true
+          example: 10.8.130.0/23
+          x-prerelease: true
         ipv6CidrBlock:
           type: string
           description: >-
@@ -9512,6 +9688,8 @@ components:
           $ref: '#/components/schemas/Volumes'
         lans:
           $ref: '#/components/schemas/Lans'
+        routers:
+          $ref: '#/components/schemas/VirtualRouters'
     DatacenterProperties:
       required:
         - location
@@ -9570,6 +9748,12 @@ components:
           readOnly: true
           example: 2001:db8:b06d:8f00::/56
           x-prerelease: true
+        defaultRouterId:
+          type: string
+          description: UUID of the default router for this datacenter.
+          format: uuid
+          readOnly: true
+          example: '15f67991-0f51-4efc-a8ad-ef1fb31a480c'
     DatacenterPropertiesPost:
       required:
         - location
@@ -10063,39 +10247,7 @@ components:
       type: object
       properties:
         nics:
-          $ref: '#/components/schemas/LanNics'
-    LanNics:
-      type: object
-      properties:
-        id:
-          type: string
-          description: The resource's unique identifier.
-          readOnly: true
-          example: 15f67991-0f51-4efc-a8ad-ef1fb31a480c
-        type:
-          type: string
-          description: The type of object that has been created.
-          example: collection
-          allOf:
-            - $ref: '#/components/schemas/Type'
-        href:
-          type: string
-          description: URL to the object representation (absolute path).
-          format: uri
-          readOnly: true
-          example: <RESOURCE-URI>
-        items:
-          type: array
-          description: Array of items in the collection.
-          readOnly: true
-          items:
-            $ref: '#/components/schemas/Nic'
-        offset:
-          $ref: '#/components/schemas/PaginationOffsetOptional'
-        limit:
-          $ref: '#/components/schemas/PaginationLimitOptional'
-        _links:
-          $ref: '#/components/schemas/PaginationLinks'
+          $ref: '#/components/schemas/Nics'
     LanProperties:
       type: object
       properties:
@@ -10137,18 +10289,12 @@ components:
           nullable: true
           example: 2001:db8:b06d:8f5a::/64
           x-prerelease: true
-        pcc:
-          type: string
-          description: >-
-            The unique identifier of the Cross Connect the LAN is connected to,
-            if any. It needs to be ensured that IP addresses of the NICs of all
-            LANs connected to a given Cross Connect is not duplicated and
-            belongs to the same subnet range.
-          example: 3c11273c-b3e1-4ca3-8134-84fd2dd4ebec
         public:
           type: boolean
           description: Indicates if the LAN is connected to the internet or not.
           example: true
+        router:
+          $ref: '#/components/schemas/ResourceReference'
         vni:
           type: integer
           format: int32
@@ -10165,7 +10311,7 @@ components:
           type: string
           description: The resource's unique identifier.
           readOnly: true
-          example: '5'
+          example: 3c11273c-b3e1-4ca3-8134-84fd2dd4ebec
         type:
           type: string
           description: The type of object that has been created.
@@ -10619,84 +10765,6 @@ components:
         entities:
           $ref: '#/components/schemas/ResourceEntities'
       description: datacenter resource representation
-    ResourcesUsers:
-      type: object
-      properties:
-        id:
-          type: string
-          description: The resource's unique identifier.
-          readOnly: true
-          example: 15f67991-0f51-4efc-a8ad-ef1fb31a480c
-        type:
-          type: string
-          description: The type of the resource.
-          example: collection
-          allOf:
-            - $ref: '#/components/schemas/Type'
-        href:
-          type: string
-          description: URL to the object representation (absolute path).
-          format: uri
-          readOnly: true
-          example: >-
-            https://<API_HOST>/cloudapi/v6/um/users/9b1b4c62-1466-11e7-87d3-d7bb7dac0087/owns
-        items:
-          type: array
-          description: Array of items in the collection.
-          readOnly: true
-          items:
-            $ref: '#/components/schemas/Resource'
-      description: Resources owned by a user.
-    UserMetadata:
-      type: object
-      properties:
-        etag:
-          type: string
-          description: >-
-            Resource's Entity Tag as defined in
-            http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.11 
-            Entity Tag is also added as an 'ETag response header to requests
-            which don't use 'depth' parameter.
-          readOnly: true
-          example: 45480eb3fbfc31f1d916c1eaa4abdcc3
-        createdDate:
-          type: string
-          description: The time the user was created.
-          format: date-time
-          readOnly: true
-          example: '2015-12-04T14:34:09.809Z'
-        createdBy:
-          type: string
-          description: The user who has created the resource.
-          readOnly: true
-          example: user@example.com
-        createdByUserId:
-          type: string
-          description: The unique ID of the user who created the resource.
-          readOnly: true
-          example: 63cef532-26fe-4a64-a4e0-de7c8a506c90
-        lastModifiedDate:
-          type: string
-          description: The last time the resource was modified.
-          format: date-time
-          readOnly: true
-          example: '2015-12-04T14:34:09.809Z'
-        lastModifiedBy:
-          type: string
-          description: The user who last modified the resource.
-          readOnly: true
-          example: user@example.com
-        lastModifiedByUserId:
-          type: string
-          description: The unique ID of the user who last modified the resource.
-          readOnly: true
-          example: 63cef532-26fe-4a64-a4e0-de7c8a506c90
-        lastLogin:
-          type: string
-          description: The time of the last login by the user.
-          format: date-time
-          readOnly: true
-          example: '2015-12-04T14:34:09.809Z'
     ResourceProperties:
       type: object
       properties:
@@ -11508,153 +11576,6 @@ components:
           $ref: '#/components/schemas/PaginationLimitOptional'
         _links:
           $ref: '#/components/schemas/PaginationLinks'
-    LabelProperties:
-      type: object
-      properties:
-        key:
-          type: string
-          description: A label key
-          example: environment
-        value:
-          type: string
-          description: A label value
-          example: production
-        resourceId:
-          type: string
-          description: The ID of the resource.
-          example: 700e1cab-99b2-4c30-ba8c-1d273ddba022
-        resourceType:
-          type: string
-          description: The type of the resource on which the label is applied.
-          example: datacenter
-        resourceHref:
-          type: string
-          description: URL to the Resource (absolute path) on which the label is applied.
-          example: https://<hostname>/datacenters/700e1cab-99b2-4c30-ba8c-1d273ddba022
-    Label:
-      required:
-        - properties
-      type: object
-      properties:
-        id:
-          type: string
-          description: Label is identified using standard URN.
-          readOnly: true
-          example: >-
-            urn:label:datacenter:700e1cab-99b2-4c30-ba8c-1d273ddba022:environment
-        type:
-          type: string
-          description: The type of object that has been created.
-          readOnly: true
-          enum:
-            - label
-        href:
-          type: string
-          description: URL to the object representation (absolute path).
-          format: uri
-          readOnly: true
-          example: <RESOURCE-URI>
-        metadata:
-          $ref: '#/components/schemas/NoStateMetaData'
-        properties:
-          $ref: '#/components/schemas/LabelProperties'
-    Labels:
-      type: object
-      properties:
-        id:
-          type: string
-          description: A unique representation of the label as a resource collection.
-          readOnly: true
-          example: labels
-        type:
-          type: string
-          description: The type of resource within a collection.
-          readOnly: true
-          example: collection
-          enum:
-            - collection
-        href:
-          type: string
-          description: URL to the collection representation (absolute path).
-          format: uri
-          readOnly: true
-          example: <RESOURCE-URI>
-        items:
-          type: array
-          description: Array of items in the collection.
-          readOnly: true
-          items:
-            $ref: '#/components/schemas/Label'
-    LabelResourceProperties:
-      type: object
-      properties:
-        key:
-          type: string
-          description: A label key
-          example: environment
-        value:
-          type: string
-          description: A label value
-          example: production
-    LabelResource:
-      required:
-        - properties
-      type: object
-      properties:
-        id:
-          type: string
-          description: Label on a resource is identified using label key.
-          readOnly: true
-          example: environment
-        type:
-          type: string
-          description: The type of object that has been created.
-          readOnly: true
-          enum:
-            - label
-        href:
-          type: string
-          description: URL to the object representation (absolute path).
-          format: uri
-          readOnly: true
-          example: <RESOURCE-URI>
-        metadata:
-          $ref: '#/components/schemas/NoStateMetaData'
-        properties:
-          $ref: '#/components/schemas/LabelResourceProperties'
-    LabelResources:
-      type: object
-      properties:
-        id:
-          type: string
-          description: A unique representation of the label as a resource collection.
-          readOnly: true
-          example: labels
-        type:
-          type: string
-          description: The type of resource within a collection.
-          readOnly: true
-          example: collection
-          enum:
-            - collection
-        href:
-          type: string
-          description: URL to the collection representation (absolute path).
-          format: uri
-          readOnly: true
-          example: <RESOURCE-URI>
-        items:
-          type: array
-          description: Array of items in the collection.
-          readOnly: true
-          items:
-            $ref: '#/components/schemas/LabelResource'
-        offset:
-          $ref: '#/components/schemas/PaginationOffsetOptional'
-        limit:
-          $ref: '#/components/schemas/PaginationLimitOptional'
-        _links:
-          $ref: '#/components/schemas/PaginationLinks'
     Templates:
       type: object
       properties:
@@ -11736,6 +11657,232 @@ components:
           type: string
           description: The description of the template.
           example: Template category
+    VirtualRouters:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The resource's unique identifier.
+          readOnly: true
+          example: 15f67991-0f51-4efc-a8ad-ef1fb31a480c
+        type:
+          type: string
+          description: The type of object that has been created.
+          example: collection
+          allOf:
+            - $ref: '#/components/schemas/Type'
+        href:
+          type: string
+          description: The URL to the object representation (absolute path).
+          format: uri
+          readOnly: true
+          example: <RESOURCE-URI>
+        items:
+          type: array
+          description: Array of items in the collection.
+          readOnly: true
+          items:
+            $ref: '#/components/schemas/VirtualRouter'
+        offset:
+          $ref: '#/components/schemas/PaginationOffsetOptional'
+        limit:
+          $ref: '#/components/schemas/PaginationLimitOptional'
+        _links:
+          $ref: '#/components/schemas/PaginationLinks'
+    VirtualRouterRequest:
+      required:
+        - properties
+      type: object
+      properties:
+        properties:
+          $ref: '#/components/schemas/VirtualRouterRequestProperties'
+        entities:
+          $ref: '#/components/schemas/VirtualRouterEntities'
+    VirtualRouter:
+      required:
+        - properties
+      type: object
+      properties:
+        id:
+          type: string
+          description: The resource's unique identifier.
+          readOnly: true
+          example: 15f67991-0f51-4efc-a8ad-ef1fb31a480c
+        type:
+          type: string
+          description: The type of object that has been created.
+          example: router
+          allOf:
+            - $ref: '#/components/schemas/Type'
+        href:
+          type: string
+          description: URL to the object representation (absolute path).
+          format: uri
+          readOnly: true
+          example: <RESOURCE-URI>
+        metadata:
+          $ref: '#/components/schemas/DatacenterElementMetadata'
+        properties:
+          $ref: '#/components/schemas/VirtualRouterProperties'
+        entities:
+          $ref: '#/components/schemas/VirtualRouterEntities'
+    VirtualRouterRequestProperties:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The name of the virtual router.
+          example: My virtual router
+        description:
+          type: string
+          description: The description of the virtual router.
+          example: My virtual router description.
+        default:
+          type: boolean
+          description: >-
+            Indicates if the virtual router is the default router of the datacenter.
+            There can be only one default router in a datacenter.
+          example: true
+          default: false
+    VirtualRouterProperties:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The name of the virtual router.
+          example: My virtual router
+        description:
+          type: string
+          description: The description of the virtual router.
+          example: My virtual router description.
+        default:
+          type: boolean
+          description: >-
+            Indicates if the virtual router is the default router of the datacenter.
+            There can be only one default router in a datacenter.
+          example: true
+          default: false
+        lans:
+          type: array
+          description: >-
+            List containing details of the LANs assigned to this virtual router.
+          readOnly: true
+          items:
+            $ref: '#/components/schemas/ResourceReference'
+        nics:
+          type: array
+          description: >-
+            List containing details of the NICs assigned to this virtual router.
+          readOnly: true
+          items:
+            $ref: '#/components/schemas/ResourceReference'
+    VirtualRouterEntities:
+      type: object
+      properties:
+        vroutes:
+          $ref: '#/components/schemas/VirtualRoutes'
+    VirtualRoutes:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The resource's unique identifier.
+          readOnly: true
+          example: 15f67991-0f51-4efc-a8ad-ef1fb31a480c
+        type:
+          type: string
+          description: The type of object that has been created.
+          example: collection
+          allOf:
+            - $ref: '#/components/schemas/Type'
+        href:
+          type: string
+          description: The URL to the object representation (absolute path).
+          format: uri
+          readOnly: true
+          example: <RESOURCE-URI>
+        items:
+          type: array
+          description: Array of items in the collection.
+          readOnly: true
+          items:
+            $ref: '#/components/schemas/VirtualRoute'
+        offset:
+          $ref: '#/components/schemas/PaginationOffsetOptional'
+        limit:
+          $ref: '#/components/schemas/PaginationLimitOptional'
+        _links:
+          $ref: '#/components/schemas/PaginationLinks'
+    VirtualRoute:
+      required:
+        - properties
+      type: object
+      properties:
+        id:
+          type: string
+          description: The resource's unique identifier.
+          readOnly: true
+          example: 15f67991-0f51-4efc-a8ad-ef1fb31a480c
+        type:
+          type: string
+          description: The type of object that has been created.
+          example: route
+          allOf:
+            - $ref: '#/components/schemas/Type'
+        href:
+          type: string
+          description: URL to the object representation (absolute path).
+          format: uri
+          readOnly: true
+          example: <RESOURCE-URI>
+        metadata:
+          $ref: '#/components/schemas/DatacenterElementMetadata'
+        properties:
+          $ref: '#/components/schemas/VirtualRouteProperties'
+    VirtualRouteProperties:
+      required:
+        - prefix
+        - gatewayType
+      type: object
+      properties:
+        name:
+          type: string
+          description: The name of the virtual route.
+          example: My virtual route
+        description:
+          type: string
+          description: The description of the virtual route.
+          example: My virtual route description.
+        prefix:
+          type: string
+          description: >-
+            IPV4 or IPV6 CIDR representing the prefix for the virtual route. 
+            If the gateway type is `INTERNET` the prefix will be set to 0.0.0.0/0.
+          example: 10.1.2.0/23
+        gatewayType:
+          type: string
+          description: Gateway type of the virtual route.
+          example: PEERING
+          enum:
+            - LOCAL
+            - INTERNET
+            - GUEST
+            - PEERING
+        gatewayNic:
+          type: string
+          format: uuid
+          description: >-
+            UUID of the gateway NIC of this virtual route. Must be specified only if the 
+            gateway type is `PEERING` or `GUEST`.
+          example: 25f67991-0f51-4efc-a8ad-ef1fb31a481c
+          nullable: true
+        gatewayIp:
+          type: string
+          description: >-
+            IPv4 or IPv6 Gateway IP for the virtual route. Must be specified only if the
+            gateway type is `PEERING` or `GUEST`.
+          example: 80.1.5.16
+          nullable: true
     ExposeSerial:
       type: boolean
       description: >-
@@ -11782,8 +11929,10 @@ components:
         - volume
         - nic
         - location
+        - firewall-rule
         - flow-log
         - image
+        - group
         - snapshot
         - lan
         - ipblock
@@ -11791,9 +11940,10 @@ components:
         - resource
         - request
         - request-status
-        - label
         - template
         - security-group
+        - router
+        - route
     PaginationOffsetMandatory:
       type: number
       description: >-
