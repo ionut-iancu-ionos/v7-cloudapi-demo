@@ -185,7 +185,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/VpcPost'
+              $ref: '#/components/schemas/Vpc'
         required: true
       responses:
         '202':
@@ -340,7 +340,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/VpcPut'
+              $ref: '#/components/schemas/Vpc'
         required: true
       responses:
         '202':
@@ -495,7 +495,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/VpcPropertiesPut'
+              $ref: '#/components/schemas/VpcProperties'
         required: true
       responses:
         '202':
@@ -552,6 +552,11 @@ paths:
         items; use pagination query parameters for listing more items.
       operationId: datacentersGet
       parameters:
+        - name: vpcId
+          in: query
+          description: The unique ID of the vpc
+          schema:
+            type: string
         - name: pretty
           in: query
           description: >-
@@ -560,12 +565,6 @@ paths:
           schema:
             type: boolean
             default: true
-        - name: vpcId
-          in: query
-          description: The unique ID of the vpc
-          required: true
-          schema:
-            type: string
         - name: X-Contract-Number
           in: header
           description: >-
@@ -658,12 +657,6 @@ paths:
           schema:
             type: boolean
             default: true
-        - name: vpcId
-          in: query
-          description: The unique ID of the vpc
-          required: true
-          schema:
-            type: string
         - name: X-Contract-Number
           in: header
           description: >-
@@ -677,7 +670,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/DatacenterPost'
+              $ref: '#/components/schemas/Datacenter'
         required: true
       responses:
         '202':
@@ -739,11 +732,6 @@ paths:
           in: path
           description: The unique ID of the data center.
           required: true
-          schema:
-            type: string
-        - name: vpcId
-          in: query
-          description: The unique ID of the vpc.
           schema:
             type: string
         - name: pretty
@@ -816,12 +804,6 @@ paths:
           required: true
           schema:
             type: string
-        - name: vpcId
-          in: query
-          description: The unique ID of the vpc.
-          required: true
-          schema:
-            type: string
         - name: pretty
           in: query
           description: >-
@@ -843,7 +825,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/DatacenterPut'
+              $ref: '#/components/schemas/Datacenter'
         required: true
       responses:
         '202':
@@ -902,12 +884,6 @@ paths:
         - name: datacenterId
           in: path
           description: The unique ID of the data center.
-          required: true
-          schema:
-            type: string
-        - name: vpcId
-          in: query
-          description: The unique ID of the vpc.
           required: true
           schema:
             type: string
@@ -983,12 +959,6 @@ paths:
           required: true
           schema:
             type: string
-        - name: vpcId
-          in: query
-          description: The unique ID of the vpc.
-          required: true
-          schema:
-            type: string
         - name: pretty
           in: query
           description: >-
@@ -1010,7 +980,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/DatacenterPropertiesPut'
+              $ref: '#/components/schemas/DatacenterProperties'
         required: true
       responses:
         '202':
@@ -1078,13 +1048,11 @@ paths:
         - name: regionId
           in: query
           description: The unique ID of the region.
-          required: true
           schema:
             type: string
         - name: locationId
           in: query
           description: The unique ID of the location.
-          required: true
           schema:
             type: string
         - name: pretty
@@ -1146,20 +1114,18 @@ paths:
     get:
       tags:
         - Servers
-      summary: 'List servers '
-      description: List all servers within the data center.
-      operationId: srversGet
+      summary: List servers
+      description: List all servers within the vpc or data center.
+      operationId: serversGet
       parameters:
         - name: vpcId
           in: query
           description: The unique ID of the vpc.
-          required: true
           schema:
             type: string
         - name: datacenterId
           in: query
           description: The unique ID of the data center.
-          required: true
           schema:
             type: string
         - name: pretty
@@ -1244,23 +1210,11 @@ paths:
         - Servers
       summary: Create a Server
       description: >-
-        Creates a server within the specified data center. You can also use this
+        Creates a server within the specified data center or vpc. You can also use this
         request to configure the boot volumes and connect to existing LANs at
         the same time.
       operationId: serversPost
       parameters:
-        - name: vpcId
-          in: query
-          description: The unique ID of the vpc.
-          required: true
-          schema:
-            type: string
-        - name: datacenterId
-          in: query
-          description: The unique ID of the data center.
-          required: true
-          schema:
-            type: string
         - name: pretty
           in: query
           description: >-
@@ -1335,22 +1289,10 @@ paths:
         - Servers
       summary: Retrieve servers by ID
       description: >-
-        Retrieve information about the specified server within the data center,
+        Retrieve information about the specified server ,
         such as its configuration, provisioning status, and so on.
       operationId: serversFindById
       parameters:
-        - name: vpcId
-          in: query
-          description: The unique ID of the vpc.
-          required: true
-          schema:
-            type: string
-        - name: datacenterId
-          in: query
-          description: The unique ID of the data center.
-          required: true
-          schema:
-            type: string
         - name: serverId
           in: path
           description: The unique ID of the server.
@@ -1428,18 +1370,6 @@ paths:
         required, the reboot will be performed automatically.
       operationId: serversPut
       parameters:
-        - name: vpcId
-          in: query
-          description: The unique ID of the vpc.
-          required: true
-          schema:
-            type: string
-        - name: datacenterId
-          in: query
-          description: The unique ID of the data center.
-          required: true
-          schema:
-            type: string
         - name: serverId
           in: path
           description: The unique ID of the server.
@@ -1524,18 +1454,6 @@ paths:
         otherwise a separate API call must be made for these actions.
       operationId: serversDelete
       parameters:
-        - name: vpcId
-          in: query
-          description: The unique ID of the vpc.
-          required: true
-          schema:
-            type: string
-        - name: datacenterId
-          in: query
-          description: The unique ID of the data center.
-          required: true
-          schema:
-            type: string
         - name: serverId
           in: path
           description: The unique ID of the server.
@@ -1611,18 +1529,6 @@ paths:
       description: Update the properties of the specified server within the data center.
       operationId: serversPatch
       parameters:
-        - name: vpcId
-          in: query
-          description: The unique ID of the vpc.
-          required: true
-          schema:
-            type: string
-        - name: datacenterId
-          in: query
-          description: The unique ID of the data center.
-          required: true
-          schema:
-            type: string
         - name: serverId
           in: path
           description: The unique ID of the server.
@@ -1701,26 +1607,23 @@ paths:
     get:
       tags:
         - Volumes
-      summary: Get Attached Volumes
+      summary: Get Volumes
       description: Lists all volumes attached to the specified server.
       operationId: volumesGet
       parameters:
         - name: vpcId
           in: query
           description: The unique ID of the vpc.
-          required: true
           schema:
             type: string
         - name: datacenterId
           in: query
           description: The unique ID of the data center.
-          required: true
           schema:
             type: string
         - name: serverId
           in: query
           description: The unique ID of the server.
-          required: true
           schema:
             type: string
         - name: pretty
@@ -1785,7 +1688,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AttachedVolumes'
+                $ref: '#/components/schemas/Volumes'
         default:
           description: >-
             Any erroneous status code: 400 (parse error), 401 (auth error), 402
@@ -1803,13 +1706,13 @@ paths:
     post:
       tags:
         - Volumes
-      summary: Attach a Volume to a Server
+      summary: Create or attach a Volume to a Server
       description: >-
-        Attachs an existing storage volume to the specified server.
+        Creates or attaches an existing storage volume to the specified server.
 
 
-        You can attach an existing volume in the VDC to a server. To move a
-        volume from one server to another, you must first detach the volume from
+        You can create and optionally attach an existing volume in the VDC to a server.
+        To move a volume from one server to another, you must first detach the volume from
         the first server and attach it to the second server.
 
 
@@ -1822,24 +1725,6 @@ paths:
         24 per server.
       operationId: volumesPost
       parameters:
-        - name: vpcId
-          in: query
-          description: The unique ID of the vpc.
-          required: true
-          schema:
-            type: string
-        - name: datacenterId
-          in: query
-          description: The unique ID of the data center.
-          required: true
-          schema:
-            type: string
-        - name: serverId
-          in: query
-          description: The unique ID of the server.
-          required: true
-          schema:
-            type: string
         - name: pretty
           in: query
           description: >-
@@ -1912,26 +1797,23 @@ paths:
     get:
       tags:
         - Volumes
-      summary: Get Attached Volume by ID
+      summary: Get Volume by ID
       description: Retrieves the properties of the volume attached to the specified server.
       operationId: volumesFindById
       parameters:
         - name: vpcId
           in: query
           description: The unique ID of the vpc.
-          required: true
           schema:
             type: string
         - name: datacenterId
           in: query
           description: The unique ID of the data center.
-          required: true
           schema:
             type: string
         - name: serverId
           in: query
           description: The unique ID of the server.
-          required: true
           schema:
             type: string
         - name: volumeId
@@ -2008,24 +1890,6 @@ paths:
         separate request to perform the deletion.
       operationId: volumesDelete
       parameters:
-        - name: vpcId
-          in: query
-          description: The unique ID of the vpc.
-          required: true
-          schema:
-            type: string
-        - name: datacenterId
-          in: query
-          description: The unique ID of the data center.
-          required: true
-          schema:
-            type: string
-        - name: serverId
-          in: query
-          description: The unique ID of the server.
-          required: true
-          schema:
-            type: string
         - name: volumeId
           in: path
           description: The unique ID of the volume.
@@ -2100,19 +1964,16 @@ paths:
         - name: vpcId
           in: query
           description: The unique ID of the vpc.
-          required: true
           schema:
             type: string
         - name: datacenterId
           in: query
           description: The unique ID of the data center.
-          required: true
           schema:
             type: string
         - name: serverId
           in: query
           description: The unique ID of the server.
-          required: true
           schema:
             type: string
         - name: pretty
@@ -2209,24 +2070,6 @@ paths:
         Note that attaching a CD-ROM leads to a reset of the server.
       operationId: cdromsPost
       parameters:
-        - name: vpcId
-          in: query
-          description: The unique ID of the vpc.
-          required: true
-          schema:
-            type: string
-        - name: datacenterId
-          in: query
-          description: The unique ID of the data center.
-          required: true
-          schema:
-            type: string
-        - name: serverId
-          in: query
-          description: The unique ID of the server.
-          required: true
-          schema:
-            type: string
         - name: pretty
           in: query
           description: >-
@@ -2306,19 +2149,16 @@ paths:
         - name: vpcId
           in: query
           description: The unique ID of the vpc.
-          required: true
           schema:
             type: string
         - name: datacenterId
           in: query
           description: The unique ID of the data center.
-          required: true
           schema:
             type: string
         - name: serverId
           in: query
           description: The unique ID of the server.
-          required: true
           schema:
             type: string
         - name: cdromId
@@ -2394,24 +2234,6 @@ paths:
         Note that detaching a CD-ROM leads to a reset of the server.
       operationId: cdromsDelete
       parameters:
-        - name: vpcId
-          in: query
-          description: The unique ID of the vpc.
-          required: true
-          schema:
-            type: string
-        - name: datacenterId
-          in: query
-          description: The unique ID of the data center.
-          required: true
-          schema:
-            type: string
-        - name: serverId
-          in: query
-          description: The unique ID of the server.
-          required: true
-          schema:
-            type: string
         - name: cdromId
           in: path
           description: The unique ID of the CD-ROM.
@@ -2475,29 +2297,15 @@ paths:
       security:
         - BasicAuthentication: []
         - TokenAuthentication: []
-  /servers/{serverId}/reboot:
+  /servers/{serverId}/operations:
     post:
       tags:
         - Servers
-      summary: Reboot servers
+      summary: Request an operation from the servers
       description: >-
-        Force a hard reboot of the specified server within the data center.
-        Don't use this method if you wish to reboot gracefully. This is an
-        equivalent of powering down a computer and turning it back on.
-      operationId: serversRebootPost
+        Performs and of the specified server within the data center.
+      operationId: serversRequestsPost
       parameters:
-        - name: vpcId
-          in: query
-          description: The unique ID of the vpc.
-          required: true
-          schema:
-            type: string
-        - name: datacenterId
-          in: query
-          description: The unique ID of the data center.
-          required: true
-          schema:
-            type: string
         - name: serverId
           in: path
           description: The unique ID of the server.
@@ -2520,6 +2328,13 @@ paths:
           schema:
             type: integer
             format: int32
+      requestBody:
+        description: The operation on the server
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ServerOperation'
+        required: true
       responses:
         '202':
           description: Successful operation
@@ -2546,638 +2361,10 @@ paths:
               schema:
                 pattern: https://[apiBaseUri]/requests/[requestId]/status
                 type: string
-          content: {}
-        default:
-          description: >-
-            Any erroneous status code: 400 (parse error), 401 (auth error), 402
-            (trial access), 403 (insufficient privileges), 404 (not found), 405
-            (unsupported HTTP method), 415 (unsupported content type, 422
-            (validation error), 429 (request rate limit exceeded), 500 (server
-            error), or 503 (maintenance).
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
-      security:
-        - BasicAuthentication: []
-        - TokenAuthentication: []
-  /servers/{serverId}/start:
-    post:
-      tags:
-        - Servers
-      summary: Start an Enterprise Server by ID
-      description: >-
-        Starts the Enterprise Server specified by its ID.
-
-
-        >Note that you cannot use this method to start a Cube Server.
-
-
-        By starting the Enterprise Server, cores and RAM are provisioned, and
-        the billing continues.
-
-
-        If the server's public IPv4 address has been deallocated, a new IPv4
-        address will be assigned. IPv6 blocks and addresses will remain
-        unchanged when stopping and starting a server.
-
-
-        To check the status of the request, you can use the 'Location' HTTP
-        header in the response (see 'Requests' for more information).
-      operationId: serversStartPost
-      parameters:
-        - name: vpcId
-          in: query
-          description: The unique ID of the vpc.
-          required: true
-          schema:
-            type: string
-        - name: datacenterId
-          in: query
-          description: The unique ID of the data center.
-          required: true
-          schema:
-            type: string
-        - name: serverId
-          in: path
-          description: The unique ID of the server.
-          required: true
-          schema:
-            type: string
-        - name: pretty
-          in: query
-          description: >-
-            Controls whether the response is pretty-printed (with indentations
-            and new lines).
-          schema:
-            type: boolean
-            default: true
-        - name: X-Contract-Number
-          in: header
-          description: >-
-            Users with multiple contracts must provide the contract number, for
-            which all API requests are to be executed.
-          schema:
-            type: integer
-            format: int32
-      responses:
-        '202':
-          description: Successful operation
-          headers:
-            X-RateLimit-Remaining:
-              description: >-
-                The number of requests that can still be made without triggering
-                a failure response.
-              schema:
-                type: integer
-                format: int32
-            X-RateLimit-Limit:
-              description: The average number of requests per minute allowed.
-              schema:
-                type: integer
-                format: int32
-            X-RateLimit-Burst:
-              description: The maximum number of concurrent API requests allowed.
-              schema:
-                type: integer
-                format: int32
-            Location:
-              description: Callback URL to poll async operation status.
-              schema:
-                pattern: https://[apiBaseUri]/requests/[requestId]/status
-                type: string
-          content: {}
-        default:
-          description: >-
-            Any erroneous status code: 400 (parse error), 401 (auth error), 402
-            (trial access), 403 (insufficient privileges), 404 (not found), 405
-            (unsupported HTTP method), 415 (unsupported content type, 422
-            (validation error), 429 (request rate limit exceeded), 500 (server
-            error), or 503 (maintenance).
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-      security:
-        - BasicAuthentication: []
-        - TokenAuthentication: []
-  /servers/{serverId}/stop:
-    post:
-      tags:
-        - Servers
-      summary: Stop an Enterprise Server by ID
-      description: >-
-        Stops the Enterprise Server specified by its ID. 
-
-
-        >Note that you cannot use this method to stop a Cube Server.
-
-         By stopping the Enterprise Server, cores and RAM are freed and no longer charged.
-
-        Public IPv4 IPs that are not reserved are returned to the IPv4 pool.
-        IPv6 blocks and addresses will remain unchanged when stopping and
-        starting a server.
-
-
-        To check the status of the request, you can use the 'Location' HTTP
-        header in the response (see 'Requests' for more information).
-      operationId: serversStopPost
-      parameters:
-        - name: vpcId
-          in: query
-          description: The unique ID of the vpc.
-          required: true
-          schema:
-            type: string
-        - name: datacenterId
-          in: query
-          description: The unique ID of the data center.
-          required: true
-          schema:
-            type: string
-        - name: serverId
-          in: path
-          description: The unique ID of the server.
-          required: true
-          schema:
-            type: string
-        - name: pretty
-          in: query
-          description: >-
-            Controls whether the response is pretty-printed (with indentations
-            and new lines).
-          schema:
-            type: boolean
-            default: true
-        - name: X-Contract-Number
-          in: header
-          description: >-
-            Users with multiple contracts must provide the contract number, for
-            which all API requests are to be executed.
-          schema:
-            type: integer
-            format: int32
-      responses:
-        '202':
-          description: Successful operation
-          headers:
-            X-RateLimit-Remaining:
-              description: >-
-                The number of requests that can still be made without triggering
-                a failure response.
-              schema:
-                type: integer
-                format: int32
-            X-RateLimit-Limit:
-              description: The average number of requests per minute allowed.
-              schema:
-                type: integer
-                format: int32
-            X-RateLimit-Burst:
-              description: The maximum number of concurrent API requests allowed.
-              schema:
-                type: integer
-                format: int32
-            Location:
-              description: Callback URL to poll async operation status.
-              schema:
-                pattern: https://[apiBaseUri]/requests/[requestId]/status
-                type: string
-          content: {}
-        default:
-          description: >-
-            Any erroneous status code: 400 (parse error), 401 (auth error), 402
-            (trial access), 403 (insufficient privileges), 404 (not found), 405
-            (unsupported HTTP method), 415 (unsupported content type, 422
-            (validation error), 429 (request rate limit exceeded), 500 (server
-            error), or 503 (maintenance).
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-      security:
-        - BasicAuthentication: []
-        - TokenAuthentication: []
-  /servers/{serverId}/suspend:
-    post:
-      tags:
-        - Servers
-      summary: Suspend a Cube Server by ID
-      description: >-
-        Suspends the specified Cubes instance within the data center. 
-
-
-        The instance is not deleted and allocated resources continue to be
-        billed. You can perform this operation only for Cube Servers.
-
-
-        To check the status of the request, you can use the 'Location' HTTP
-        header in the response (see 'Requests' for more information).
-      operationId: serversSuspendPost
-      parameters:
-        - name: vpcId
-          in: query
-          description: The unique ID of the vpc.
-          required: true
-          schema:
-            type: string
-        - name: datacenterId
-          in: query
-          description: The unique ID of the data center.
-          required: true
-          schema:
-            type: string
-        - name: serverId
-          in: path
-          description: The unique ID of the server.
-          required: true
-          schema:
-            type: string
-        - name: pretty
-          in: query
-          description: >-
-            Controls whether the response is pretty-printed (with indentations
-            and new lines).
-          schema:
-            type: boolean
-            default: true
-        - name: X-Contract-Number
-          in: header
-          description: >-
-            Users with multiple contracts must provide the contract number, for
-            which all API requests are to be executed.
-          schema:
-            type: integer
-            format: int32
-      responses:
-        '202':
-          description: Successful operation
-          headers:
-            X-RateLimit-Remaining:
-              description: >-
-                The number of requests that can still be made without triggering
-                a failure response.
-              schema:
-                type: integer
-                format: int32
-            X-RateLimit-Limit:
-              description: The average number of requests per minute allowed.
-              schema:
-                type: integer
-                format: int32
-            X-RateLimit-Burst:
-              description: The maximum number of concurrent API requests allowed.
-              schema:
-                type: integer
-                format: int32
-            Location:
-              description: Callback URL to poll async operation status.
-              schema:
-                pattern: https://[apiBaseUri]/requests/[requestId]/status
-                type: string
-          content: {}
-        default:
-          description: >-
-            Any erroneous status code: 400 (parse error), 401 (auth error), 402
-            (trial access), 403 (insufficient privileges), 404 (not found), 405
-            (unsupported HTTP method), 415 (unsupported content type, 422
-            (validation error), 429 (request rate limit exceeded), 500 (server
-            error), or 503 (maintenance).
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-      security:
-        - BasicAuthentication: []
-        - TokenAuthentication: []
-  /servers/{serverId}/resume:
-    post:
-      tags:
-        - Servers
-      summary: Resume a Cube Server by ID
-      description: >-
-        Resumes a suspended Cube Server specified by its ID.
-
-
-        Since the suspended instance was not deleted the allocated resources
-        continue to be billed. You can perform this operation only for Cube
-        Servers.
-
-
-        To check the status of the request, you can use the 'Location' HTTP
-        header in the response (see 'Requests' for more information).
-      operationId: serversResumePost
-      parameters:
-        - name: vpcId
-          in: query
-          description: The unique ID of the vpc.
-          required: true
-          schema:
-            type: string
-        - name: datacenterId
-          in: query
-          description: The unique ID of the data center.
-          required: true
-          schema:
-            type: string
-        - name: serverId
-          in: path
-          description: The unique ID of the server.
-          required: true
-          schema:
-            type: string
-        - name: pretty
-          in: query
-          description: >-
-            Controls whether the response is pretty-printed (with indentations
-            and new lines).
-          schema:
-            type: boolean
-            default: true
-        - name: X-Contract-Number
-          in: header
-          description: >-
-            Users with multiple contracts must provide the contract number, for
-            which all API requests are to be executed.
-          schema:
-            type: integer
-            format: int32
-      responses:
-        '202':
-          description: Successful operation
-          headers:
-            X-RateLimit-Remaining:
-              description: >-
-                The number of requests that can still be made without triggering
-                a failure response.
-              schema:
-                type: integer
-                format: int32
-            X-RateLimit-Limit:
-              description: The average number of requests per minute allowed.
-              schema:
-                type: integer
-                format: int32
-            X-RateLimit-Burst:
-              description: The maximum number of concurrent API requests allowed.
-              schema:
-                type: integer
-                format: int32
-            Location:
-              description: Callback URL to poll async operation status.
-              schema:
-                pattern: https://[apiBaseUri]/requests/[requestId]/status
-                type: string
-          content: {}
-        default:
-          description: >-
-            Any erroneous status code: 400 (parse error), 401 (auth error), 402
-            (trial access), 403 (insufficient privileges), 404 (not found), 405
-            (unsupported HTTP method), 415 (unsupported content type, 422
-            (validation error), 429 (request rate limit exceeded), 500 (server
-            error), or 503 (maintenance).
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-      security:
-        - BasicAuthentication: []
-        - TokenAuthentication: []
-  /servers/{serverId}/upgrade:
-    post:
-      tags:
-        - Servers
-      summary: Upgrade a Server by ID
-      description: Upgrades the server version.
-      operationId: serversUpgradePost
-      parameters:
-        - name: vpcId
-          in: query
-          description: The unique ID of the vpc.
-          required: true
-          schema:
-            type: string
-        - name: datacenterId
-          in: query
-          description: The unique ID of the data center.
-          required: true
-          schema:
-            type: string
-        - name: serverId
-          in: path
-          description: The unique ID of the server.
-          required: true
-          schema:
-            type: string
-        - name: pretty
-          in: query
-          description: >-
-            Controls whether the response is pretty-printed (with indentations
-            and new lines).
-          schema:
-            type: boolean
-            default: true
-        - name: X-Contract-Number
-          in: header
-          description: >-
-            Users with multiple contracts must provide the contract number, for
-            which all API requests are to be executed.
-          schema:
-            type: integer
-            format: int32
-      responses:
-        '202':
-          description: Successful operation
-          headers:
-            X-RateLimit-Remaining:
-              description: >-
-                The number of requests that can still be made without triggering
-                a failure response.
-              schema:
-                type: integer
-                format: int32
-            X-RateLimit-Limit:
-              description: The average number of requests per minute allowed.
-              schema:
-                type: integer
-                format: int32
-            X-RateLimit-Burst:
-              description: The maximum number of concurrent API requests allowed.
-              schema:
-                type: integer
-                format: int32
-            Location:
-              description: Callback URL to poll async operation status.
-              schema:
-                pattern: https://[apiBaseUri]/requests/[requestId]/status
-                type: string
-          content: {}
-        default:
-          description: >-
-            Any erroneous status code: 400 (parse error), 401 (auth error), 402
-            (trial access), 403 (insufficient privileges), 404 (not found), 405
-            (unsupported HTTP method), 415 (unsupported content type, 422
-            (validation error), 429 (request rate limit exceeded), 500 (server
-            error), or 503 (maintenance).
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-      security:
-        - BasicAuthentication: []
-        - TokenAuthentication: []
-  /servers/{serverId}/token:
-    get:
-      tags:
-        - Servers
-      summary: Get JSON Web Token
-      description: >-
-        Retrieve a JSON Web Token from the server for use in login operations
-        (such as accessing the server's console).
-      operationId: serversTokenGet
-      parameters:
-        - name: vpcId
-          in: query
-          description: The unique ID of the vpc.
-          required: true
-          schema:
-            type: string
-        - name: datacenterId
-          in: query
-          description: The unique ID of the data center.
-          required: true
-          schema:
-            type: string
-        - name: serverId
-          in: path
-          description: The unique ID of the server.
-          required: true
-          schema:
-            type: string
-        - name: pretty
-          in: query
-          description: >-
-            Controls whether the response is pretty-printed (with indentations
-            and new lines).
-          schema:
-            type: boolean
-            default: true
-        - name: X-Contract-Number
-          in: header
-          description: >-
-            Users with multiple contracts must provide the contract number, for
-            which all API requests are to be executed.
-          schema:
-            type: integer
-            format: int32
-      responses:
-        '200':
-          description: Successful operation
-          headers:
-            X-RateLimit-Remaining:
-              description: >-
-                The number of requests that can still be made without triggering
-                a failure response.
-              schema:
-                type: integer
-                format: int32
-            X-RateLimit-Limit:
-              description: The average number of requests per minute allowed.
-              schema:
-                type: integer
-                format: int32
-            X-RateLimit-Burst:
-              description: The maximum number of concurrent API requests allowed.
-              schema:
-                type: integer
-                format: int32
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Token'
-        default:
-          description: >-
-            Any erroneous status code: 400 (parse error), 401 (auth error), 402
-            (trial access), 403 (insufficient privileges), 404 (not found), 405
-            (unsupported HTTP method), 415 (unsupported content type, 422
-            (validation error), 429 (request rate limit exceeded), 500 (server
-            error), or 503 (maintenance).
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-      security:
-        - BasicAuthentication: []
-        - TokenAuthentication: []
-  /servers/{serverId}/remoteconsole:
-    get:
-      tags:
-        - Servers
-      summary: Get Remote Console link
-      description: >-
-        Retrieve a link with a JSON Web Token for accessing the server's Remote
-        Console.
-      operationId: serversRemoteConsoleGet
-      parameters:
-        - name: vpcId
-          in: query
-          description: The unique ID of the vpc.
-          required: true
-          schema:
-            type: string
-        - name: datacenterId
-          in: query
-          description: The unique ID of the data center.
-          required: true
-          schema:
-            type: string
-        - name: serverId
-          in: path
-          description: The unique ID of the server.
-          required: true
-          schema:
-            type: string
-        - name: pretty
-          in: query
-          description: >-
-            Controls whether the response is pretty-printed (with indentations
-            and new lines).
-          schema:
-            type: boolean
-            default: true
-        - name: X-Contract-Number
-          in: header
-          description: >-
-            Users with multiple contracts must provide the contract number, for
-            which all API requests are to be executed.
-          schema:
-            type: integer
-            format: int32
-      responses:
-        '200':
-          description: Successful operation
-          headers:
-            X-RateLimit-Remaining:
-              description: >-
-                The number of requests that can still be made without triggering
-                a failure response.
-              schema:
-                type: integer
-                format: int32
-            X-RateLimit-Limit:
-              description: The average number of requests per minute allowed.
-              schema:
-                type: integer
-                format: int32
-            X-RateLimit-Burst:
-              description: The maximum number of concurrent API requests allowed.
-              schema:
-                type: integer
-                format: int32
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/RemoteConsoleUrl'
+                $ref: '#/components/schemas/ServerOperationResponse'
         default:
           description: >-
             Any erroneous status code: 400 (parse error), 401 (auth error), 402
@@ -4584,13 +3771,11 @@ paths:
         - name: vpcId
           in: query
           description: The unique ID of the vpc.
-          required: true
           schema:
             type: string
         - name: datacenterId
           in: query
           description: The unique ID of the data center.
-          required: true
           schema:
             type: string
         - name: pretty
@@ -4674,21 +3859,9 @@ paths:
       tags:
         - LANs
       summary: Create LANs
-      description: Creates a LAN within the data center.
+      description: Creates a LAN within a vpc or a data center.
       operationId: lansPost
       parameters:
-        - name: vpcId
-          in: query
-          description: The unique ID of the vpc.
-          required: true
-          schema:
-            type: string
-        - name: datacenterId
-          in: query
-          description: The unique ID of the data center.
-          required: true
-          schema:
-            type: string
         - name: pretty
           in: query
           description: >-
@@ -4762,21 +3935,9 @@ paths:
       tags:
         - LANs
       summary: Retrieve LANs
-      description: Retrieve the properties of the specified LAN within the data center.
+      description: Retrieve the properties of the specified LAN.
       operationId: lansFindById
       parameters:
-        - name: vpcId
-          in: query
-          description: The unique ID of the vpc.
-          required: true
-          schema:
-            type: string
-        - name: datacenterId
-          in: query
-          description: The unique ID of the data center.
-          required: true
-          schema:
-            type: string
         - name: lanId
           in: path
           description: The unique ID of the LAN.
@@ -4842,21 +4003,9 @@ paths:
       tags:
         - LANs
       summary: Modify LANs
-      description: Modify the properties of the specified LAN within the data center.
+      description: Modify the properties of the specified LAN.
       operationId: lansPut
       parameters:
-        - name: vpcId
-          in: query
-          description: The unique ID of the vpc.
-          required: true
-          schema:
-            type: string
-        - name: datacenterId
-          in: query
-          description: The unique ID of the data center.
-          required: true
-          schema:
-            type: string
         - name: lanId
           in: path
           description: The unique ID of the LAN.
@@ -4935,21 +4084,9 @@ paths:
       tags:
         - LANs
       summary: Delete LANs
-      description: Delete the specified LAN within the data center.
+      description: Delete the specified LAN.
       operationId: lansDelete
       parameters:
-        - name: vpcId
-          in: query
-          description: The unique ID of the vpc.
-          required: true
-          schema:
-            type: string
-        - name: datacenterId
-          in: query
-          description: The unique ID of the data center.
-          required: true
-          schema:
-            type: string
         - name: lanId
           in: path
           description: The unique ID of the LAN.
@@ -5017,21 +4154,9 @@ paths:
       tags:
         - LANs
       summary: Partially modify LANs
-      description: Update the properties of the specified LAN within the data center.
+      description: Update the properties of the specified LAN.
       operationId: lansPatch
       parameters:
-        - name: vpcId
-          in: query
-          description: The unique ID of the vpc.
-          required: true
-          schema:
-            type: string
-        - name: datacenterId
-          in: query
-          description: The unique ID of the data center.
-          required: true
-          schema:
-            type: string
         - name: lanId
           in: path
           description: The unique ID of the LAN.
@@ -5117,13 +4242,11 @@ paths:
         - name: vpcId
           in: query
           description: The unique ID of the vpc.
-          required: true
           schema:
             type: string
         - name: datacenterId
           in: query
           description: The unique ID of the data center.
-          required: true
           schema:
             type: string
         - name: serverId
@@ -5220,28 +4343,6 @@ paths:
       description: Create a NIC to the specified Resource.
       operationId: nicsPost
       parameters:
-        - name: vpcId
-          in: query
-          description: The unique ID of the vpc.
-          required: true
-          schema:
-            type: string
-        - name: datacenterId
-          in: query
-          description: The unique ID of the data center.
-          required: true
-          schema:
-            type: string
-        - name: lanId
-          in: query
-          description: The unique ID of the LAN.
-          schema:
-            type: string
-        - name: serverId
-          in: query
-          description: The unique ID of the server.
-          schema:
-            type: string
         - name: pretty
           in: query
           description: >-
@@ -5315,31 +4416,9 @@ paths:
       tags:
         - Network interfaces
       summary: Retrieve  NICs
-      description: Retrieve the properties of the NIC, attached to the specified Resource.
+      description: Retrieve the properties of the NIC.
       operationId: nicsFindById
       parameters:
-        - name: vpcId
-          in: query
-          description: The unique ID of the vpc.
-          required: true
-          schema:
-            type: string
-        - name: datacenterId
-          in: query
-          description: The unique ID of the data center.
-          required: true
-          schema:
-            type: string
-        - name: lanId
-          in: query
-          description: The unique ID of the LAN.
-          schema:
-            type: string
-        - name: serverId
-          in: query
-          description: The unique ID of the server.
-          schema:
-            type: string
         - name: nicId
           in: path
           description: The unique ID of the NIC.
@@ -5408,28 +4487,6 @@ paths:
       description: Modify the properties of the specified NIC.
       operationId: nicsPut
       parameters:
-        - name: vpcId
-          in: query
-          description: The unique ID of the vpc.
-          required: true
-          schema:
-            type: string
-        - name: datacenterId
-          in: query
-          description: The unique ID of the data center.
-          required: true
-          schema:
-            type: string
-        - name: lanId
-          in: query
-          description: The unique ID of the LAN.
-          schema:
-            type: string
-        - name: serverId
-          in: query
-          description: The unique ID of the server.
-          schema:
-            type: string
         - name: nicId
           in: path
           description: The unique ID of the NIC.
@@ -5511,28 +4568,6 @@ paths:
       description: Remove the specified NIC.
       operationId: nicsDelete
       parameters:
-        - name: vpcId
-          in: query
-          description: The unique ID of the vpc.
-          required: true
-          schema:
-            type: string
-        - name: datacenterId
-          in: query
-          description: The unique ID of the data center.
-          required: true
-          schema:
-            type: string
-        - name: lanId
-          in: query
-          description: The unique ID of the LAN.
-          schema:
-            type: string
-        - name: serverId
-          in: query
-          description: The unique ID of the server.
-          schema:
-            type: string
         - name: nicId
           in: path
           description: The unique ID of the NIC.
@@ -5603,28 +4638,6 @@ paths:
       description: Update the properties of the specified NIC.
       operationId: nicsPatch
       parameters:
-        - name: vpcId
-          in: query
-          description: The unique ID of the vpc.
-          required: true
-          schema:
-            type: string
-        - name: datacenterId
-          in: query
-          description: The unique ID of the data center.
-          required: true
-          schema:
-            type: string
-        - name: lanId
-          in: query
-          description: The unique ID of the LAN.
-          schema:
-            type: string
-        - name: serverId
-          in: query
-          description: The unique ID of the server.
-          schema:
-            type: string
         - name: nicId
           in: path
           description: The unique ID of the NIC.
@@ -5704,19 +4717,12 @@ paths:
       tags:
         - Virtual routers
       summary: List virtual routers
-      description: Retrieves all virtual routers within the data center.
+      description: Retrieves all virtual routers within the vpc.
       operationId: routersGet
       parameters:
         - name: vpcId
           in: query
           description: The unique ID of the vpc.
-          required: true
-          schema:
-            type: string
-        - name: datacenterId
-          in: query
-          description: The unique ID of the data center.
-          required: true
           schema:
             type: string
         - name: pretty
@@ -5792,21 +4798,9 @@ paths:
       tags:
         - Virtual routers
       summary: Create a virtual router
-      description: Creates a virtual router within the specified data center.
+      description: Creates a virtual router within the specified vpc.
       operationId: routersPost
       parameters:
-        - name: vpcId
-          in: query
-          description: The unique ID of the vpc.
-          required: true
-          schema:
-            type: string
-        - name: datacenterId
-          in: query
-          description: The unique ID of the data center.
-          required: true
-          schema:
-            type: string
         - name: pretty
           in: query
           description: >-
@@ -5875,18 +4869,6 @@ paths:
       description: Retrieves the properties of the specified virtual router.
       operationId: routersFindById
       parameters:
-        - name: vpcId
-          in: query
-          description: The unique ID of the vpc.
-          required: true
-          schema:
-            type: string
-        - name: datacenterId
-          in: query
-          description: The unique ID of the data center.
-          required: true
-          schema:
-            type: string
         - name: routerId
           in: path
           description: The unique ID of the virtual router.
@@ -5947,18 +4929,6 @@ paths:
       description: Modifies the properties of the specified virtual router.
       operationId: routersPut
       parameters:
-        - name: vpcId
-          in: query
-          description: The unique ID of the vpc.
-          required: true
-          schema:
-            type: string
-        - name: datacenterId
-          in: query
-          description: The unique ID of the data center.
-          required: true
-          schema:
-            type: string
         - name: routerId
           in: path
           description: The unique ID of the virtual router.
@@ -6032,18 +5002,6 @@ paths:
       description: Modifies the properties of the specified virtual router.
       operationId: routersPatch
       parameters:
-        - name: vpcId
-          in: query
-          description: The unique ID of the vpc.
-          required: true
-          schema:
-            type: string
-        - name: datacenterId
-          in: query
-          description: The unique ID of the data center.
-          required: true
-          schema:
-            type: string
         - name: routerId
           in: path
           description: The unique ID of the virtual router.
@@ -6122,18 +5080,6 @@ paths:
         removed.
       operationId: routersDelete
       parameters:
-        - name: vpcId
-          in: query
-          description: The unique ID of the vpc.
-          required: true
-          schema:
-            type: string
-        - name: datacenterId
-          in: query
-          description: The unique ID of the data center.
-          required: true
-          schema:
-            type: string
         - name: routerId
           in: path
           description: The unique ID of the virtual router.
@@ -6200,19 +5146,11 @@ paths:
         - name: vpcId
           in: query
           description: The unique ID of the vpc.
-          required: true
-          schema:
-            type: string
-        - name: datacenterId
-          in: query
-          description: The unique ID of the data center.
-          required: true
           schema:
             type: string
         - name: routerId
           in: query
           description: The unique ID of the virtual router.
-          required: true
           schema:
             type: string
         - name: pretty
@@ -6291,24 +5229,6 @@ paths:
       description: Creates a virtual route for the specified virtual Router.
       operationId: routesPost
       parameters:
-        - name: vpcId
-          in: query
-          description: The unique ID of the vpc.
-          required: true
-          schema:
-            type: string
-        - name: datacenterId
-          in: query
-          description: The unique ID of the data center.
-          required: true
-          schema:
-            type: string
-        - name: routerId
-          in: query
-          description: The unique ID of the virtual router.
-          required: true
-          schema:
-            type: string
         - name: pretty
           in: query
           description: >-
@@ -6377,24 +5297,6 @@ paths:
       description: Retrieves the properties of the specified virtual route.
       operationId: routesFindById
       parameters:
-        - name: vpcId
-          in: query
-          description: The unique ID of the vpc.
-          required: true
-          schema:
-            type: string
-        - name: datacenterId
-          in: query
-          description: The unique ID of the data center.
-          required: true
-          schema:
-            type: string
-        - name: routerId
-          in: query
-          description: The unique ID of the virtual router.
-          required: true
-          schema:
-            type: string
         - name: routeId
           in: path
           description: The unique ID of the virtual route.
@@ -6455,24 +5357,6 @@ paths:
       description: Modifies the properties of the specified virtual route.
       operationId: routesPut
       parameters:
-        - name: vpcId
-          in: query
-          description: The unique ID of the vpc.
-          required: true
-          schema:
-            type: string
-        - name: datacenterId
-          in: query
-          description: The unique ID of the data center.
-          required: true
-          schema:
-            type: string
-        - name: routerId
-          in: query
-          description: The unique ID of the virtual router.
-          required: true
-          schema:
-            type: string
         - name: routeId
           in: path
           description: The unique ID of the virtual route.
@@ -6546,24 +5430,6 @@ paths:
       description: Modifies the properties of the specified virtual route.
       operationId: routesPatch
       parameters:
-        - name: vpcId
-          in: query
-          description: The unique ID of the vpc.
-          required: true
-          schema:
-            type: string
-        - name: datacenterId
-          in: query
-          description: The unique ID of the data center.
-          required: true
-          schema:
-            type: string
-        - name: routerId
-          in: query
-          description: The unique ID of the virtual router.
-          required: true
-          schema:
-            type: string
         - name: routeId
           in: path
           description: The unique ID of the virtual route.
@@ -6637,24 +5503,6 @@ paths:
       description: Removes the specified virtual route from the virtual router.
       operationId: routesDelete
       parameters:
-        - name: vpcId
-          in: query
-          description: The unique ID of the vpc.
-          required: true
-          schema:
-            type: string
-        - name: datacenterId
-          in: query
-          description: The unique ID of the data center.
-          required: true
-          schema:
-            type: string
-        - name: routerId
-          in: query
-          description: The unique ID of the virtual router.
-          required: true
-          schema:
-            type: string
         - name: routeId
           in: path
           description: The unique ID of the virtual route.
@@ -6721,25 +5569,21 @@ paths:
         - name: vpcId
           in: query
           description: The unique ID of the vpc.
-          required: true
           schema:
             type: string
         - name: datacenterId
           in: query
           description: The unique ID of the data center.
-          required: true
           schema:
             type: string
         - name: serverId
           in: query
           description: The unique ID of the server.
-          required: true
           schema:
             type: string
         - name: nicId
           in: query
           description: The unique ID of the NIC.
-          required: true
           schema:
             type: string
         - name: pretty
@@ -6818,30 +5662,6 @@ paths:
       description: Adds a new Flow Log for the specified NIC.
       operationId: flowlogsPost
       parameters:
-        - name: vpcId
-          in: query
-          description: The unique ID of the vpc.
-          required: true
-          schema:
-            type: string
-        - name: datacenterId
-          in: query
-          description: The unique ID of the data center.
-          required: true
-          schema:
-            type: string
-        - name: serverId
-          in: query
-          description: The unique ID of the server.
-          required: true
-          schema:
-            type: string
-        - name: nicId
-          in: query
-          description: The unique ID of the NIC.
-          required: true
-          schema:
-            type: string
         - name: pretty
           in: query
           description: >-
@@ -6910,30 +5730,6 @@ paths:
       description: Retrieve the properties of the specified Flow Log.
       operationId: flowlogsFindById
       parameters:
-        - name: vpcId
-          in: query
-          description: The unique ID of the vpc.
-          required: true
-          schema:
-            type: string
-        - name: datacenterId
-          in: query
-          description: The unique ID of the data center.
-          required: true
-          schema:
-            type: string
-        - name: serverId
-          in: query
-          description: The unique ID of the server.
-          required: true
-          schema:
-            type: string
-        - name: nicId
-          in: query
-          description: The unique ID of the NIC.
-          required: true
-          schema:
-            type: string
         - name: flowlogId
           in: path
           description: The unique ID of the Flow Log.
@@ -6994,30 +5790,6 @@ paths:
       description: Modify the specified Flow Log record.
       operationId: flowlogsPut
       parameters:
-        - name: vpcId
-          in: query
-          description: The unique ID of the vpc.
-          required: true
-          schema:
-            type: string
-        - name: datacenterId
-          in: query
-          description: The unique ID of the data center.
-          required: true
-          schema:
-            type: string
-        - name: serverId
-          in: query
-          description: The unique ID of the server.
-          required: true
-          schema:
-            type: string
-        - name: nicId
-          in: query
-          description: The unique ID of the NIC.
-          required: true
-          schema:
-            type: string
         - name: flowlogId
           in: path
           description: The unique ID of the Flow Log.
@@ -7091,30 +5863,6 @@ paths:
       description: Delete the specified Flow Log.
       operationId: flowlogsDelete
       parameters:
-        - name: vpcId
-          in: query
-          description: The unique ID of the vpc.
-          required: true
-          schema:
-            type: string
-        - name: datacenterId
-          in: query
-          description: The unique ID of the data center.
-          required: true
-          schema:
-            type: string
-        - name: serverId
-          in: query
-          description: The unique ID of the server.
-          required: true
-          schema:
-            type: string
-        - name: nicId
-          in: query
-          description: The unique ID of the NIC.
-          required: true
-          schema:
-            type: string
         - name: flowlogId
           in: path
           description: The unique ID of the Flow Log.
@@ -7177,30 +5925,6 @@ paths:
       description: Update the specified Flow Log record.
       operationId: flowlogsPatch
       parameters:
-        - name: vpcId
-          in: query
-          description: The unique ID of the vpc.
-          required: true
-          schema:
-            type: string
-        - name: datacenterId
-          in: query
-          description: The unique ID of the data center.
-          required: true
-          schema:
-            type: string
-        - name: serverId
-          in: query
-          description: The unique ID of the server.
-          required: true
-          schema:
-            type: string
-        - name: nicId
-          in: query
-          description: The unique ID of the NIC.
-          required: true
-          schema:
-            type: string
         - name: flowlogId
           in: path
           description: The unique ID of the Flow Log.
@@ -7683,13 +6407,11 @@ paths:
         - name: vpcId
           in: query
           description: The unique ID of the vpc.
-          required: true
           schema:
             type: string
         - name: datacenterId
           in: query
           description: The unique ID of the data center.
-          required: true
           schema:
             type: string
         - name: pretty
@@ -7763,21 +6485,11 @@ paths:
       tags:
         - Security Groups
       summary: Create a Security Group
-      description: Creates a security group within the vpc. This will allow you to define which IP addresses and networks have access to your servers.
+      description: >-
+        Creates a security group within the vpc or datacenter. This will allow you 
+        to define which IP addresses and networks have access to your servers.
       operationId: securitygroupsPost
       parameters:
-        - name: vpcId
-          in: query
-          description: The unique ID of the vpc.
-          required: true
-          schema:
-            type: string
-        - name: datacenterId
-          in: query
-          description: The unique ID of the data center.
-          required: true
-          schema:
-            type: string
         - name: pretty
           in: query
           description: Controls whether the response is pretty-printed (with indentations and new lines).
@@ -7846,18 +6558,6 @@ paths:
       description: Retrieves the attributes of a given Security Group.
       operationId: securitygroupsFindById
       parameters:
-        - name: vpcId
-          in: query
-          description: The unique ID of the vpc.
-          required: true
-          schema:
-            type: string
-        - name: datacenterId
-          in: query
-          description: The unique ID of the data center
-          required: true
-          schema:
-            type: string
         - name: securityGroupId
           in: path
           description: The unique ID of the security group.
@@ -7919,22 +6619,9 @@ paths:
         - Security Groups
       summary: Modify Security Group
       description:
-        Modify the properties of the specified Security Group within the
-        data center.
+        Modify the properties of the specified Security Group.
       operationId: securitygroupsPut
       parameters:
-        - name: vpcId
-          in: query
-          description: The unique ID of the vpc.
-          required: true
-          schema:
-            type: string
-        - name: datacenterId
-          in: query
-          description: The unique ID of the data center.
-          required: true
-          schema:
-            type: string
         - name: securityGroupId
           in: path
           description: The unique ID of the Security Group.
@@ -8009,22 +6696,9 @@ paths:
         - Security Groups
       summary: Partially modify Security Group
       description:
-        Modify the properties of the specified Security Group within the
-        data center.
+        Modify the properties of the specified Security Group.
       operationId: securitygroupsPatch
       parameters:
-        - name: vpcId
-          in: query
-          description: The unique ID of the vpc.
-          required: true
-          schema:
-            type: string
-        - name: datacenterId
-          in: query
-          description: The unique ID of the data center.
-          required: true
-          schema:
-            type: string
         - name: securityGroupId
           in: path
           description: The unique ID of the Security Group.
@@ -8101,18 +6775,6 @@ paths:
       description: Deletes the specified Security Group.
       operationId: securitygroupsDelete
       parameters:
-        - name: vpcId
-          in: query
-          description: The unique ID of the vpc.
-          required: true
-          schema:
-            type: string
-        - name: datacenterId
-          in: query
-          description: The unique ID of the data center.
-          required: true
-          schema:
-            type: string
         - name: securityGroupId
           in: path
           description: The unique ID of the Security Group.
@@ -8182,19 +6844,16 @@ paths:
         - name: vpcId
           in: query
           description: The unique ID of the vpc.
-          required: true
           schema:
             type: string
         - name: datacenterId
           in: query
           description: The unique ID of the data center.
-          required: true
           schema:
             type: string
         - name: securityGroupId
           in: query
           description: The unique ID of the security group.
-          required: true
           schema:
             type: string
         - name: pretty
@@ -8270,25 +6929,6 @@ paths:
       summary: Create Firewall rule to a Security Group
       description: Create one firewall rule and attach it to the existing security group
       operationId: securitygroupsrulesPost
-      parameters:
-        - name: vpcId
-          in: query
-          description: The unique ID of the vpc.
-          required: true
-          schema:
-            type: string
-        - name: datacenterId
-          in: query
-          description: The unique ID of the data center.
-          required: true
-          schema:
-            type: string
-        - name: securityGroupId
-          in: query
-          description: The unique ID of the security group.
-          required: true
-          schema:
-            type: string
       requestBody:
         description: The firewall to be attached (or created and attached).
         content:
@@ -8354,24 +6994,6 @@ paths:
       description: Retrieve the properties of the specified Security Group rule.
       operationId: securitygroupsrulesFindById
       parameters:
-        - name: vpcId
-          in: query
-          description: The unique ID of the vpc.
-          required: true
-          schema:
-            type: string
-        - name: datacenterId
-          in: query
-          description: The unique ID of the data center.
-          required: true
-          schema:
-            type: string
-        - name: securityGroupId
-          in: query
-          description: The unique ID of the security group.
-          required: true
-          schema:
-            type: string
         - name: ruleId
           in: path
           description: The unique ID of the Security Group rule.
@@ -8435,24 +7057,6 @@ paths:
       description: Modifies the properties of the specified Security Group Rule.
       operationId: securitygroupsrulesPut
       parameters:
-        - name: vpcId
-          in: query
-          description: The unique ID of the vpc.
-          required: true
-          schema:
-            type: string
-        - name: datacenterId
-          in: query
-          description: The unique ID of the data center.
-          required: true
-          schema:
-            type: string
-        - name: securityGroupId
-          in: query
-          description: The unique ID of the security group.
-          required: true
-          schema:
-            type: string
         - name: ruleId
           in: path
           description: The unique ID of the Security Group Rule.
@@ -8529,24 +7133,6 @@ paths:
       description: Removes the specific Firewall Rule from the Security Group and delete the Firewall rule
       operationId: securitygroupsrulesDelete
       parameters:
-        - name: vpcId
-          in: query
-          description: The unique ID of the vpc.
-          required: true
-          schema:
-            type: string
-        - name: datacenterId
-          in: query
-          description: The unique ID of the data center.
-          required: true
-          schema:
-            type: string
-        - name: securityGroupId
-          in: query
-          description: The unique ID of the security group.
-          required: true
-          schema:
-            type: string
         - name: ruleId
           in: path
           description: The unique ID of the firewall rule.
@@ -8601,24 +7187,6 @@ paths:
       description: Update the properties of the specified Security Group rule.
       operationId: securitygroupsrulesPatch
       parameters:
-        - name: vpcId
-          in: query
-          description: The unique ID of the vpc.
-          required: true
-          schema:
-            type: string
-        - name: datacenterId
-          in: query
-          description: The unique ID of the data center.
-          required: true
-          schema:
-            type: string
-        - name: securityGroupId
-          in: query
-          description: The unique ID of the security group.
-          required: true
-          schema:
-            type: string
         - name: ruleId
           in: path
           description: The unique ID of the Security Group Rule.
@@ -8636,7 +7204,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/FirewallruleProperties'
+              $ref: '#/components/schemas/FirewallRuleProperties'
         required: true
       responses:
         '202':
@@ -8690,127 +7258,7 @@ paths:
       x-codegen-request-body-name: rule
 components:
   schemas:
-    AttachedVolumes:
-      type: object
-      properties:
-        id:
-          type: string
-          description: The resource's unique identifier.
-          readOnly: true
-          example: 15f67991-0f51-4efc-a8ad-ef1fb31a480c
-        type:
-          type: string
-          description: The type of object that has been created.
-          example: collection
-          allOf:
-            - $ref: '#/components/schemas/Type'
-        href:
-          type: string
-          description: The URL to the object representation (absolute path).
-          format: uri
-          readOnly: true
-          example: <RESOURCE-URI>
-        items:
-          type: array
-          description: Array of items in the collection.
-          items:
-            $ref: '#/components/schemas/Volume'
-        offset:
-          $ref: '#/components/schemas/PaginationOffsetOptional'
-        limit:
-          $ref: '#/components/schemas/PaginationLimitOptional'
-        _links:
-          $ref: '#/components/schemas/PaginationLinks'
-    VpcElementMetadata:
-      type: object
-      properties:
-        etag:
-          type: string
-          description: >-
-            Resource's Entity Tag as defined in
-            http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.11
-          readOnly: true
-          example: 45480eb3fbfc31f1d916c1eaa4abdcc3
-        createdDate:
-          type: string
-          description: The last time the resource was created.
-          format: date-time
-          readOnly: true
-          example: '2015-12-04T14:34:09.809Z'
-        createdBy:
-          type: string
-          description: The user who created the resource.
-          readOnly: true
-          example: user@example.com
-        createdByUserId:
-          type: string
-          description: The unique ID of the user who created the resource.
-          readOnly: true
-          example: user@example.com
-        lastModifiedDate:
-          type: string
-          description: The last time the resource was modified.
-          format: date-time
-          readOnly: true
-          example: '2015-12-04T14:34:09.809Z'
-        lastModifiedBy:
-          type: string
-          description: The user who last modified the resource.
-          readOnly: true
-          example: user@example.com
-        lastModifiedByUserId:
-          type: string
-          description: The unique ID of the user who last modified the resource.
-          readOnly: true
-          example: 63cef532-26fe-4a64-a4e0-de7c8a506c90
-        state:
-          type: string
-          description: >-
-            State of the resource. *AVAILABLE* There are no pending modification
-            requests for this item; *BUSY* There is at least one modification
-            request pending and all following requests will be queued;
-            *INACTIVE* Resource has been de-provisioned; *DEPLOYING* Resource
-            state DEPLOYING - relevant for Kubernetes cluster/nodepool; *ACTIVE*
-            Resource state ACTIVE - relevant for Kubernetes cluster/nodepool;
-            *FAILED* Resource state FAILED - relevant for Kubernetes
-            cluster/nodepool; *SUSPENDED* Resource state SUSPENDED - relevant
-            for Kubernetes cluster/nodepool; *FAILED_SUSPENDED* Resource state
-            FAILED_SUSPENDED - relevant for Kubernetes cluster; *UPDATING*
-            Resource state UPDATING - relevant for Kubernetes cluster/nodepool;
-            *FAILED_UPDATING* Resource state FAILED_UPDATING - relevant for
-            Kubernetes cluster/nodepool; *DESTROYING* Resource state DESTROYING
-            - relevant for Kubernetes cluster; *FAILED_DESTROYING* Resource
-            state FAILED_DESTROYING - relevant for Kubernetes cluster/nodepool;
-            *TERMINATED* Resource state TERMINATED - relevant for Kubernetes
-            cluster/nodepool; *HIBERNATING* Resource state HIBERNATING -
-            relevant for Kubernetes cluster/nodepool; *FAILED_HIBERNATING*
-            Resource state FAILED_HIBERNATING - relevant for Kubernetes
-            cluster/nodepool; *MAINTENANCE* Resource state MAINTENANCE -
-            relevant for Kubernetes cluster/nodepool; *FAILED_HIBERNATING*
-            Resource state FAILED_HIBERNATING - relevant for Kubernetes
-            cluster/nodepool.
-          readOnly: true
-          example: AVAILABLE
-          enum:
-            - AVAILABLE
-            - INACTIVE
-            - BUSY
-            - DEPLOYING
-            - ACTIVE
-            - FAILED
-            - SUSPENDED
-            - FAILED_SUSPENDED
-            - UPDATING
-            - FAILED_UPDATING
-            - DESTROYING
-            - FAILED_DESTROYING
-            - TERMINATED
-            - HIBERNATING
-            - FAILED_HIBERNATING
-            - MAINTENANCE
-            - FAILED_MAINTENANCE
-            - UNKNOWN
-    DatacenterElementMetadata:
+    ElementMetadata:
       type: object
       properties:
         etag:
@@ -8908,6 +7356,10 @@ components:
           type: string
           description: The name of the  resource.
           example: My resource
+        server:
+          type: string
+          description: The uuid of the server to be attached to.
+          example: addc0728-2878-4ef0-96c3-742684048398
         type:
           type: string
           description: >-
@@ -9097,7 +7549,7 @@ components:
           readOnly: true
           example: <RESOURCE-URI>
         metadata:
-          $ref: '#/components/schemas/DatacenterElementMetadata'
+          $ref: '#/components/schemas/ElementMetadata'
         properties:
           $ref: '#/components/schemas/VolumeProperties'
     Cdroms:
@@ -9126,9 +7578,9 @@ components:
           items:
             $ref: '#/components/schemas/Image'
         offset:
-          $ref: '#/components/schemas/PaginationOffsetOptional'
+          $ref: '#/components/schemas/PaginationOffset'
         limit:
-          $ref: '#/components/schemas/PaginationLimitOptional'
+          $ref: '#/components/schemas/PaginationLimit'
         _links:
           $ref: '#/components/schemas/PaginationLinks'
     Image:
@@ -9154,7 +7606,7 @@ components:
           readOnly: true
           example: <RESOURCE-URI>
         metadata:
-          $ref: '#/components/schemas/DatacenterElementMetadata'
+          $ref: '#/components/schemas/ElementMetadata'
         properties:
           $ref: '#/components/schemas/ImageProperties'
     ImageProperties:
@@ -9166,6 +7618,10 @@ components:
           type: string
           description: The resource name.
           example: My resource
+        server:
+          type: string
+          description: The uuid of the server to be attached to.
+          example: addc0728-2878-4ef0-96c3-742684048398
         description:
           type: string
           description: Human-readable description.
@@ -9267,71 +7723,6 @@ components:
           enum:
             - NONE
             - V1
-    ContractProperties:
-      type: object
-      properties:
-        contractNumber:
-          type: integer
-          description: The contract number.
-          format: int64
-          readOnly: true
-          example: 12345
-        owner:
-          type: string
-          description: The contract owner's user name.
-          readOnly: true
-          example: user@example.com
-        status:
-          type: string
-          description: The contract status.
-          readOnly: true
-          example: BILLABLE
-        regDomain:
-          type: string
-          description: The registration domain of the contract.
-          readOnly: true
-          example: ionos.de
-        resourceLimits:
-          $ref: '#/components/schemas/ResourceLimits'
-    Contract:
-      required:
-        - properties
-      type: object
-      properties:
-        type:
-          type: string
-          description: The type of the resource.
-          example: resource
-          allOf:
-            - $ref: '#/components/schemas/Type'
-        properties:
-          $ref: '#/components/schemas/ContractProperties'
-    Contracts:
-      type: object
-      properties:
-        id:
-          type: string
-          description: The resource's unique identifier.
-          readOnly: true
-          example: contracts
-        type:
-          type: string
-          description: The type of object that has been created.
-          example: collection
-          allOf:
-            - $ref: '#/components/schemas/Type'
-        href:
-          type: string
-          description: The URL to the object representation (absolute path).
-          format: uri
-          readOnly: true
-          example: https://api.ionos.com/cloudapi/v6/contracts
-        items:
-          type: array
-          description: Array of items in the collection.
-          readOnly: true
-          items:
-            $ref: '#/components/schemas/Contract'
     ResourceLimits:
       required:
         - coresPerContract
@@ -9472,7 +7863,9 @@ components:
       type: object
       properties:
         datacenters:
-          $ref: '#/components/schemas/Datacenter'
+          $ref: '#/components/schemas/Datacenters'
+        routers:
+          $ref: '#/components/schemas/VirtualRouters'
     VpcProperties:
       required:
         - location
@@ -9486,21 +7879,21 @@ components:
           type: string
           description: >-
             The physical location where the vpc will be created. This
-            will be where all of your datacenters live. Property cannot be modified
-            after vpc creation (disallowed in update requests).
+            will be where all of your datacenters live.
           example: us/las
         vni:
           type: string
           description: >-
             Only settable for VPC and VPC-lite type. Unique identifier for virtual network address.
+          nullable: true
           example: 15f67991-0f51-4efc-a8ad-ef1fb31a480c
         ipv4CidrBlock:
           type: string
           description: >-
-            It contains the private IPv4 CIDR range on this virtual private cloud.
+            It contains the list of private IPv4 CIDR blocks on this virtual private cloud.
             This property is a read only property.
-          readOnly: true
           nullable: true
+          readOnly: true
           example: 10.8.130.0/23
           x-prerelease: true
         ipv6CidrBlock:
@@ -9513,94 +7906,12 @@ components:
           readOnly: true
           example: 2001:db8:b06d:8f00::/56
           x-prerelease: true
-    VpcPropertiesPost:
-      required:
-        - location
-      type: object
-      properties:
-        name:
+        defaultRouterId:
           type: string
-          description: The name of the  resource.
-          example: Virtual Private Cloud
-        description:
-          type: string
-          description: A description for the vpc, such as staging, production.
-          example: My Production Vpc
-        location:
-          type: string
-          description: >-
-            The physical location where the vpc will be created. This
-            will be where all of your datancenters live. Property cannot be modified
-            after vpc creation (disallowed in update requests).
-          example: us/las
-        vni:
-          type: string
-          description: >-
-            Only settable for VPC and VPC-lite type. Unique identifier for virtual network address.
+          description: UUID of the default router for this datacenter.
+          format: uuid
+          readOnly: true
           example: 15f67991-0f51-4efc-a8ad-ef1fb31a480c
-        ipv4CidrBlock:
-          type: string
-          description: >-
-            It contains the private IPv4 CIDR range on this virtual private cloud.
-            This property is a read only property.
-          readOnly: true
-          nullable: true
-          example: 10.8.130.0/23
-          x-prerelease: true
-        ipv6CidrBlock:
-          type: string
-          description: >-
-            This value is either 'null' or contains an automatically-assigned
-            /56 IPv6 CIDR block if IPv6 is enabled on this virtual data center.
-            It can neither be changed nor removed.
-          nullable: true
-          readOnly: true
-          example: 2001:db8:b06d:8f00::/56
-          x-prerelease: true
-    VpcPropertiesPut:
-      required:
-        - location
-      type: object
-      properties:
-        name:
-          type: string
-          description: The name of the  resource.
-          example: Production Datacenter
-        description:
-          type: string
-          description: A description for the datacenter, such as staging, production.
-          example: My Production Datacenter
-        location:
-          type: string
-          description: >-
-            The physical location where the vpc will be created. This
-            will be where all of your datacenters live. Property cannot be modified
-            after datacenter creation (disallowed in update requests).
-          example: us/las
-        vni:
-          type: string
-          description: >-
-            Only settable for VPC and VPC-lite type. Unique identifier for virtual network address.
-          example: 15f67991-0f51-4efc-a8ad-ef1fb31a480c
-        ipv4CidrBlock:
-          type: string
-          description: >-
-            It contains the private IPv4 CIDR range on this virtual private cloud.
-            This property is a read only property.
-          readOnly: true
-          nullable: true
-          example: 10.8.130.0/23
-          x-prerelease: true
-        ipv6CidrBlock:
-          type: string
-          description: >-
-            This value is either 'null' or contains an automatically-assigned
-            /56 IPv6 CIDR block if IPv6 is enabled on this virtual data center.
-            It can neither be changed nor removed.
-          nullable: true
-          readOnly: true
-          example: 2001:db8:b06d:8f00::/56
-          x-prerelease: true
     Vpc:
       required:
         - properties
@@ -9622,29 +7933,10 @@ components:
           description: URL to the object representation (absolute path).
           format: uri
           readOnly: true
-          example: <RESOURCE-URI>
         metadata:
-          $ref: '#/components/schemas/VpcElementMetadata'
+          $ref: '#/components/schemas/ElementMetadata'
         properties:
           $ref: '#/components/schemas/VpcProperties'
-        entities:
-          $ref: '#/components/schemas/VpcEntities'
-    VpcPost:
-      required:
-        - properties
-      type: object
-      properties:
-        properties:
-          $ref: '#/components/schemas/VpcPropertiesPost'
-        entities:
-          $ref: '#/components/schemas/VpcEntities'
-    VpcPut:
-      required:
-        - properties
-      type: object
-      properties:
-        properties:
-          $ref: '#/components/schemas/VpcPropertiesPut'
         entities:
           $ref: '#/components/schemas/VpcEntities'
     Vpcs:
@@ -9666,7 +7958,6 @@ components:
           description: URL to the object representation (absolute path).
           format: uri
           readOnly: true
-          example: <RESOURCE-URI>
         items:
           type: array
           description: Array of items in the collection.
@@ -9674,9 +7965,9 @@ components:
           items:
             $ref: '#/components/schemas/Vpc'
         offset:
-          $ref: '#/components/schemas/PaginationOffsetOptional'
+          $ref: '#/components/schemas/PaginationOffset'
         limit:
-          $ref: '#/components/schemas/PaginationLimitOptional'
+          $ref: '#/components/schemas/PaginationLimit'
         _links:
           $ref: '#/components/schemas/PaginationLinks'
     DatacenterEntities:
@@ -9688,8 +7979,6 @@ components:
           $ref: '#/components/schemas/Volumes'
         lans:
           $ref: '#/components/schemas/Lans'
-        routers:
-          $ref: '#/components/schemas/VirtualRouters'
     DatacenterProperties:
       required:
         - location
@@ -9703,6 +7992,11 @@ components:
           type: string
           description: A description for the datacenter, such as staging, production.
           example: My Production Datacenter
+        vpc:
+          type: string
+          description: >-
+            The vpc where the datacenter exists.
+          example: c031d885-937d-4dc1-b3e1-95085c7046e2
         location:
           type: string
           description: >-
@@ -9738,138 +8032,6 @@ components:
           readOnly: true
           items:
             $ref: '#/components/schemas/CpuArchitectureProperties'
-        ipv6CidrBlock:
-          type: string
-          description: >-
-            This value is either 'null' or contains an automatically-assigned
-            /56 IPv6 CIDR block if IPv6 is enabled on this virtual data center.
-            It can neither be changed nor removed.
-          nullable: true
-          readOnly: true
-          example: 2001:db8:b06d:8f00::/56
-          x-prerelease: true
-        defaultRouterId:
-          type: string
-          description: UUID of the default router for this datacenter.
-          format: uuid
-          readOnly: true
-          example: '15f67991-0f51-4efc-a8ad-ef1fb31a480c'
-    DatacenterPropertiesPost:
-      required:
-        - location
-      type: object
-      properties:
-        name:
-          type: string
-          description: The name of the  resource.
-          example: Production Datacenter
-        description:
-          type: string
-          description: A description for the datacenter, such as staging, production.
-          example: My Production Datacenter
-        location:
-          type: string
-          description: >-
-            The physical location where the datacenter will be created. This
-            will be where all of your servers live. Property cannot be modified
-            after datacenter creation (disallowed in update requests).
-          example: us/las
-        version:
-          type: integer
-          description: The version of the data center; incremented with every change.
-          format: int32
-          readOnly: true
-          example: 8
-        features:
-          type: array
-          description: >-
-            List of features supported by the location where this data center is
-            provisioned.
-          readOnly: true
-          example:
-            - SSD
-          items:
-            type: string
-        secAuthProtection:
-          type: boolean
-          description: >-
-            Boolean value representing if the data center requires extra
-            protection, such as two-step verification.
-          example: true
-        cpuArchitecture:
-          type: array
-          description: Array of features and CPU families available in a location
-          readOnly: true
-          items:
-            $ref: '#/components/schemas/CpuArchitectureProperties'
-        ipv6CidrBlock:
-          type: string
-          description: >-
-            This value is either 'null' or contains an automatically-assigned
-            /56 IPv6 CIDR block if IPv6 is enabled on this virtual data center.
-            It can neither be changed nor removed.
-          nullable: true
-          readOnly: true
-          example: 2001:db8:b06d:8f00::/56
-          x-prerelease: true
-    DatacenterPropertiesPut:
-      required:
-        - location
-      type: object
-      properties:
-        name:
-          type: string
-          description: The name of the  resource.
-          example: Production Datacenter
-        description:
-          type: string
-          description: A description for the datacenter, such as staging, production.
-          example: My Production Datacenter
-        location:
-          type: string
-          description: >-
-            The physical location where the datacenter will be created. This
-            will be where all of your servers live. Property cannot be modified
-            after datacenter creation (disallowed in update requests).
-          example: us/las
-        version:
-          type: integer
-          description: The version of the data center; incremented with every change.
-          format: int32
-          readOnly: true
-          example: 8
-        features:
-          type: array
-          description: >-
-            List of features supported by the location where this data center is
-            provisioned.
-          readOnly: true
-          example:
-            - SSD
-          items:
-            type: string
-        secAuthProtection:
-          type: boolean
-          description: >-
-            Boolean value representing if the data center requires extra
-            protection, such as two-step verification.
-          example: true
-        cpuArchitecture:
-          type: array
-          description: Array of features and CPU families available in a location
-          readOnly: true
-          items:
-            $ref: '#/components/schemas/CpuArchitectureProperties'
-        ipv6CidrBlock:
-          type: string
-          description: >-
-            This value is either 'null' or contains an automatically-assigned
-            /56 IPv6 CIDR block if IPv6 is enabled on this virtual data center.
-            It can neither be changed nor removed.
-          nullable: true
-          readOnly: true
-          example: 2001:db8:b06d:8f00::/56
-          x-prerelease: true
     Datacenter:
       required:
         - properties
@@ -9893,27 +8055,9 @@ components:
           readOnly: true
           example: <RESOURCE-URI>
         metadata:
-          $ref: '#/components/schemas/DatacenterElementMetadata'
+          $ref: '#/components/schemas/ElementMetadata'
         properties:
           $ref: '#/components/schemas/DatacenterProperties'
-        entities:
-          $ref: '#/components/schemas/DatacenterEntities'
-    DatacenterPost:
-      required:
-        - properties
-      type: object
-      properties:
-        properties:
-          $ref: '#/components/schemas/DatacenterPropertiesPost'
-        entities:
-          $ref: '#/components/schemas/DatacenterEntities'
-    DatacenterPut:
-      required:
-        - properties
-      type: object
-      properties:
-        properties:
-          $ref: '#/components/schemas/DatacenterPropertiesPut'
         entities:
           $ref: '#/components/schemas/DatacenterEntities'
     Datacenters:
@@ -9935,7 +8079,6 @@ components:
           description: URL to the object representation (absolute path).
           format: uri
           readOnly: true
-          example: <RESOURCE-URI>
         items:
           type: array
           description: Array of items in the collection.
@@ -9943,9 +8086,9 @@ components:
           items:
             $ref: '#/components/schemas/Datacenter'
         offset:
-          $ref: '#/components/schemas/PaginationOffsetOptional'
+          $ref: '#/components/schemas/PaginationOffset'
         limit:
-          $ref: '#/components/schemas/PaginationLimitOptional'
+          $ref: '#/components/schemas/PaginationLimit'
         _links:
           $ref: '#/components/schemas/PaginationLinks'
     FirewallRule:
@@ -9969,11 +8112,10 @@ components:
           description: URL to the object representation (absolute path).
           format: uri
           readOnly: true
-          example: <RESOURCE-URI>
         metadata:
-          $ref: '#/components/schemas/DatacenterElementMetadata'
+          $ref: '#/components/schemas/ElementMetadata'
         properties:
-          $ref: '#/components/schemas/FirewallruleProperties'
+          $ref: '#/components/schemas/FirewallRuleProperties'
     FirewallRules:
       type: object
       properties:
@@ -9993,7 +8135,6 @@ components:
           description: URL to the object representation (absolute path).
           format: uri
           readOnly: true
-          example: <RESOURCE-URI>
         items:
           type: array
           description: Array of items in the collection.
@@ -10001,12 +8142,12 @@ components:
           items:
             $ref: '#/components/schemas/FirewallRule'
         offset:
-          $ref: '#/components/schemas/PaginationOffsetOptional'
+          $ref: '#/components/schemas/PaginationOffset'
         limit:
-          $ref: '#/components/schemas/PaginationLimitOptional'
+          $ref: '#/components/schemas/PaginationLimit'
         _links:
           $ref: '#/components/schemas/PaginationLinks'
-    FirewallruleProperties:
+    FirewallRuleProperties:
       required:
         - protocol
       type: object
@@ -10015,6 +8156,10 @@ components:
           type: string
           description: The name of the  resource.
           example: My resource
+        securityGroup:
+          type: string
+          description: The uuid of the security group to which the rule belongs to
+          example: fde83b97-f515-420c-ab10-b3cfaaf45155
         protocol:
           type: string
           description: >-
@@ -10141,9 +8286,8 @@ components:
           description: The URL to the object representation (absolute path).
           format: uri
           readOnly: true
-          example: <RESOURCE-URI>
         metadata:
-          $ref: '#/components/schemas/DatacenterElementMetadata'
+          $ref: '#/components/schemas/ElementMetadata'
         properties:
           $ref: '#/components/schemas/FlowLogProperties'
     FlowLogPut:
@@ -10167,7 +8311,6 @@ components:
           description: URL to the object representation (absolute path).
           format: uri
           readOnly: true
-          example: <RESOURCE-URI>
         properties:
           $ref: '#/components/schemas/FlowLogProperties'
     FlowLogs:
@@ -10189,7 +8332,6 @@ components:
           description: The URL to the object representation (absolute path).
           format: uri
           readOnly: true
-          example: <RESOURCE-URI>
         items:
           type: array
           description: Array of items in the collection.
@@ -10197,9 +8339,9 @@ components:
           items:
             $ref: '#/components/schemas/FlowLog'
         offset:
-          $ref: '#/components/schemas/PaginationOffsetOptional'
+          $ref: '#/components/schemas/PaginationOffset'
         limit:
-          $ref: '#/components/schemas/PaginationLimitOptional'
+          $ref: '#/components/schemas/PaginationLimit'
         _links:
           $ref: '#/components/schemas/PaginationLinks'
     FlowLogProperties:
@@ -10214,6 +8356,14 @@ components:
           type: string
           description: The resource name.
           example: My resource
+        nic:
+          type: string
+          description: The nicId where the flowLog will be attached.
+          example: fde83b97-f515-420c-ab10-b3cfaaf45155
+        server:
+          type: string
+          description: The serverId where the flowLog will be attached.
+          example: addc0728-2878-4ef0-96c3-742684048398
         action:
           type: string
           description: Specifies the traffic action pattern.
@@ -10255,6 +8405,14 @@ components:
           type: string
           description: The name of the  resource.
           example: My resource
+        vpc:
+          type: string
+          description: The id of the vpc to be attached to.
+          example: addc0728-2878-4ef0-96c3-742684048398
+        datacenter:
+          type: string
+          description: The id of the datacenter to be attached to.
+          example: addc0728-2878-4ef0-96c3-742684048398
         ipFailover:
           type: array
           description: IP failover configurations for lan
@@ -10309,6 +8467,7 @@ components:
       properties:
         id:
           type: string
+          format: uuid
           description: The resource's unique identifier.
           readOnly: true
           example: 3c11273c-b3e1-4ca3-8134-84fd2dd4ebec
@@ -10325,7 +8484,7 @@ components:
           readOnly: true
           example: <RESOURCE-URI>
         metadata:
-          $ref: '#/components/schemas/DatacenterElementMetadata'
+          $ref: '#/components/schemas/ElementMetadata'
         properties:
           $ref: '#/components/schemas/LanProperties'
         entities:
@@ -10349,7 +8508,6 @@ components:
           description: URL to the object representation (absolute path).
           format: uri
           readOnly: true
-          example: <RESOURCE-URI>
         items:
           type: array
           description: Array of items in the collection.
@@ -10357,9 +8515,9 @@ components:
           items:
             $ref: '#/components/schemas/Lan'
         offset:
-          $ref: '#/components/schemas/PaginationOffsetOptional'
+          $ref: '#/components/schemas/PaginationOffset'
         limit:
-          $ref: '#/components/schemas/PaginationLimitOptional'
+          $ref: '#/components/schemas/PaginationLimit'
         _links:
           $ref: '#/components/schemas/PaginationLinks'
     Nic:
@@ -10383,9 +8541,8 @@ components:
           description: URL to the object representation (absolute path).
           format: uri
           readOnly: true
-          example: <RESOURCE-URI>
         metadata:
-          $ref: '#/components/schemas/DatacenterElementMetadata'
+          $ref: '#/components/schemas/ElementMetadata'
         properties:
           $ref: '#/components/schemas/NicProperties'
         entities:
@@ -10396,8 +8553,6 @@ components:
         flowlogs:
           $ref: '#/components/schemas/FlowLogs'
     NicProperties:
-      required:
-        - lan
       type: object
       properties:
         name:
@@ -10471,12 +8626,17 @@ components:
           default: true
           x-prerelease: true
         lan:
-          type: integer
+          type: string
           description: >-
-            The LAN ID the NIC will be on. If the LAN ID does not exist, it will
-            be implicitly created.
-          format: int32
-          example: 2
+            The LAN uuid the NIC will be on.
+          format: uuid
+          example: fde83b97-f515-420c-ab10-b3cfaaf45155
+        server:
+          type: string
+          description: >-
+            The server uuid the NIC will be on.
+          format: uuid
+          example: fde83b97-f515-420c-ab10-b3cfaaf45155
         firewallActive:
           type: boolean
           description: >-
@@ -10535,16 +8695,15 @@ components:
           description: URL to the object representation (absolute path).
           format: uri
           readOnly: true
-          example: <RESOURCE-URI>
         items:
           type: array
           description: Array of items in the collection.
           items:
             $ref: '#/components/schemas/Nic'
         offset:
-          $ref: '#/components/schemas/PaginationOffsetOptional'
+          $ref: '#/components/schemas/PaginationOffset'
         limit:
-          $ref: '#/components/schemas/PaginationLimitOptional'
+          $ref: '#/components/schemas/PaginationLimit'
         _links:
           $ref: '#/components/schemas/PaginationLinks'
     NicPut:
@@ -10568,7 +8727,6 @@ components:
           description: URL to the object representation (absolute path).
           format: uri
           readOnly: true
-          example: <RESOURCE-URI>
         properties:
           $ref: '#/components/schemas/NicProperties'
     ResourceReference:
@@ -10590,7 +8748,6 @@ components:
           description: URL to the object representation (absolute path).
           format: uri
           readOnly: true
-          example: <RESOURCE-URI>
     ListOfIds:
       required:
         - ids
@@ -10611,7 +8768,7 @@ components:
         cdroms:
           $ref: '#/components/schemas/Cdroms'
         volumes:
-          $ref: '#/components/schemas/AttachedVolumes'
+          $ref: '#/components/schemas/Volumes'
         nics:
           $ref: '#/components/schemas/Nics'
     ServerProperties:
@@ -10688,6 +8845,14 @@ components:
           type: string
           description: 'Server type: CUBE, ENTERPRISE or VCPU.'
           example: CUBE
+        vpc:
+          type: string
+          description: The id of the vpc to be attached to
+          example: a4c6c98b-45b4-4b30-95c7-fab73eeb3089
+        datacenter:
+          type: string
+          description: The id of the datacenter to be attached to
+          example: a4c6c98b-45b4-4b30-95c7-fab73eeb3089
         placementGroupId:
           type: "string"
           description: "The placement group ID that belongs to this server; Requires system privileges, for internal usage
@@ -10756,15 +8921,13 @@ components:
           description: URL to the object representation (absolute path).
           format: uri
           readOnly: true
-          example: >-
-            https://<API_HOST>/cloudapi/v6/um/resources/datacenter/15f67991-0f51-4efc-a8ad-ef1fb31a480c
         metadata:
-          $ref: '#/components/schemas/DatacenterElementMetadata'
+          $ref: '#/components/schemas/ElementMetadata'
         properties:
           $ref: '#/components/schemas/ResourceProperties'
         entities:
           $ref: '#/components/schemas/ResourceEntities'
-      description: datacenter resource representation
+      description: resource representation
     ResourceProperties:
       type: object
       properties:
@@ -10827,9 +8990,8 @@ components:
           description: URL to the object representation (absolute path).
           format: uri
           readOnly: true
-          example: <RESOURCE-URI>
         metadata:
-          $ref: '#/components/schemas/DatacenterElementMetadata'
+          $ref: '#/components/schemas/ElementMetadata'
         properties:
           $ref: '#/components/schemas/IpBlockProperties'
     IpBlockProperties:
@@ -10906,9 +9068,9 @@ components:
           items:
             $ref: '#/components/schemas/IpBlock'
         offset:
-          $ref: '#/components/schemas/PaginationOffsetMandatory'
+          $ref: '#/components/schemas/PaginationOffset'
         limit:
-          $ref: '#/components/schemas/PaginationLimitMandatory'
+          $ref: '#/components/schemas/PaginationLimit'
         _links:
           $ref: '#/components/schemas/PaginationLinks'
     LocationProperties:
@@ -10918,6 +9080,10 @@ components:
           type: string
           description: The location name.
           example: berlin
+        region:
+          type: string
+          description: The regions where the location is
+          example: de
         features:
           type: array
           description: A list of available features in the location.
@@ -10988,9 +9154,9 @@ components:
           description: URL to the object representation (absolute path).
           format: uri
           readOnly: true
-          example: https://api.ionos.com/cloudapi/v6/locations/de
+          example: https://api.ionos.com/cloudapi/v6/locations
         metadata:
-          $ref: '#/components/schemas/DatacenterElementMetadata'
+          $ref: '#/components/schemas/ElementMetadata'
         properties:
           $ref: '#/components/schemas/LocationProperties'
     Locations:
@@ -11012,51 +9178,13 @@ components:
           description: URL to the object representation (absolute path).
           format: uri
           readOnly: true
-          example: https://api.ionos.com/cloudapi/v6/locations
+          example: https://api.ionos.com/cloudapi/v7/locations
         items:
           type: array
           description: Array of items in the collection.
           readOnly: true
           items:
             $ref: '#/components/schemas/Location'
-    ConnectableDatacenter:
-      type: object
-      properties:
-        id:
-          type: string
-          description: >-
-            Identifier of the virtual data center that can be connected to the
-            Cross Connect.
-        name:
-          type: string
-          description: >-
-            Name of the virtual data center that can be connected to the Cross
-            Connect.
-        location:
-          type: string
-          description: >-
-            Location of the virtual data center that can be connected to the
-            Cross Connect.
-    Peer:
-      type: object
-      properties:
-        id:
-          type: string
-          description: Identifier of the LAN connected to the Cross Connect.
-        name:
-          type: string
-          description: Name of the LAN connected to the Cross Connect.
-        datacenterId:
-          type: string
-          description: >-
-            Identifier of the virtual data center connected to the Cross
-            Connect.
-        datacenterName:
-          type: string
-          description: Name of the virtual data center connected to the Cross Connect.
-        location:
-          type: string
-          description: Location of the virtual data center connected to the Cross Connect.
     IpConsumer:
       type: object
       properties:
@@ -11097,7 +9225,7 @@ components:
           description: URL to the object representation (absolute path).
           format: uri
           readOnly: true
-          example: <RESOURCE-URI>
+          example: https://api.ionos.com/cloudapi/v7/requests
         metadata:
           $ref: '#/components/schemas/RequestStatusMetadata'
     RequestStatusMetadata:
@@ -11158,7 +9286,7 @@ components:
           description: URL to the object representation (absolute path).
           format: uri
           readOnly: true
-          example: <RESOURCE-URI>
+          example: https://api.ionos.com/cloudapi/v7/requests
         metadata:
           $ref: '#/components/schemas/RequestMetadata'
         properties:
@@ -11232,9 +9360,9 @@ components:
           items:
             $ref: '#/components/schemas/Request'
         offset:
-          $ref: '#/components/schemas/PaginationOffsetMandatory'
+          $ref: '#/components/schemas/PaginationOffset'
         limit:
-          $ref: '#/components/schemas/PaginationLimitMandatory'
+          $ref: '#/components/schemas/PaginationLimit'
         _links:
           $ref: '#/components/schemas/PaginationLinks'
     Resources:
@@ -11283,16 +9411,7 @@ components:
           description: The API version.
           readOnly: true
           example: '6.0'
-    Token:
-      type: object
-      properties:
-        token:
-          type: string
-          description: The jwToken for the server.
-          readOnly: true
-          example: >-
-            eyJ0eXAiOiJKV1QiLCJraWQiOiI0MWM1MDFlNC03NGY3LTQwYjctYmMxMi1lZWIzMTAzNThlZDkiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJpb25vc2Nsb3VkIiwiaWF0IjoxNjAyNDg5NTkzMDcxLCJzZXJ2ZXIiOnsidXVpZCI6IjMwNGEwZGVlLWE3OTgtNDNhNi04MzIyLTk3M2NiYzc3Yjg4ZCIsIm5hbWUiOiJTZXJ2ZXIifX0.TND9kJd8GXM39XP5PMH_LnF_99al4MEkI_eoEowPvPztirgM50aZEdg6SuLYQzg-R7vrA7hEFaK4NJb2BUUsIZYVMhjl1QmKUE5TnP0Q2zYnIfNQNZFDu2rKrOydPCkPQwlMVvvZLeBSz7lrKYujF-qZ_yY_6SHlFtt-rg6IznRtup8AFziXtl-9cEsWU92_GCTd5LiriQrsnFAiGRbb0p2_6OYAQAH9FeWu4cxrbSwUmeR7Q4klJyZqFd0fv6UTFBtpSiyci7rsB142MXyLcqM4PrBkgd9P5OFbJYf5lbsb9pW04wLSl9rqoWGgZvWsqpuzosUkQRZt_O5yuYmT9w
-    RemoteConsoleUrl:
+    ServerOperationResponse:
       type: object
       properties:
         url:
@@ -11301,6 +9420,12 @@ components:
           readOnly: true
           example: >-
             https://dcd.ionos.com/noVNC?token=eyJ0eXAiOiJKV1QiLCJraWQiOiI0MWM1MDFlNC03NGY3LTQwYjctYmMxMi1lZWIzMTAzNThlZDkiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJpb25vc2Nsb3VkIiwiaWF0IjoxNjAyNDg5NTkzMDcxLCJzZXJ2ZXIiOnsidXVpZCI6IjMwNGEwZGVlLWE3OTgtNDNhNi04MzIyLTk3M2NiYzc3Yjg4ZCIsIm5hbWUiOiJTZXJ2ZXIifX0.TND9kJd8GXM39XP5PMH_LnF_99al4MEkI_eoEowPvPztirgM50aZEdg6SuLYQzg-R7vrA7hEFaK4NJb2BUUsIZYVMhjl1QmKUE5TnP0Q2zYnIfNQNZFDu2rKrOydPCkPQwlMVvvZLeBSz7lrKYujF-qZ_yY_6SHlFtt-rg6IznRtup8AFziXtl-9cEsWU92_GCTd5LiriQrsnFAiGRbb0p2_6OYAQAH9FeWu4cxrbSwUmeR7Q4klJyZqFd0fv6UTFBtpSiyci7rsB142MXyLcqM4PrBkgd9P5OFbJYf5lbsb9pW04wLSl9rqoWGgZvWsqpuzosUkQRZt_O5yuYmT9w
+        token:
+          type: string
+          description: The jwToken for the server.
+          readOnly: true
+          example: >-
+            eyJ0eXAiOiJKV1QiLCJraWQiOiI0MWM1MDFlNC03NGY3LTQwYjctYmMxMi1lZWIzMTAzNThlZDkiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJpb25vc2Nsb3VkIiwiaWF0IjoxNjAyNDg5NTkzMDcxLCJzZXJ2ZXIiOnsidXVpZCI6IjMwNGEwZGVlLWE3OTgtNDNhNi04MzIyLTk3M2NiYzc3Yjg4ZCIsIm5hbWUiOiJTZXJ2ZXIifX0.TND9kJd8GXM39XP5PMH_LnF_99al4MEkI_eoEowPvPztirgM50aZEdg6SuLYQzg-R7vrA7hEFaK4NJb2BUUsIZYVMhjl1QmKUE5TnP0Q2zYnIfNQNZFDu2rKrOydPCkPQwlMVvvZLeBSz7lrKYujF-qZ_yY_6SHlFtt-rg6IznRtup8AFziXtl-9cEsWU92_GCTd5LiriQrsnFAiGRbb0p2_6OYAQAH9FeWu4cxrbSwUmeR7Q4klJyZqFd0fv6UTFBtpSiyci7rsB142MXyLcqM4PrBkgd9P5OFbJYf5lbsb9pW04wLSl9rqoWGgZvWsqpuzosUkQRZt_O5yuYmT9w
     Server:
       required:
         - properties
@@ -11324,7 +9449,7 @@ components:
           readOnly: true
           example: <RESOURCE-URI>
         metadata:
-          $ref: '#/components/schemas/DatacenterElementMetadata'
+          $ref: '#/components/schemas/ElementMetadata'
         properties:
           $ref: '#/components/schemas/ServerProperties'
         entities:
@@ -11348,7 +9473,6 @@ components:
           description: URL to the object representation (absolute path).
           format: uri
           readOnly: true
-          example: <RESOURCE-URI>
         items:
           type: array
           description: Array of items in the collection.
@@ -11356,11 +9480,53 @@ components:
           items:
             $ref: '#/components/schemas/Server'
         offset:
-          $ref: '#/components/schemas/PaginationOffsetOptional'
+          $ref: '#/components/schemas/PaginationOffset'
         limit:
-          $ref: '#/components/schemas/PaginationLimitOptional'
+          $ref: '#/components/schemas/PaginationLimit'
         _links:
           $ref: '#/components/schemas/PaginationLinks'
+    ServerOperation:
+      required:
+        - properties
+      type: object
+      properties:
+        id:
+          type: string
+          description: The resource's unique identifier.
+          readOnly: true
+          example: 15f67991-0f51-4efc-a8ad-ef1fb31a480c
+        type:
+          type: string
+          description: The type of object that has been created.
+          example: request
+          allOf:
+            - $ref: '#/components/schemas/Type'
+        href:
+          type: string
+          description: URL to the object representation (absolute path).
+          format: uri
+          readOnly: true
+          example: https://api.ionos.com/cloudapi/v7/servers/<ServerUuid>requests
+        metadata:
+          $ref: '#/components/schemas/RequestMetadata'
+        properties:
+          $ref: '#/components/schemas/ServerOperationProperties'
+    ServerOperationProperties:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The requested operation
+          example: START
+          enum:
+          - REBOOT
+          - START
+          - STOP
+          - SUSPEND
+          - RESUME
+          - UPGRADE
+          - TOKEN
+          - REMOTECONSOLE
     SnapshotProperties:
       type: object
       properties:
@@ -11471,7 +9637,7 @@ components:
           readOnly: true
           example: <RESOURCE-URI>
         metadata:
-          $ref: '#/components/schemas/DatacenterElementMetadata'
+          $ref: '#/components/schemas/ElementMetadata'
         properties:
           $ref: '#/components/schemas/SnapshotProperties'
     CreateSnapshot:
@@ -11485,6 +9651,11 @@ components:
         name:
           type: string
           description: The name of the snapshot
+        volume:
+          type: string
+          format: uuid
+          description: The uuid of the volume
+          example: a4c6c98b-45b4-4b30-95c7-fab73eeb3089
         description:
           type: string
           description: The description of the snapshot
@@ -11518,6 +9689,11 @@ components:
         snapshotId:
           type: string
           description: The id of the snapshot
+        volume:
+          type: string
+          format: uuid
+          description: The uuid of the volume
+          example: a4c6c98b-45b4-4b30-95c7-fab73eeb3089
     Snapshots:
       type: object
       properties:
@@ -11571,9 +9747,9 @@ components:
           items:
             $ref: '#/components/schemas/Volume'
         offset:
-          $ref: '#/components/schemas/PaginationOffsetOptional'
+          $ref: '#/components/schemas/PaginationOffset'
         limit:
-          $ref: '#/components/schemas/PaginationLimitOptional'
+          $ref: '#/components/schemas/PaginationLimit'
         _links:
           $ref: '#/components/schemas/PaginationLinks'
     Templates:
@@ -11625,7 +9801,7 @@ components:
           readOnly: true
           example: <RESOURCE-URI>
         metadata:
-          $ref: '#/components/schemas/DatacenterElementMetadata'
+          $ref: '#/components/schemas/ElementMetadata'
         properties:
           $ref: '#/components/schemas/TemplateProperties'
     TemplateProperties:
@@ -11684,9 +9860,9 @@ components:
           items:
             $ref: '#/components/schemas/VirtualRouter'
         offset:
-          $ref: '#/components/schemas/PaginationOffsetOptional'
+          $ref: '#/components/schemas/PaginationOffset'
         limit:
-          $ref: '#/components/schemas/PaginationLimitOptional'
+          $ref: '#/components/schemas/PaginationLimit'
         _links:
           $ref: '#/components/schemas/PaginationLinks'
     VirtualRouterRequest:
@@ -11721,7 +9897,7 @@ components:
           readOnly: true
           example: <RESOURCE-URI>
         metadata:
-          $ref: '#/components/schemas/DatacenterElementMetadata'
+          $ref: '#/components/schemas/ElementMetadata'
         properties:
           $ref: '#/components/schemas/VirtualRouterProperties'
         entities:
@@ -11733,6 +9909,11 @@ components:
           type: string
           description: The name of the virtual router.
           example: My virtual router
+        vpc:
+          type: string
+          format: uuid
+          description: The id of the vpc.
+          example: aa5f6bcf-c9db-46d3-9d4c-330aa90647aa
         description:
           type: string
           description: The description of the virtual router.
@@ -11740,8 +9921,8 @@ components:
         default:
           type: boolean
           description: >-
-            Indicates if the virtual router is the default router of the datacenter.
-            There can be only one default router in a datacenter.
+            Indicates if the virtual router is the default router of the vpc.
+            There can be only one default router in a vpc.
           example: true
           default: false
     VirtualRouterProperties:
@@ -11751,6 +9932,11 @@ components:
           type: string
           description: The name of the virtual router.
           example: My virtual router
+        vpc:
+          type: string
+          format: uuid
+          description: The id of the vpc.
+          example: aa5f6bcf-c9db-46d3-9d4c-330aa90647aa
         description:
           type: string
           description: The description of the virtual router.
@@ -11758,8 +9944,8 @@ components:
         default:
           type: boolean
           description: >-
-            Indicates if the virtual router is the default router of the datacenter.
-            There can be only one default router in a datacenter.
+            Indicates if the virtual router is the default router of the vpc.
+            There can be only one default router in a vpc.
           example: true
           default: false
         lans:
@@ -11808,9 +9994,9 @@ components:
           items:
             $ref: '#/components/schemas/VirtualRoute'
         offset:
-          $ref: '#/components/schemas/PaginationOffsetOptional'
+          $ref: '#/components/schemas/PaginationOffset'
         limit:
-          $ref: '#/components/schemas/PaginationLimitOptional'
+          $ref: '#/components/schemas/PaginationLimit'
         _links:
           $ref: '#/components/schemas/PaginationLinks'
     VirtualRoute:
@@ -11836,7 +10022,7 @@ components:
           readOnly: true
           example: <RESOURCE-URI>
         metadata:
-          $ref: '#/components/schemas/DatacenterElementMetadata'
+          $ref: '#/components/schemas/ElementMetadata'
         properties:
           $ref: '#/components/schemas/VirtualRouteProperties'
     VirtualRouteProperties:
@@ -11849,6 +10035,11 @@ components:
           type: string
           description: The name of the virtual route.
           example: My virtual route
+        router:
+          type: string
+          format: uuid
+          description: The uuid of the virtual router.
+          example: aa5f6bcf-c9db-46d3-9d4c-330aa90647aa
         description:
           type: string
           description: The description of the virtual route.
@@ -11944,23 +10135,11 @@ components:
         - security-group
         - router
         - route
-    PaginationOffsetMandatory:
-      type: number
-      description: >-
-        The offset, specified in the request (if not is specified, 0 is used by
-        default).
-      example: 0
-    PaginationLimitMandatory:
-      type: number
-      description: >-
-        The limit, specified in the request (if not specified, the endpoint's
-        default pagination limit is used).
-      example: 1000
-    PaginationOffsetOptional:
+    PaginationOffset:
       type: number
       description: The offset (if specified in the request).
       example: 0
-    PaginationLimitOptional:
+    PaginationLimit:
       type: number
       description: The limit (if specified in the request).
       example: 1000
@@ -12016,9 +10195,9 @@ components:
           items:
             $ref: '#/components/schemas/SecurityGroup'
         offset:
-          $ref: '#/components/schemas/PaginationOffsetOptional'
+          $ref: '#/components/schemas/PaginationOffset'
         limit:
-          $ref: '#/components/schemas/PaginationLimitOptional'
+          $ref: '#/components/schemas/PaginationLimit'
         _links:
           $ref: '#/components/schemas/PaginationLinks'
     SecurityGroup:
@@ -12044,7 +10223,7 @@ components:
           readOnly: true
           example: <RESOURCE-URI>
         metadata:
-          $ref: '#/components/schemas/DatacenterElementMetadata'
+          $ref: '#/components/schemas/ElementMetadata'
         properties:
           $ref: '#/components/schemas/SecurityGroupProperties'
         entities:
