@@ -6122,13 +6122,9 @@ paths:
       summary: Get Locations by region
       description: >-
         Retrieves the available physical locations where you can deploy cloud
-        resources in a VDC. 
+        resources in a VDC based on a region. 
 
-         A location is identified by a combination of the following characters: 
-
-         * a two-character **region**, which represents a country (example: 'de') 
-
-         * a three-character **locationId**, which represents a city. The 'locationId' is typically based on the IATA code of the city's airport (example: 'txl'). 
+         A region is identified by a two-character **region**, which represents a country (example: 'de')  
 
          >Note that 'locations' are read-only and cannot be changed.
       operationId: locationsGet
