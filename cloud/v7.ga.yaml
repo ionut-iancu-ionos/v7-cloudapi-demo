@@ -6119,7 +6119,7 @@ paths:
     get:
       tags:
         - Metadata
-      summary: Get Locations
+      summary: Get Locations by region
       description: >-
         Retrieves the available physical locations where you can deploy cloud
         resources in a VDC. 
@@ -6133,14 +6133,9 @@ paths:
          >Note that 'locations' are read-only and cannot be changed.
       operationId: locationsGet
       parameters:
-        - name: regionId
+        - name: region
           in: query
           description: The unique ID of the region.
-          schema:
-            type: string
-        - name: locationId
-          in: query
-          description: The unique ID of the location.
           schema:
             type: string
         - name: X-Contract-Number
@@ -6176,6 +6171,83 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Locations'
+        default:
+          description: >-
+            Any erroneous status code: 400 (parse error), 401 (auth error), 402
+            (trial access), 403 (insufficient privileges), 404 (not found), 405
+            (unsupported HTTP method), 415 (unsupported content type, 422
+            (validation error), 429 (request rate limit exceeded), 500 (server
+            error), or 503 (maintenance).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - BasicAuthentication: []
+        - TokenAuthentication: []
+  /metadata/locations/{locationId}:
+    get:
+      tags:
+        - Locations
+      summary: Get Location by region and ID
+      description: >-
+        Retrieves the available physical locations where you can deploy cloud
+        resources in a VDC. 
+
+         A location is identified by a combination of the following characters: 
+
+         * a two-character **regionId**, which represents a country (example: 'de') 
+
+         * a three-character **locationId**, which represents a city. The 'locationId' is typically based on the IATA code of the city's airport (example: 'txl'). 
+
+         >Note that 'locations' are read-only and cannot be changed.
+      operationId: locationsFindId
+      parameters:
+        - name: locationId
+          in: path
+          description: The unique ID of the location.
+          required: true
+          schema:
+            type: string
+        - name: region
+          in: query
+          description: The unique ID of the region.
+          required: true
+          schema:
+            type: string
+        - name: X-Contract-Number
+          in: header
+          description: >-
+            Users with multiple contracts must provide the contract number, for
+            which all API requests are to be executed.
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: Successful operation
+          headers:
+            X-RateLimit-Remaining:
+              description: >-
+                The number of requests that can still be made without triggering
+                a failure response.
+              schema:
+                type: integer
+                format: int32
+            X-RateLimit-Limit:
+              description: The average number of requests per minute allowed.
+              schema:
+                type: integer
+                format: int32
+            X-RateLimit-Burst:
+              description: The maximum number of concurrent API requests allowed.
+              schema:
+                type: integer
+                format: int32
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Location'
         default:
           description: >-
             Any erroneous status code: 400 (parse error), 401 (auth error), 402
