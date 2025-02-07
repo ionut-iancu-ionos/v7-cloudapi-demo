@@ -15,18 +15,20 @@ servers:
 tags:
   - name: Virtual Private Clouds
   - name: Data centers
-  - name: Locations
+  - name: Virtual routers
+  - name: Virtual routes
   - name: Servers
   - name: CD-ROMs
+  - name: LANs
   - name: Network interfaces
-  - name: Virtual routers
   - name: Images
   - name: Volumes
   - name: Snapshots
   - name: IP blocks
-  - name: LANs
   - name: Security Groups
+  - name: IP Rules
   - name: Flow Logs
+  - name: Metadata
 paths:
   /vpcs:
     get:
@@ -3903,7 +3905,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/NicPut'
+              $ref: '#/components/schemas/Nic'
         required: true
       responses:
         '202':
@@ -4511,7 +4513,7 @@ paths:
   /routes:
     get:
       tags:
-        - Virtual routers
+        - Virtual routes
       summary: List virtual routes
       description: Retrieves all virtual routes for the specified virtual router.
       operationId: routesGet
@@ -4597,7 +4599,7 @@ paths:
         - TokenAuthentication: []
     post:
       tags:
-        - Virtual routers
+        - Virtual routes
       summary: Create a virtual route
       description: Creates a virtual route for the specified virtual Router.
       operationId: routesPost
@@ -4665,7 +4667,7 @@ paths:
   /routes/{routeId}:
     get:
       tags:
-        - Virtual routers
+        - Virtual routes
       summary: Retrieve a virtual route
       description: Retrieves the properties of the specified virtual route.
       operationId: routesFindById
@@ -4725,7 +4727,7 @@ paths:
         - TokenAuthentication: []
     put:
       tags:
-        - Virtual routers
+        - Virtual routes
       summary: Modify a virtual route
       description: Modifies the properties of the specified virtual route.
       operationId: routesPut
@@ -4798,7 +4800,7 @@ paths:
       x-codegen-request-body-name: route
     patch:
       tags:
-        - Virtual routers
+        - Virtual routes
       summary: Partially modify a virtual route
       description: Modifies the properties of the specified virtual route.
       operationId: routesPatch
@@ -4871,7 +4873,7 @@ paths:
       x-codegen-request-body-name: route
     delete:
       tags:
-        - Virtual routers
+        - Virtual routes
       summary: Delete a virtual route
       description: Removes the specified virtual route from the virtual router.
       operationId: routesDelete
@@ -5813,10 +5815,10 @@ paths:
       security:
         - TokenAuthentication: []
         - BasicAuthentication: []
-  /securitygroupsrules:
+  /iprules:
     get:
       tags:
-        - Security Groups
+        - IP Rules
       summary: List Security Group rules
       description: List all rules for the specified Security Group.
       operationId: securitygroupsrulesGet
@@ -5907,7 +5909,7 @@ paths:
         - TokenAuthentication: []
     post:
       tags:
-        - Security Groups
+        - IP Rules
       summary: Create Firewall rule to a Security Group
       description: Create one firewall rule and attach it to the existing security group
       operationId: securitygroupsrulesPost
@@ -5977,10 +5979,10 @@ paths:
         - TokenAuthentication: []
         - BasicAuthentication: []
       x-codegen-request-body-name: firewallRule
-  /securitygroupsrules/{ruleId}:
+  /iprules/{ruleId}:
     get:
       tags:
-        - Security Groups
+        - IP Rules
       summary: Retrieve security group rule by id
       description: Retrieve the properties of the specified Security Group rule.
       operationId: securitygroupsrulesFindById
@@ -6045,7 +6047,7 @@ paths:
         - TokenAuthentication: []
     put:
       tags:
-        - Security Groups
+        - IP Rules
       summary: Modify a Security Group Rule
       description: Modifies the properties of the specified Security Group Rule.
       operationId: securitygroupsrulesPut
@@ -6123,7 +6125,7 @@ paths:
       x-codegen-request-body-name: rule
     delete:
       tags:
-        - Security Groups
+        - IP Rules
       summary: Remove a Firewall Rule from a Security Group
       description: Removes the specific Firewall Rule from the Security Group and delete the Firewall rule
       operationId: securitygroupsrulesDelete
@@ -6185,7 +6187,7 @@ paths:
         - BasicAuthentication: []
     patch:
       tags:
-        - Security Groups
+        - IP Rules
       summary: Partially modify Security Group Rules
       description: Update the properties of the specified Security Group rule.
       operationId: securitygroupsrulesPatch
@@ -6261,10 +6263,246 @@ paths:
         - BasicAuthentication: []
         - TokenAuthentication: []
       x-codegen-request-body-name: rule
+  /metadata/locations:
+    get:
+      tags:
+        - Metadata
+      summary: Get Locations
+      description: >-
+        Retrieves the available physical locations where you can deploy cloud
+        resources in a VDC. 
+
+         A location is identified by a combination of the following characters: 
+
+         * a two-character **regionId**, which represents a country (example: 'de') 
+
+         * a three-character **locationId**, which represents a city. The 'locationId' is typically based on the IATA code of the city's airport (example: 'txl'). 
+
+         >Note that 'locations' are read-only and cannot be changed.
+      operationId: locationsGet
+      parameters:
+        - name: regionId
+          in: query
+          description: The unique ID of the region.
+          schema:
+            type: string
+        - name: locationId
+          in: query
+          description: The unique ID of the location.
+          schema:
+            type: string
+        - name: X-Contract-Number
+          in: header
+          description: >-
+            Users with multiple contracts must provide the contract number, for
+            which all API requests are to be executed.
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: Successful operation
+          headers:
+            X-RateLimit-Remaining:
+              description: >-
+                The number of requests that can still be made without triggering
+                a failure response.
+              schema:
+                type: integer
+                format: int32
+            X-RateLimit-Limit:
+              description: The average number of requests per minute allowed.
+              schema:
+                type: integer
+                format: int32
+            X-RateLimit-Burst:
+              description: The maximum number of concurrent API requests allowed.
+              schema:
+                type: integer
+                format: int32
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Locations'
+        default:
+          description: >-
+            Any erroneous status code: 400 (parse error), 401 (auth error), 402
+            (trial access), 403 (insufficient privileges), 404 (not found), 405
+            (unsupported HTTP method), 415 (unsupported content type, 422
+            (validation error), 429 (request rate limit exceeded), 500 (server
+            error), or 503 (maintenance).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - BasicAuthentication: []
+        - TokenAuthentication: []
+  /metadata/cpuarchitectures:
+    get:
+      tags:
+        - Metadata
+      summary: Get Available CPU Architecture
+      description: >-
+        Retrieves the available CPU Architecture that you can use in a server.
+      operationId: cpuarchitectureGet
+      parameters:
+        - name: X-Contract-Number
+          in: header
+          description: >-
+            Users with multiple contracts must provide the contract number, for
+            which all API requests are to be executed.
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: Successful operation
+          headers:
+            X-RateLimit-Remaining:
+              description: >-
+                The number of requests that can still be made without triggering
+                a failure response.
+              schema:
+                type: integer
+                format: int32
+            X-RateLimit-Limit:
+              description: The average number of requests per minute allowed.
+              schema:
+                type: integer
+                format: int32
+            X-RateLimit-Burst:
+              description: The maximum number of concurrent API requests allowed.
+              schema:
+                type: integer
+                format: int32
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CpuArchitectures'
+        default:
+          description: >-
+            Any erroneous status code: 400 (parse error), 401 (auth error), 402
+            (trial access), 403 (insufficient privileges), 404 (not found), 405
+            (unsupported HTTP method), 415 (unsupported content type, 422
+            (validation error), 429 (request rate limit exceeded), 500 (server
+            error), or 503 (maintenance).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - BasicAuthentication: []
+        - TokenAuthentication: []
+  /metadata/templates:
+    get:
+      tags:
+        - Metadata
+      summary: Get Cubes Templates
+      description: |-
+        Retrieves all available templates.
+
+        Templates provide a pre-defined configuration for Cube servers. 
+
+         >Templates are read-only and cannot be created, modified, or deleted by users.
+      operationId: templatesGet
+      responses:
+        '200':
+          description: Successful operation
+          headers:
+            X-RateLimit-Remaining:
+              description: >-
+                The number of requests that can still be made without triggering
+                a failure response.
+              schema:
+                type: integer
+                format: int32
+            X-RateLimit-Limit:
+              description: The average number of requests per minute allowed.
+              schema:
+                type: integer
+                format: int32
+            X-RateLimit-Burst:
+              description: The maximum number of concurrent API requests allowed.
+              schema:
+                type: integer
+                format: int32
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Templates'
+        default:
+          description: >-
+            Any erroneous status code: 400 (parse error), 401 (auth error), 402
+            (trial access), 403 (insufficient privileges), 404 (not found), 405
+            (unsupported HTTP method), 415 (unsupported content type, 422
+            (validation error), 429 (request rate limit exceeded), 500 (server
+            error), or 503 (maintenance).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - BasicAuthentication: []
+        - TokenAuthentication: []
+  /metadata/templates/{templateId}:
+    get:
+      tags:
+        - Metadata
+      summary: Get Cubes Template by ID
+      description: Retrieves the properties of the Cubes template specified by its ID.
+      operationId: templatesFindById
+      parameters:
+        - name: templateId
+          in: path
+          description: The unique template ID.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful operation
+          headers:
+            X-RateLimit-Remaining:
+              description: >-
+                The number of requests that can still be made without triggering
+                a failure response.
+              schema:
+                type: integer
+                format: int32
+            X-RateLimit-Limit:
+              description: The average number of requests per minute allowed.
+              schema:
+                type: integer
+                format: int32
+            X-RateLimit-Burst:
+              description: The maximum number of concurrent API requests allowed.
+              schema:
+                type: integer
+                format: int32
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Template'
+        default:
+          description: >-
+            Any erroneous status code: 400 (parse error), 401 (auth error), 402
+            (trial access), 403 (insufficient privileges), 404 (not found), 405
+            (unsupported HTTP method), 415 (unsupported content type, 422
+            (validation error), 429 (request rate limit exceeded), 500 (server
+            error), or 503 (maintenance).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - BasicAuthentication: []
+        - TokenAuthentication: []
 components:
   schemas:
     ElementMetadata:
       type: object
+      readOnly: true
       properties:
         etag:
           type: string
@@ -6352,6 +6590,155 @@ components:
             - MAINTENANCE
             - FAILED_MAINTENANCE
             - UNKNOWN
+    VpcProperties:
+      required:
+        - location
+      type: object
+      properties:
+        name:
+          type: string
+          description: The name of the  resource.
+          example: Production vpc
+        location:
+          type: string
+          description: >-
+            The physical location where the vpc will be created. This
+            will be where all of your datacenters live.
+          example: us/las
+        vni:
+          type: string
+          description: >-
+            Only settable for VPC and VPC-lite type. Unique identifier for virtual network address.
+          nullable: true
+          example: 15f67991-0f51-4efc-a8ad-ef1fb31a480c
+        ipv4CidrBlock:
+          type: array
+          description: >-
+            It contains the list of private IPv4 CIDR blocks on this virtual private cloud.
+            This property is a read only property.
+          nullable: true
+          items:
+            type: string
+            example: 10.8.130.0/23
+          x-prerelease: true
+        ipv6CidrBlock:
+          type: array
+          description: >-
+            This value is either 'null' or contains an automatically-assigned
+            /56 IPv6 CIDR block if IPv6 is enabled on this virtual private cloud.
+            It can neither be changed nor removed.
+          nullable: true
+          items:
+            type: string
+            example: 2001:db8:b06d:8f00::/56
+          x-prerelease: true
+        defaultRouterId:
+          type: integer
+          description: UUID of the default router for this datacenter.
+          format: int32
+          example: 15f67991
+    Vpc:
+      required:
+        - properties
+      type: object
+      properties:
+        metadata:
+          $ref: '#/components/schemas/ElementMetadata'
+        properties:
+          $ref: '#/components/schemas/VpcProperties'
+    Vpcs:
+      type: object
+      properties:
+        items:
+          type: array
+          description: Array of items in the collection.
+          readOnly: true
+          items:
+            $ref: '#/components/schemas/Vpc'
+        offset:
+          $ref: '#/components/schemas/PaginationOffset'
+        limit:
+          $ref: '#/components/schemas/PaginationLimit'
+        _links:
+          $ref: '#/components/schemas/PaginationLinks'
+    DatacenterProperties:
+      required:
+        - location
+      type: object
+      properties:
+        name:
+          type: string
+          description: The name of the  resource.
+          example: Production datacenter
+        description:
+          type: string
+          description: A description for the datacenter, such as staging, production.
+          example: My Production Datacenter
+        vpc:
+          type: string
+          description: >-
+            The vpc where the datacenter exists.
+          nullable: true
+          example: c031d885-937d-4dc1-b3e1-95085c7046e2
+        location:
+          type: string
+          description: >-
+            The physical location where the datacenter will be created. This
+            will be where all of your servers live. Property cannot be modified
+            after datacenter creation (disallowed in update requests).
+          example: us/las
+        version:
+          type: integer
+          description: The version of the data center; incremented with every change.
+          format: int32
+          readOnly: true
+          example: 8
+        features:
+          type: array
+          description: >-
+            List of features supported by the location where this data center is
+            provisioned.
+          readOnly: true
+          example:
+            - SSD
+          items:
+            type: string
+        secAuthProtection:
+          type: boolean
+          description: >-
+            Boolean value representing if the data center requires extra
+            protection, such as two-step verification.
+          example: true
+        cpuArchitecture:
+          type: array
+          description: Array of features and CPU families available in a location
+          readOnly: true
+          items:
+            $ref: '#/components/schemas/CpuArchitectureProperties'
+    Datacenter:
+      required:
+        - properties
+      type: object
+      properties:
+        metadata:
+          $ref: '#/components/schemas/ElementMetadata'
+        properties:
+          $ref: '#/components/schemas/DatacenterProperties'
+    Datacenters:
+      type: object
+      properties:
+        items:
+          type: array
+          description: Array of items in the collection.
+          readOnly: true
+          items:
+            $ref: '#/components/schemas/Datacenter'
+        offset:
+          $ref: '#/components/schemas/PaginationOffset'
+        limit:
+          $ref: '#/components/schemas/PaginationLimit'
+        _links:
+          $ref: '#/components/schemas/PaginationLinks'
     VolumeProperties:
       required:
         - size
@@ -6364,6 +6751,7 @@ components:
         server:
           type: string
           description: The uuid of the server to be attached to.
+          nullable: true
           example: addc0728-2878-4ef0-96c3-742684048398
         type:
           type: string
@@ -6371,13 +6759,6 @@ components:
             Hardware type of the volume. DAS (Direct Attached Storage) could be
             used only in a composite call with a Cube server.
           example: HDD
-          enum:
-            - HDD
-            - SSD
-            - SSD Standard
-            - SSD Premium
-            - DAS
-            - ISO
         size:
           type: number
           description: The size of the volume in GB.
@@ -6536,17 +6917,6 @@ components:
         - properties
       type: object
       properties:
-        id:
-          type: string
-          description: The resource's unique identifier.
-          readOnly: true
-          example: 15f67991-0f51-4efc-a8ad-ef1fb31a480c
-        href:
-          type: string
-          description: The URL to the object representation (absolute path).
-          format: uri
-          readOnly: true
-          example: https://api.ionos.com/cloudapi/v7/volumes/cbb989ef-731d-4cda-a3f3-1032823e3c1b
         metadata:
           $ref: '#/components/schemas/ElementMetadata'
         properties:
@@ -6554,17 +6924,6 @@ components:
     Cdroms:
       type: object
       properties:
-        id:
-          type: string
-          description: The resource's unique identifier.
-          readOnly: true
-          example: 15f67991-0f51-4efc-a8ad-ef1fb31a480c
-        href:
-          type: string
-          description: URL to the object representation (absolute path).
-          format: uri
-          readOnly: true
-          example: https://api.ionos.com/cloudapi/v7/cdroms/cbb989ef-731d-4cda-a3f3-1032823e3c1b
         items:
           type: array
           description: Array of items in the collection.
@@ -6581,17 +6940,6 @@ components:
         - properties
       type: object
       properties:
-        id:
-          type: string
-          description: The resource's unique identifier.
-          readOnly: true
-          example: 15f67991-0f51-4efc-a8ad-ef1fb31a480c
-        href:
-          type: string
-          description: URL to the object representation (absolute path).
-          format: uri
-          readOnly: true
-          example: <RESOURCE-URI>
         metadata:
           $ref: '#/components/schemas/ElementMetadata'
         properties:
@@ -6710,351 +7058,11 @@ components:
           enum:
             - NONE
             - V1
-    ResourceLimits:
-      required:
-        - coresPerContract
-        - coresPerServer
-        - coresProvisioned
-        - dasVolumeProvisioned
-        - hddLimitPerContract
-        - hddLimitPerVolume
-        - hddVolumeProvisioned
-        - ramPerContract
-        - ramPerServer
-        - ramProvisioned
-        - reservableIps
-        - reservedIpsInUse
-        - reservedIpsOnContract
-        - ssdLimitPerContract
-        - ssdLimitPerVolume
-        - ssdVolumeProvisioned
-        - securityGroupsPerVdc
-        - securityGroupsPerResource
-        - rulesPerSecurityGroup
-      type: object
-      properties:
-        coresPerServer:
-          type: integer
-          description: The maximum number of CPU cores per server.
-          format: int32
-          example: 4
-        coresPerContract:
-          type: integer
-          description: The maximum number of CPU cores per contract.
-          format: int32
-          example: 8
-        coresProvisioned:
-          type: integer
-          description: The number of CPU cores provisioned.
-          format: int32
-          example: 7
-        ramPerServer:
-          type: integer
-          description: >-
-            The maximum amount of RAM (in MB) that can be provisioned for a
-            particular server under this contract.
-          format: int32
-          example: 20480
-        ramPerContract:
-          type: integer
-          description: >-
-            The maximum amount of RAM (in MB) that can be provisioned under this
-            contract.
-          format: int32
-          example: 20480
-        ramProvisioned:
-          type: integer
-          description: The amount of RAM (in MB) provisioned under this contract.
-          format: int32
-          example: 14336
-        hddLimitPerVolume:
-          type: integer
-          description: The maximum size (in MB) of an idividual hard disk volume.
-          format: int64
-          example: 614400
-        hddLimitPerContract:
-          type: integer
-          description: >-
-            The maximum amount of disk space (in MB) that can be provided under
-            this contract.
-          format: int64
-          example: 61440
-        hddVolumeProvisioned:
-          type: integer
-          description: The amount of hard disk space (in MB) that is currently provisioned.
-          format: int64
-          example: 10240
-        ssdLimitPerVolume:
-          type: integer
-          description: The maximum size (in MB) of an individual solid state disk volume.
-          format: int64
-          example: 614400
-        ssdLimitPerContract:
-          type: integer
-          description: >-
-            The maximum amount of solid state disk space (in MB) that can be
-            provisioned under this contract.
-          format: int64
-          example: 614400
-        ssdVolumeProvisioned:
-          type: integer
-          description: >-
-            The amount of solid state disk space (in MB) that is currently
-            provisioned.
-          format: int64
-          example: 204800
-        dasVolumeProvisioned:
-          type: integer
-          description: >-
-            The amount of DAS disk space (in MB) in a Cube server that is
-            currently provisioned.
-          format: int64
-          example: 51200
-        reservableIps:
-          type: integer
-          description: >-
-            The maximum number of static public IP addresses that can be
-            reserved by this customer across contracts.
-          format: int32
-          example: 1
-        reservedIpsOnContract:
-          type: integer
-          description: >-
-            The maximum number of static public IP addresses that can be
-            reserved for this contract.
-          format: int32
-          example: 1
-        reservedIpsInUse:
-          type: integer
-          description: The number of static public IP addresses in use.
-          format: int32
-          example: 0
-        securityGroupsPerVdc:
-          type: integer
-          description: The maximum number of security groups per VDC.
-          format: int32
-          example: 200
-        securityGroupsPerResource:
-          type: integer
-          description: >-
-            The maximum number of security groups that can be attached to a NIC or a VM individually.
-            For example, a user can have maximum 10 security groups per NIC and 10 per VM.
-          format: int32
-          example: 10
-        rulesPerSecurityGroup:
-          type: integer
-          description: The maximum number of rules per security group.
-          format: int32
-          example: 100
-    VpcProperties:
-      required:
-        - location
-      type: object
-      properties:
-        name:
-          type: string
-          description: The name of the  resource.
-          example: Production vpc
-        location:
-          type: string
-          description: >-
-            The physical location where the vpc will be created. This
-            will be where all of your datacenters live.
-          example: us/las
-        vni:
-          type: string
-          description: >-
-            Only settable for VPC and VPC-lite type. Unique identifier for virtual network address.
-          nullable: true
-          example: 15f67991-0f51-4efc-a8ad-ef1fb31a480c
-        ipv4CidrBlock:
-          type: array
-          description: >-
-            It contains the list of private IPv4 CIDR blocks on this virtual private cloud.
-            This property is a read only property.
-          nullable: true
-          readOnly: true
-          items:
-            type: string
-            example: 10.8.130.0/23
-          x-prerelease: true
-        ipv6CidrBlock:
-          type: array
-          description: >-
-            This value is either 'null' or contains an automatically-assigned
-            /56 IPv6 CIDR block if IPv6 is enabled on this virtual private cloud.
-            It can neither be changed nor removed.
-          nullable: true
-          readOnly: true
-          items:
-            type: string
-            example: 2001:db8:b06d:8f00::/56
-          x-prerelease: true
-        defaultRouterId:
-          type: string
-          description: UUID of the default router for this datacenter.
-          format: uuid
-          readOnly: true
-          example: 15f67991-0f51-4efc-a8ad-ef1fb31a480c
-    Vpc:
-      required:
-        - properties
-      type: object
-      properties:
-        id:
-          type: string
-          description: The resource's unique identifier.
-          readOnly: true
-          example: 15f67991-0f51-4efc-a8ad-ef1fb31a480c
-        href:
-          type: string
-          description: URL to the object representation (absolute path).
-          format: uri
-          readOnly: true
-          example: https://api.ionos.com/cloudapi/v7/vpcs/cbb989ef-731d-4cda-a3f3-1032823e3c1b
-        metadata:
-          $ref: '#/components/schemas/ElementMetadata'
-        properties:
-          $ref: '#/components/schemas/VpcProperties'
-    Vpcs:
-      type: object
-      properties:
-        id:
-          type: string
-          description: The resource's unique identifier.
-          readOnly: true
-          example: 15f67991-0f51-4efc-a8ad-ef1fb31a480c
-        href:
-          type: string
-          description: URL to the object representation (absolute path).
-          format: uri
-          readOnly: true
-          example: https://api.ionos.com/cloudapi/v7/vpcs/
-        items:
-          type: array
-          description: Array of items in the collection.
-          readOnly: true
-          items:
-            $ref: '#/components/schemas/Vpc'
-        offset:
-          $ref: '#/components/schemas/PaginationOffset'
-        limit:
-          $ref: '#/components/schemas/PaginationLimit'
-        _links:
-          $ref: '#/components/schemas/PaginationLinks'
-    DatacenterProperties:
-      required:
-        - location
-      type: object
-      properties:
-        name:
-          type: string
-          description: The name of the  resource.
-          example: Production datacenter
-        description:
-          type: string
-          description: A description for the datacenter, such as staging, production.
-          example: My Production Datacenter
-        vpc:
-          type: string
-          description: >-
-            The vpc where the datacenter exists.
-          example: c031d885-937d-4dc1-b3e1-95085c7046e2
-        location:
-          type: string
-          description: >-
-            The physical location where the datacenter will be created. This
-            will be where all of your servers live. Property cannot be modified
-            after datacenter creation (disallowed in update requests).
-          example: us/las
-        version:
-          type: integer
-          description: The version of the data center; incremented with every change.
-          format: int32
-          readOnly: true
-          example: 8
-        features:
-          type: array
-          description: >-
-            List of features supported by the location where this data center is
-            provisioned.
-          readOnly: true
-          example:
-            - SSD
-          items:
-            type: string
-        secAuthProtection:
-          type: boolean
-          description: >-
-            Boolean value representing if the data center requires extra
-            protection, such as two-step verification.
-          example: true
-        cpuArchitecture:
-          type: array
-          description: Array of features and CPU families available in a location
-          readOnly: true
-          items:
-            $ref: '#/components/schemas/CpuArchitectureProperties'
-    Datacenter:
-      required:
-        - properties
-      type: object
-      properties:
-        id:
-          type: string
-          description: The resource's unique identifier.
-          readOnly: true
-          example: 15f67991-0f51-4efc-a8ad-ef1fb31a480c
-        href:
-          type: string
-          description: URL to the object representation (absolute path).
-          format: uri
-          readOnly: true
-          example: https://api.ionos.com/cloudapi/v7/datacenters/cbb989ef-731d-4cda-a3f3-1032823e3c1b
-        metadata:
-          $ref: '#/components/schemas/ElementMetadata'
-        properties:
-          $ref: '#/components/schemas/DatacenterProperties'
-    Datacenters:
-      type: object
-      properties:
-        id:
-          type: string
-          description: The resource's unique identifier.
-          readOnly: true
-          example: 15f67991-0f51-4efc-a8ad-ef1fb31a480c
-        href:
-          type: string
-          description: URL to the object representation (absolute path).
-          format: uri
-          readOnly: true
-        items:
-          type: array
-          description: Array of items in the collection.
-          readOnly: true
-          items:
-            $ref: '#/components/schemas/Datacenter'
-        offset:
-          $ref: '#/components/schemas/PaginationOffset'
-        limit:
-          $ref: '#/components/schemas/PaginationLimit'
-        _links:
-          $ref: '#/components/schemas/PaginationLinks'
     FirewallRule:
       required:
         - properties
       type: object
       properties:
-        id:
-          type: string
-          description: The resource's unique identifier.
-          readOnly: true
-          example: 15f67991-0f51-4efc-a8ad-ef1fb31a480c
-        href:
-          type: string
-          description: URL to the object representation (absolute path).
-          format: uri
-          readOnly: true
         metadata:
           $ref: '#/components/schemas/ElementMetadata'
         properties:
@@ -7062,16 +7070,6 @@ components:
     FirewallRules:
       type: object
       properties:
-        id:
-          type: string
-          description: The resource's unique identifier.
-          readOnly: true
-          example: 15f67991-0f51-4efc-a8ad-ef1fb31a480c
-        href:
-          type: string
-          description: URL to the object representation (absolute path).
-          format: uri
-          readOnly: true
         items:
           type: array
           description: Array of items in the collection.
@@ -7207,16 +7205,6 @@ components:
         - properties
       type: object
       properties:
-        id:
-          type: string
-          description: The resource's unique identifier.
-          readOnly: true
-          example: 15f67991-0f51-4efc-a8ad-ef1fb31a480c
-        href:
-          type: string
-          description: The URL to the object representation (absolute path).
-          format: uri
-          readOnly: true
         metadata:
           $ref: '#/components/schemas/ElementMetadata'
         properties:
@@ -7226,31 +7214,11 @@ components:
         - properties
       type: object
       properties:
-        id:
-          type: string
-          description: The resource's unique identifier.
-          readOnly: true
-          example: 15f67991-0f51-4efc-a8ad-ef1fb31a480c
-        href:
-          type: string
-          description: URL to the object representation (absolute path).
-          format: uri
-          readOnly: true
         properties:
           $ref: '#/components/schemas/FlowLogProperties'
     FlowLogs:
       type: object
       properties:
-        id:
-          type: string
-          description: The resource's unique identifier.
-          readOnly: true
-          example: 15f67991-0f51-4efc-a8ad-ef1fb31a480c
-        href:
-          type: string
-          description: The URL to the object representation (absolute path).
-          format: uri
-          readOnly: true
         items:
           type: array
           description: Array of items in the collection.
@@ -7278,10 +7246,12 @@ components:
         nic:
           type: string
           description: The nicId where the flowLog will be attached.
+          nullable: true
           example: fde83b97-f515-420c-ab10-b3cfaaf45155
         server:
           type: string
           description: The serverId where the flowLog will be attached.
+          nullable: true
           example: addc0728-2878-4ef0-96c3-742684048398
         action:
           type: string
@@ -7379,18 +7349,6 @@ components:
         - properties
       type: object
       properties:
-        id:
-          type: string
-          format: uuid
-          description: The resource's unique identifier.
-          readOnly: true
-          example: 3c11273c-b3e1-4ca3-8134-84fd2dd4ebec
-        href:
-          type: string
-          description: URL to the object representation (absolute path).
-          format: uri
-          readOnly: true
-          example: <RESOURCE-URI>
         metadata:
           $ref: '#/components/schemas/ElementMetadata'
         properties:
@@ -7398,16 +7356,6 @@ components:
     Lans:
       type: object
       properties:
-        id:
-          type: string
-          description: The resource's unique identifier.
-          readOnly: true
-          example: 15f67991-0f51-4efc-a8ad-ef1fb31a480c
-        href:
-          type: string
-          description: URL to the object representation (absolute path).
-          format: uri
-          readOnly: true
         items:
           type: array
           description: Array of items in the collection.
@@ -7425,16 +7373,6 @@ components:
         - properties
       type: object
       properties:
-        id:
-          type: string
-          description: The resource's unique identifier.
-          readOnly: true
-          example: 15f67991-0f51-4efc-a8ad-ef1fb31a480c
-        href:
-          type: string
-          description: URL to the object representation (absolute path).
-          format: uri
-          readOnly: true
         metadata:
           $ref: '#/components/schemas/ElementMetadata'
         properties:
@@ -7517,12 +7455,14 @@ components:
           description: >-
             The LAN uuid the NIC will be on.
           format: uuid
+          nullable: true
           example: fde83b97-f515-420c-ab10-b3cfaaf45155
         server:
           type: string
           description: >-
             The server uuid the NIC will be on.
           format: uuid
+          nullable: true
           example: fde83b97-f515-420c-ab10-b3cfaaf45155
         firewallActive:
           type: boolean
@@ -7566,16 +7506,6 @@ components:
     Nics:
       type: object
       properties:
-        id:
-          type: string
-          description: The resource's unique identifier.
-          readOnly: true
-          example: 15f67991-0f51-4efc-a8ad-ef1fb31a480c
-        href:
-          type: string
-          description: URL to the object representation (absolute path).
-          format: uri
-          readOnly: true
         items:
           type: array
           description: Array of items in the collection.
@@ -7587,23 +7517,6 @@ components:
           $ref: '#/components/schemas/PaginationLimit'
         _links:
           $ref: '#/components/schemas/PaginationLinks'
-    NicPut:
-      required:
-        - properties
-      type: object
-      properties:
-        id:
-          type: string
-          description: The resource's unique identifier.
-          readOnly: true
-          example: 15f67991-0f51-4efc-a8ad-ef1fb31a480c
-        href:
-          type: string
-          description: URL to the object representation (absolute path).
-          format: uri
-          readOnly: true
-        properties:
-          $ref: '#/components/schemas/NicProperties'
     ResourceReference:
       required:
         - id
@@ -7617,20 +7530,6 @@ components:
           description: URL to the object representation (absolute path).
           format: uri
           readOnly: true
-    ListOfIds:
-      required:
-        - ids
-      properties:
-        ids:
-          type: array
-          description: The list of IDs
-          items:
-            type: string
-            format: uuid
-            example: '15f67991-0f51-4efc-a8ad-ef1fb31a480c'
-          example:
-            - ac51b8e4-050c-4941-b7cd-43923422fe6e
-            - ea737d87-8754-4a42-b97c-0b1a8f619de5
     ServerProperties:
       type: object
       properties:
@@ -7705,13 +7604,10 @@ components:
           type: string
           description: 'Server type: CUBE, ENTERPRISE or VCPU.'
           example: CUBE
-        vpc:
-          type: string
-          description: The id of the vpc to be attached to
-          example: a4c6c98b-45b4-4b30-95c7-fab73eeb3089
         datacenter:
           type: string
           description: The id of the datacenter to be attached to
+          nullable: true
           example: a4c6c98b-45b4-4b30-95c7-fab73eeb3089
         placementGroupId:
           type: "string"
@@ -7729,53 +7625,9 @@ components:
             It is not allowed for servers of type Cube.
           example: true
           default: false
-    Resource:
-      type: object
-      properties:
-        id:
-          type: string
-          description: The resource's unique identifier.
-          readOnly: true
-          example: 15f67991-0f51-4efc-a8ad-ef1fb31a480c
-        href:
-          type: string
-          description: URL to the object representation (absolute path).
-          format: uri
-          readOnly: true
-        metadata:
-          $ref: '#/components/schemas/ElementMetadata'
-        properties:
-          $ref: '#/components/schemas/ResourceProperties'
-      description: resource representation
-    ResourceProperties:
-      type: object
-      properties:
-        name:
-          type: string
-          description: The name of the resource.
-        secAuthProtection:
-          type: boolean
-          description: >-
-            Boolean value representing if the resource is multi factor protected
-            or not e.g. using two factor protection. Currently only data centers
-            and snapshots are allowed to be multi factor protected, The value of
-            attribute if null is intentional and it means that the resource
-            doesn't support multi factor protection at all.
-          example: true
     Images:
       type: object
       properties:
-        id:
-          type: string
-          description: The resource's unique identifier.
-          readOnly: true
-          example: 15f67991-0f51-4efc-a8ad-ef1fb31a480c
-        href:
-          type: string
-          description: The URL to the object representation (absolute path).
-          format: uri
-          readOnly: true
-          example: <RESOURCE-URI>
         items:
           type: array
           description: Array of items in the collection.
@@ -7787,16 +7639,6 @@ components:
         - properties
       type: object
       properties:
-        id:
-          type: string
-          description: The resource's unique identifier.
-          readOnly: true
-          example: 15f67991-0f51-4efc-a8ad-ef1fb31a480c
-        href:
-          type: string
-          description: URL to the object representation (absolute path).
-          format: uri
-          readOnly: true
         metadata:
           $ref: '#/components/schemas/ElementMetadata'
         properties:
@@ -7851,17 +7693,6 @@ components:
     IpBlocks:
       type: object
       properties:
-        id:
-          type: string
-          description: The resource's unique identifier.
-          readOnly: true
-          example: 15f67991-0f51-4efc-a8ad-ef1fb31a480c
-        href:
-          type: string
-          description: URL to the object representation (absolute path).
-          format: uri
-          readOnly: true
-          example: https://api.ionos.com/cloudapi/v7/ipblocks/cbb989ef-731d-4cda-a3f3-1032823e3c1b
         items:
           type: array
           description: Array of items in the collection.
@@ -7934,22 +7765,33 @@ components:
           type: string
           description: A valid CPU vendor name.
           example: AuthenticAMD
+    CpuArchitecture:
+      required:
+        - properties
+      type: object
+      properties:
+        properties:
+          $ref: '#/components/schemas/CpuArchitectureProperties'
+    CpuArchitectures:
+      type: object
+      properties:
+        items:
+          type: array
+          description: Array of items in the collection.
+          readOnly: true
+          items:
+            $ref: '#/components/schemas/CpuArchitecture'
+        offset:
+          $ref: '#/components/schemas/PaginationOffset'
+        limit:
+          $ref: '#/components/schemas/PaginationLimit'
+        _links:
+          $ref: '#/components/schemas/PaginationLinks'
     Location:
       required:
         - properties
       type: object
       properties:
-        id:
-          type: string
-          description: The resource's unique identifier.
-          readOnly: true
-          example: 15f67991-0f51-4efc-a8ad-ef1fb31a480c
-        href:
-          type: string
-          description: URL to the object representation (absolute path).
-          format: uri
-          readOnly: true
-          example: https://api.ionos.com/cloudapi/v7/locations
         metadata:
           $ref: '#/components/schemas/ElementMetadata'
         properties:
@@ -7957,17 +7799,6 @@ components:
     Locations:
       type: object
       properties:
-        id:
-          type: string
-          description: The resource's unique identifier.
-          readOnly: true
-          example: 15f67991-0f51-4efc-a8ad-ef1fb31a480c
-        href:
-          type: string
-          description: URL to the object representation (absolute path).
-          format: uri
-          readOnly: true
-          example: https://api.ionos.com/cloudapi/v7/locations
         items:
           type: array
           description: Array of items in the collection.
@@ -7995,39 +7826,6 @@ components:
           type: string
         k8sClusterUuid:
           type: string
-    RequestTarget:
-      type: object
-      properties:
-        target:
-          $ref: '#/components/schemas/ResourceReference'
-        status:
-          type: string
-          enum:
-            - QUEUED
-            - RUNNING
-            - DONE
-            - FAILED
-    Resources:
-      type: object
-      properties:
-        id:
-          type: string
-          description: The resource's unique identifier.
-          readOnly: true
-          example: 15f67991-0f51-4efc-a8ad-ef1fb31a480c
-        href:
-          type: string
-          description: URL to the object representation (absolute path).
-          format: uri
-          readOnly: true
-          example: https://<API_HOST>/cloudapi/v6/um/resources
-        items:
-          type: array
-          description: Array of items in the collection.
-          readOnly: true
-          items:
-            $ref: '#/components/schemas/Resource'
-      description: Collection to represent the resource.
     ServerOperationResponse:
       type: object
       properties:
@@ -8048,17 +7846,6 @@ components:
         - properties
       type: object
       properties:
-        id:
-          type: string
-          description: The resource's unique identifier.
-          readOnly: true
-          example: 15f67991-0f51-4efc-a8ad-ef1fb31a480c
-        href:
-          type: string
-          description: URL to the object representation (absolute path).
-          format: uri
-          readOnly: true
-          example: https://api.ionos.com/cloudapi/v7/servers/cbb989ef-731d-4cda-a3f3-1032823e3c1b
         metadata:
           $ref: '#/components/schemas/ElementMetadata'
         properties:
@@ -8066,16 +7853,6 @@ components:
     Servers:
       type: object
       properties:
-        id:
-          type: string
-          description: The resource's unique identifier.
-          readOnly: true
-          example: 15f67991-0f51-4efc-a8ad-ef1fb31a480c
-        href:
-          type: string
-          description: URL to the object representation (absolute path).
-          format: uri
-          readOnly: true
         items:
           type: array
           description: Array of items in the collection.
@@ -8093,17 +7870,6 @@ components:
         - properties
       type: object
       properties:
-        id:
-          type: string
-          description: The resource's unique identifier.
-          readOnly: true
-          example: 15f67991-0f51-4efc-a8ad-ef1fb31a480c
-        href:
-          type: string
-          description: URL to the object representation (absolute path).
-          format: uri
-          readOnly: true
-          example: https://api.ionos.com/cloudapi/v7/servers/<ServerUuid>requests
         properties:
           $ref: '#/components/schemas/ServerOperationProperties'
     ServerOperationProperties:
@@ -8214,17 +7980,6 @@ components:
         - properties
       type: object
       properties:
-        id:
-          type: string
-          description: The resource's unique identifier.
-          readOnly: true
-          example: 15f67991-0f51-4efc-a8ad-ef1fb31a480c
-        href:
-          type: string
-          description: URL to the object representation (absolute path).
-          format: uri
-          readOnly: true
-          example: <RESOURCE-URI>
         metadata:
           $ref: '#/components/schemas/ElementMetadata'
         properties:
@@ -8286,17 +8041,6 @@ components:
     Snapshots:
       type: object
       properties:
-        id:
-          type: string
-          description: The resource's unique identifier.
-          readOnly: true
-          example: 15f67991-0f51-4efc-a8ad-ef1fb31a480c
-        href:
-          type: string
-          description: URL to the object representation (absolute path).
-          format: uri
-          readOnly: true
-          example: <RESOURCE-URI>
         items:
           type: array
           description: Array of items in the collection.
@@ -8306,17 +8050,6 @@ components:
     Volumes:
       type: object
       properties:
-        id:
-          type: string
-          description: The resource's unique identifier.
-          readOnly: true
-          example: 15f67991-0f51-4efc-a8ad-ef1fb31a480c
-        href:
-          type: string
-          description: URL to the object representation (absolute path).
-          format: uri
-          readOnly: true
-          example: https://api.ionos.com/cloudapi/v7/volumes/cbb989ef-731d-4cda-a3f3-1032823e3c1b
         items:
           type: array
           description: Array of items in the collection.
@@ -8332,17 +8065,6 @@ components:
     VirtualRouters:
       type: object
       properties:
-        id:
-          type: string
-          description: The resource's unique identifier.
-          readOnly: true
-          example: 15f67991-0f51-4efc-a8ad-ef1fb31a480c
-        href:
-          type: string
-          description: The URL to the object representation (absolute path).
-          format: uri
-          readOnly: true
-          example: https://api.ionos.com/cloudapi/v7/routers
         items:
           type: array
           description: Array of items in the collection.
@@ -8367,17 +8089,6 @@ components:
         - properties
       type: object
       properties:
-        id:
-          type: string
-          description: The resource's unique identifier.
-          readOnly: true
-          example: 15f67991-0f51-4efc-a8ad-ef1fb31a480c
-        href:
-          type: string
-          description: URL to the object representation (absolute path).
-          format: uri
-          readOnly: true
-          example: <RESOURCE-URI>
         metadata:
           $ref: '#/components/schemas/ElementMetadata'
         properties:
@@ -8445,17 +8156,6 @@ components:
     VirtualRoutes:
       type: object
       properties:
-        id:
-          type: string
-          description: The resource's unique identifier.
-          readOnly: true
-          example: 15f67991-0f51-4efc-a8ad-ef1fb31a480c
-        href:
-          type: string
-          description: The URL to the object representation (absolute path).
-          format: uri
-          readOnly: true
-          example: https://api.ionos.com/cloudapi/v7/routes
         items:
           type: array
           description: Array of items in the collection.
@@ -8473,17 +8173,6 @@ components:
         - properties
       type: object
       properties:
-        id:
-          type: string
-          description: The resource's unique identifier.
-          readOnly: true
-          example: 15f67991-0f51-4efc-a8ad-ef1fb31a480c
-        href:
-          type: string
-          description: URL to the object representation (absolute path).
-          format: uri
-          readOnly: true
-          example: <RESOURCE-URI>
         metadata:
           $ref: '#/components/schemas/ElementMetadata'
         properties:
@@ -8608,17 +8297,6 @@ components:
     SecurityGroups:
       type: object
       properties:
-        id:
-          type: string
-          description: The resource's unique identifier.
-          readOnly: true
-          example: 15f67991-0f51-4efc-a8ad-ef1fb31a480c
-        href:
-          type: string
-          description: The URL to the object representation (absolute path).
-          format: uri
-          readOnly: true
-          example: <RESOURCE-URI>
         items:
           type: array
           description: Array of items in the collection.
@@ -8636,17 +8314,6 @@ components:
         - properties
       type: object
       properties:
-        id:
-          type: string
-          description: The resource's unique identifier.
-          readOnly: true
-          example: 15f67991-0f51-4efc-a8ad-ef1fb31a480c
-        href:
-          type: string
-          description: The URL to the object representation (absolute path).
-          format: uri
-          readOnly: true
-          example: <RESOURCE-URI>
         metadata:
           $ref: '#/components/schemas/ElementMetadata'
         properties:
@@ -8667,12 +8334,77 @@ components:
           type: string
           maxLength: 60
           description: The name of the security group.
+          nullable: true
           example: My security group
+        vpc:
+          type: string
+          format: uuid
+          description: The id of the vpc.
+          nullable: true
+          example: aa5f6bcf-c9db-46d3-9d4c-330aa90647aa
+        datacenter:
+          type: string
+          format: uuid
+          description: The id of the datacenter.
+          nullable: true
+          example: 8ff2cefe-9d76-4083-af00-46aef9b3578b
+        nic:
+          type: string
+          format: uuid
+          description: The id of the nic.
+          example: 485e0c30-a26f-4a0b-b655-b7cf9c730aa8
         description:
           type: string
           maxLength: 300
           description: The description of the security group.
           example: My security group description
+    Templates:
+      type: object
+      properties:
+        items:
+          type: array
+          description: Array of items in the collection.
+          readOnly: true
+          items:
+            $ref: '#/components/schemas/Template'
+    Template:
+      required:
+        - properties
+      type: object
+      properties:
+        metadata:
+          $ref: '#/components/schemas/ElementMetadata'
+        properties:
+          $ref: '#/components/schemas/TemplateProperties'
+    TemplateProperties:
+      required:
+        - cores
+        - name
+        - ram
+        - storageSize
+        - category
+      type: object
+      properties:
+        name:
+          type: string
+          description: The resource name.
+          example: My resource
+        cores:
+          type: number
+          description: The CPU cores count.
+          example: 2
+        ram:
+          type: number
+          description: The RAM size in MB.
+          example: 2048
+        storageSize:
+          type: number
+          description: The storage size in GB.
+          example: 10
+        category:
+          type: string
+          description: The description of the template.
+          example: Template category
   responses:
     apiError:
       description: >-
