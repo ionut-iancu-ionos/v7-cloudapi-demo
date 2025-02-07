@@ -1500,17 +1500,149 @@ paths:
       security:
         - BasicAuthentication: []
         - TokenAuthentication: []
+    put:
+      tags:
+        - Volumes
+      summary: Modify a Volume by ID
+      description: Modifies the properties of the specified volume.
+      operationId: volumesPut
+      parameters:
+        - name: volumeId
+          in: path
+          description: The unique ID of the volume.
+          required: true
+          schema:
+            type: string
+        - name: X-Contract-Number
+          in: header
+          description: >-
+            Users with multiple contracts must provide the contract number, for
+            which all API requests are to be executed.
+          schema:
+            type: integer
+            format: int32
+      requestBody:
+        description: The modified volume
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Volume'
+        required: true
+      responses:
+        '202':
+          description: Successful operation
+          headers:
+            X-RateLimit-Remaining:
+              description: >-
+                The number of requests that can still be made without triggering
+                a failure response.
+              schema:
+                type: integer
+                format: int32
+            X-RateLimit-Limit:
+              description: The average number of requests per minute allowed.
+              schema:
+                type: integer
+                format: int32
+            X-RateLimit-Burst:
+              description: The maximum number of concurrent API requests allowed.
+              schema:
+                type: integer
+                format: int32
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Volume'
+        default:
+          description: >-
+            Any erroneous status code: 400 (parse error), 401 (auth error), 402
+            (trial access), 403 (insufficient privileges), 404 (not found), 405
+            (unsupported HTTP method), 415 (unsupported content type, 422
+            (validation error), 429 (request rate limit exceeded), 500 (server
+            error), or 503 (maintenance).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - BasicAuthentication: []
+        - TokenAuthentication: []
+      x-codegen-request-body-name: volume
+    patch:
+      tags:
+        - Volumes
+      summary: Partially modify volumes
+      description: >-
+        Update the properties of the specified storage volume.
+      operationId: volumesPatch
+      parameters:
+        - name: volumeId
+          in: path
+          description: The unique ID of the volume.
+          required: true
+          schema:
+            type: string
+        - name: X-Contract-Number
+          in: header
+          description: >-
+            Users with multiple contracts must provide the contract number, for
+            which all API requests are to be executed.
+          schema:
+            type: integer
+            format: int32
+      requestBody:
+        description: The properties of the volume to be updated.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VolumeProperties'
+        required: true
+      responses:
+        '202':
+          description: Successful operation
+          headers:
+            X-RateLimit-Remaining:
+              description: >-
+                The number of requests that can still be made without triggering
+                a failure response.
+              schema:
+                type: integer
+                format: int32
+            X-RateLimit-Limit:
+              description: The average number of requests per minute allowed.
+              schema:
+                type: integer
+                format: int32
+            X-RateLimit-Burst:
+              description: The maximum number of concurrent API requests allowed.
+              schema:
+                type: integer
+                format: int32
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Volume'
+        default:
+          description: >-
+            Any erroneous status code: 400 (parse error), 401 (auth error), 402
+            (trial access), 403 (insufficient privileges), 404 (not found), 405
+            (unsupported HTTP method), 415 (unsupported content type, 422
+            (validation error), 429 (request rate limit exceeded), 500 (server
+            error), or 503 (maintenance).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - BasicAuthentication: []
+        - TokenAuthentication: []
+      x-codegen-request-body-name: volume
     delete:
       tags:
         - Volumes
-      summary: Detach a Volume by ID
+      summary: Delete a Volume by ID
       description: >-
-        Detachs the specified volume from the server.
-
-
-        Note that only the volume's connection to the specified server is
-        disconnected. If you want to delete the volume, you must submit a
-        separate request to perform the deletion.
+        Deletes the specified volume.
       operationId: volumesDelete
       parameters:
         - name: volumeId
@@ -1871,7 +2003,8 @@ paths:
         - Servers
       summary: Request an operation from the servers
       description: >-
-        Performs and of the specified server within the data center.
+        Performs an operation on the specified server within the data center
+        like START, STOP, RESUME, REBOOT.
       operationId: serversRequestsPost
       parameters:
         - name: serverId
@@ -6057,62 +6190,6 @@ paths:
       security:
         - BasicAuthentication: []
         - TokenAuthentication: []
-  /metadata/cpuarchitectures:
-    get:
-      tags:
-        - Metadata
-      summary: Get Available CPU Architecture
-      description: >-
-        Retrieves the available CPU Architecture that you can use in a server.
-      operationId: cpuarchitectureGet
-      parameters:
-        - name: X-Contract-Number
-          in: header
-          description: >-
-            Users with multiple contracts must provide the contract number, for
-            which all API requests are to be executed.
-          schema:
-            type: integer
-            format: int32
-      responses:
-        '200':
-          description: Successful operation
-          headers:
-            X-RateLimit-Remaining:
-              description: >-
-                The number of requests that can still be made without triggering
-                a failure response.
-              schema:
-                type: integer
-                format: int32
-            X-RateLimit-Limit:
-              description: The average number of requests per minute allowed.
-              schema:
-                type: integer
-                format: int32
-            X-RateLimit-Burst:
-              description: The maximum number of concurrent API requests allowed.
-              schema:
-                type: integer
-                format: int32
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/CpuArchitectures'
-        default:
-          description: >-
-            Any erroneous status code: 400 (parse error), 401 (auth error), 402
-            (trial access), 403 (insufficient privileges), 404 (not found), 405
-            (unsupported HTTP method), 415 (unsupported content type, 422
-            (validation error), 429 (request rate limit exceeded), 500 (server
-            error), or 503 (maintenance).
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-      security:
-        - BasicAuthentication: []
-        - TokenAuthentication: []
   /metadata/templates:
     get:
       tags:
@@ -7277,11 +7354,6 @@ components:
         id:
           type: string
           description: The resource's unique identifier.
-        href:
-          type: string
-          description: URL to the object representation (absolute path).
-          format: uri
-          readOnly: true
     ServerProperties:
       type: object
       properties:
@@ -7521,28 +7593,6 @@ components:
           type: string
           description: A valid CPU vendor name.
           example: AuthenticAMD
-    CpuArchitecture:
-      required:
-        - properties
-      type: object
-      properties:
-        properties:
-          $ref: '#/components/schemas/CpuArchitectureProperties'
-    CpuArchitectures:
-      type: object
-      properties:
-        items:
-          type: array
-          description: Array of items in the collection.
-          readOnly: true
-          items:
-            $ref: '#/components/schemas/CpuArchitecture'
-        offset:
-          $ref: '#/components/schemas/PaginationOffset'
-        limit:
-          $ref: '#/components/schemas/PaginationLimit'
-        _links:
-          $ref: '#/components/schemas/PaginationLinks'
     Location:
       required:
         - properties
@@ -7553,8 +7603,6 @@ components:
           description: The resource's unique identifier.
           readOnly: true
           example: 15f67991-0f51-4efc-a8ad-ef1fb31a480c
-        metadata:
-          $ref: '#/components/schemas/ElementMetadata'
         properties:
           $ref: '#/components/schemas/LocationProperties'
     Locations:
@@ -7594,12 +7642,14 @@ components:
           type: string
           description: The remote console url with the jwToken parameter for access
           readOnly: true
+          nullable: true
           example: >-
             https://dcd.ionos.com/noVNC?token=eyJ0eXAiOiJKV1QiLCJraWQiOiI0MWM1MDFlNC03NGY3LTQwYjctYmMxMi1lZWIzMTAzNThlZDkiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJpb25vc2Nsb3VkIiwiaWF0IjoxNjAyNDg5NTkzMDcxLCJzZXJ2ZXIiOnsidXVpZCI6IjMwNGEwZGVlLWE3OTgtNDNhNi04MzIyLTk3M2NiYzc3Yjg4ZCIsIm5hbWUiOiJTZXJ2ZXIifX0.TND9kJd8GXM39XP5PMH_LnF_99al4MEkI_eoEowPvPztirgM50aZEdg6SuLYQzg-R7vrA7hEFaK4NJb2BUUsIZYVMhjl1QmKUE5TnP0Q2zYnIfNQNZFDu2rKrOydPCkPQwlMVvvZLeBSz7lrKYujF-qZ_yY_6SHlFtt-rg6IznRtup8AFziXtl-9cEsWU92_GCTd5LiriQrsnFAiGRbb0p2_6OYAQAH9FeWu4cxrbSwUmeR7Q4klJyZqFd0fv6UTFBtpSiyci7rsB142MXyLcqM4PrBkgd9P5OFbJYf5lbsb9pW04wLSl9rqoWGgZvWsqpuzosUkQRZt_O5yuYmT9w
         token:
           type: string
           description: The jwToken for the server.
           readOnly: true
+          nullable: true
           example: >-
             eyJ0eXAiOiJKV1QiLCJraWQiOiI0MWM1MDFlNC03NGY3LTQwYjctYmMxMi1lZWIzMTAzNThlZDkiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJpb25vc2Nsb3VkIiwiaWF0IjoxNjAyNDg5NTkzMDcxLCJzZXJ2ZXIiOnsidXVpZCI6IjMwNGEwZGVlLWE3OTgtNDNhNi04MzIyLTk3M2NiYzc3Yjg4ZCIsIm5hbWUiOiJTZXJ2ZXIifX0.TND9kJd8GXM39XP5PMH_LnF_99al4MEkI_eoEowPvPztirgM50aZEdg6SuLYQzg-R7vrA7hEFaK4NJb2BUUsIZYVMhjl1QmKUE5TnP0Q2zYnIfNQNZFDu2rKrOydPCkPQwlMVvvZLeBSz7lrKYujF-qZ_yY_6SHlFtt-rg6IznRtup8AFziXtl-9cEsWU92_GCTd5LiriQrsnFAiGRbb0p2_6OYAQAH9FeWu4cxrbSwUmeR7Q4klJyZqFd0fv6UTFBtpSiyci7rsB142MXyLcqM4PrBkgd9P5OFbJYf5lbsb9pW04wLSl9rqoWGgZvWsqpuzosUkQRZt_O5yuYmT9w
     Server:
@@ -8163,8 +8213,6 @@ components:
           description: The resource's unique identifier.
           readOnly: true
           example: 15f67991-0f51-4efc-a8ad-ef1fb31a480c
-        metadata:
-          $ref: '#/components/schemas/ElementMetadata'
         properties:
           $ref: '#/components/schemas/TemplateProperties'
     TemplateProperties:
