@@ -93,7 +93,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Vpc'
+                $ref: '#/components/schemas/Vpcs'
         default:
           description: >-
             Any erroneous status code: 400 (parse error), 401 (auth error), 402
@@ -113,7 +113,11 @@ paths:
         - Virtual Private Clouds
       summary: Create a Vpc
       description: >-
-        Creates a new vpc.
+        Creates a new Virtual Private Cloud.
+        
+        A virtual private cloud (VPC) is a secure, isolated private cloud 
+        where you can run datacenters, servers, network interfaces.
+        The private cloud is hosted remotely by a public cloud provider.
       operationId: vpcsPost
       parameters:
         - name: X-Contract-Number
@@ -305,65 +309,6 @@ paths:
         - BasicAuthentication: [ ]
         - TokenAuthentication: [ ]
       x-codegen-request-body-name: vpc
-    delete:
-      tags:
-        - Virtual Private Clouds
-      summary: Delete vpcs
-      description: >-
-        Delete the specified vpc and all the elements it contains. This
-        method is destructive and should be used carefully.
-      operationId: vpcsDelete
-      parameters:
-        - name: vpcId
-          in: path
-          description: The unique ID of the vpc.
-          required: true
-          schema:
-            type: string
-        - name: X-Contract-Number
-          in: header
-          description: >-
-            Users with multiple contracts must provide the contract number, for
-            which all API requests are to be executed.
-          schema:
-            type: integer
-            format: int32
-      responses:
-        '202':
-          description: Successful operation
-          headers:
-            X-RateLimit-Remaining:
-              description: >-
-                The number of requests that can still be made without triggering
-                a failure response.
-              schema:
-                type: integer
-                format: int32
-            X-RateLimit-Limit:
-              description: The average number of requests per minute allowed.
-              schema:
-                type: integer
-                format: int32
-            X-RateLimit-Burst:
-              description: The maximum number of concurrent API requests allowed.
-              schema:
-                type: integer
-                format: int32
-          content: { }
-        default:
-          description: >-
-            Any erroneous status code: 400 (parse error), 401 (auth error), 402
-            (trial access), 403 (insufficient privileges), 404 (not found), 405
-            (unsupported HTTP method), 415 (unsupported content type, 422
-            (validation error), 429 (request rate limit exceeded), 500 (server
-            error), or 503 (maintenance).
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-      security:
-        - BasicAuthentication: [ ]
-        - TokenAuthentication: [ ]
     patch:
       tags:
         - Virtual Private Clouds
@@ -434,6 +379,65 @@ paths:
         - BasicAuthentication: [ ]
         - TokenAuthentication: [ ]
       x-codegen-request-body-name: vpc
+    delete:
+      tags:
+        - Virtual Private Clouds
+      summary: Delete vpcs
+      description: >-
+        Delete the specified vpc and all the elements it contains. This
+        method is destructive and should be used carefully.
+      operationId: vpcsDelete
+      parameters:
+        - name: vpcId
+          in: path
+          description: The unique ID of the vpc.
+          required: true
+          schema:
+            type: string
+        - name: X-Contract-Number
+          in: header
+          description: >-
+            Users with multiple contracts must provide the contract number, for
+            which all API requests are to be executed.
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: Successful operation
+          headers:
+            X-RateLimit-Remaining:
+              description: >-
+                The number of requests that can still be made without triggering
+                a failure response.
+              schema:
+                type: integer
+                format: int32
+            X-RateLimit-Limit:
+              description: The average number of requests per minute allowed.
+              schema:
+                type: integer
+                format: int32
+            X-RateLimit-Burst:
+              description: The maximum number of concurrent API requests allowed.
+              schema:
+                type: integer
+                format: int32
+          content: { }
+        default:
+          description: >-
+            Any erroneous status code: 400 (parse error), 401 (auth error), 402
+            (trial access), 403 (insufficient privileges), 404 (not found), 405
+            (unsupported HTTP method), 415 (unsupported content type, 422
+            (validation error), 429 (request rate limit exceeded), 500 (server
+            error), or 503 (maintenance).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - BasicAuthentication: [ ]
+        - TokenAuthentication: [ ]
   /datacenters:
     get:
       tags:
@@ -523,8 +527,8 @@ paths:
         - Data centers
       summary: Create a Data Center
       description: >-
-        Creates new data centers, and data centers that already contain
-        elements, such as servers and storage volumes.
+        Creates new data centers. A new datacenter can be standalone or be part
+        of a Virtual Private Cloud.
 
         Virtual data centers are the foundation of the platform; they act as
         logical containers for all other objects you create, such as servers and
@@ -594,7 +598,7 @@ paths:
         - Data centers
       summary: Retrieve data centers
       description: >-
-        Retrieve data centers by resource ID. This value is in the response body
+        Retrieve data center by resource ID. This value is in the response body
         when the data center is created, and in the list of the data centers,
         returned by GET.
       operationId: datacentersFindById
@@ -722,65 +726,6 @@ paths:
         - BasicAuthentication: []
         - TokenAuthentication: []
       x-codegen-request-body-name: datacenter
-    delete:
-      tags:
-        - Data centers
-      summary: Delete data centers
-      description: >-
-        Delete the specified data center and all the elements it contains. This
-        method is destructive and should be used carefully.
-      operationId: datacentersDelete
-      parameters:
-        - name: datacenterId
-          in: path
-          description: The unique ID of the data center.
-          required: true
-          schema:
-            type: string
-        - name: X-Contract-Number
-          in: header
-          description: >-
-            Users with multiple contracts must provide the contract number, for
-            which all API requests are to be executed.
-          schema:
-            type: integer
-            format: int32
-      responses:
-        '202':
-          description: Successful operation
-          headers:
-            X-RateLimit-Remaining:
-              description: >-
-                The number of requests that can still be made without triggering
-                a failure response.
-              schema:
-                type: integer
-                format: int32
-            X-RateLimit-Limit:
-              description: The average number of requests per minute allowed.
-              schema:
-                type: integer
-                format: int32
-            X-RateLimit-Burst:
-              description: The maximum number of concurrent API requests allowed.
-              schema:
-                type: integer
-                format: int32
-          content: {}
-        default:
-          description: >-
-            Any erroneous status code: 400 (parse error), 401 (auth error), 402
-            (trial access), 403 (insufficient privileges), 404 (not found), 405
-            (unsupported HTTP method), 415 (unsupported content type, 422
-            (validation error), 429 (request rate limit exceeded), 500 (server
-            error), or 503 (maintenance).
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-      security:
-        - BasicAuthentication: []
-        - TokenAuthentication: []
     patch:
       tags:
         - Data centers
@@ -851,6 +796,65 @@ paths:
         - BasicAuthentication: []
         - TokenAuthentication: []
       x-codegen-request-body-name: datacenter
+    delete:
+      tags:
+        - Data centers
+      summary: Delete data centers
+      description: >-
+        Delete the specified data center and all the elements it contains. This
+        method is destructive and should be used carefully.
+      operationId: datacentersDelete
+      parameters:
+        - name: datacenterId
+          in: path
+          description: The unique ID of the data center.
+          required: true
+          schema:
+            type: string
+        - name: X-Contract-Number
+          in: header
+          description: >-
+            Users with multiple contracts must provide the contract number, for
+            which all API requests are to be executed.
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: Successful operation
+          headers:
+            X-RateLimit-Remaining:
+              description: >-
+                The number of requests that can still be made without triggering
+                a failure response.
+              schema:
+                type: integer
+                format: int32
+            X-RateLimit-Limit:
+              description: The average number of requests per minute allowed.
+              schema:
+                type: integer
+                format: int32
+            X-RateLimit-Burst:
+              description: The maximum number of concurrent API requests allowed.
+              schema:
+                type: integer
+                format: int32
+          content: {}
+        default:
+          description: >-
+            Any erroneous status code: 400 (parse error), 401 (auth error), 402
+            (trial access), 403 (insufficient privileges), 404 (not found), 405
+            (unsupported HTTP method), 415 (unsupported content type, 422
+            (validation error), 429 (request rate limit exceeded), 500 (server
+            error), or 503 (maintenance).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - BasicAuthentication: []
+        - TokenAuthentication: []
   /servers:
     get:
       tags:
@@ -943,9 +947,7 @@ paths:
         - Servers
       summary: Create a Server
       description: >-
-        Creates a server within the specified data center or vpc. You can also use this
-        request to configure the boot volumes and connect to existing LANs at
-        the same time.
+        Creates a server within the specified data center or vpc.
       operationId: serversPost
       parameters:
         - name: X-Contract-Number
@@ -1072,14 +1074,6 @@ paths:
       summary: Modify a Server by ID
       description: >-
         Modifies the properties of the specified server within the data center.
-
-
-        Starting with v5, the 'allowReboot' attribute is retired; while
-        previously required for changing certain server properties, this
-        behavior is now implicit, and the backend will perform this
-        automatically. For example, in earlier versions, when the CPU family is
-        changed, 'allowReboot' had to be set to 'true'; this is no longer
-        required, the reboot will be performed automatically.
       operationId: serversPut
       parameters:
         - name: serverId
@@ -1102,6 +1096,74 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/Server'
+        required: true
+      responses:
+        '202':
+          description: Successful operation
+          headers:
+            X-RateLimit-Remaining:
+              description: >-
+                The number of requests that can still be made without triggering
+                a failure response.
+              schema:
+                type: integer
+                format: int32
+            X-RateLimit-Limit:
+              description: The average number of requests per minute allowed.
+              schema:
+                type: integer
+                format: int32
+            X-RateLimit-Burst:
+              description: The maximum number of concurrent API requests allowed.
+              schema:
+                type: integer
+                format: int32
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Server'
+        default:
+          description: >-
+            Any erroneous status code: 400 (parse error), 401 (auth error), 402
+            (trial access), 403 (insufficient privileges), 404 (not found), 405
+            (unsupported HTTP method), 415 (unsupported content type, 422
+            (validation error), 429 (request rate limit exceeded), 500 (server
+            error), or 503 (maintenance).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - BasicAuthentication: []
+        - TokenAuthentication: []
+      x-codegen-request-body-name: server
+    patch:
+      tags:
+        - Servers
+      summary: Partially modify servers
+      description: Update the properties of the specified server within the data center.
+      operationId: serversPatch
+      parameters:
+        - name: serverId
+          in: path
+          description: The unique ID of the server.
+          required: true
+          schema:
+            type: string
+        - name: X-Contract-Number
+          in: header
+          description: >-
+            Users with multiple contracts must provide the contract number, for
+            which all API requests are to be executed.
+          schema:
+            type: integer
+            format: int32
+      requestBody:
+        description: The properties of the server to be updated.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ServerProperties'
         required: true
       responses:
         '202':
@@ -1173,7 +1235,7 @@ paths:
           schema:
             type: boolean
       responses:
-        '202':
+        '200':
           description: Successful operation
           headers:
             X-RateLimit-Remaining:
@@ -1208,74 +1270,6 @@ paths:
       security:
         - BasicAuthentication: []
         - TokenAuthentication: []
-    patch:
-      tags:
-        - Servers
-      summary: Partially modify servers
-      description: Update the properties of the specified server within the data center.
-      operationId: serversPatch
-      parameters:
-        - name: serverId
-          in: path
-          description: The unique ID of the server.
-          required: true
-          schema:
-            type: string
-        - name: X-Contract-Number
-          in: header
-          description: >-
-            Users with multiple contracts must provide the contract number, for
-            which all API requests are to be executed.
-          schema:
-            type: integer
-            format: int32
-      requestBody:
-        description: The properties of the server to be updated.
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ServerProperties'
-        required: true
-      responses:
-        '202':
-          description: Successful operation
-          headers:
-            X-RateLimit-Remaining:
-              description: >-
-                The number of requests that can still be made without triggering
-                a failure response.
-              schema:
-                type: integer
-                format: int32
-            X-RateLimit-Limit:
-              description: The average number of requests per minute allowed.
-              schema:
-                type: integer
-                format: int32
-            X-RateLimit-Burst:
-              description: The maximum number of concurrent API requests allowed.
-              schema:
-                type: integer
-                format: int32
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Server'
-        default:
-          description: >-
-            Any erroneous status code: 400 (parse error), 401 (auth error), 402
-            (trial access), 403 (insufficient privileges), 404 (not found), 405
-            (unsupported HTTP method), 415 (unsupported content type, 422
-            (validation error), 429 (request rate limit exceeded), 500 (server
-            error), or 503 (maintenance).
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-      security:
-        - BasicAuthentication: []
-        - TokenAuthentication: []
-      x-codegen-request-body-name: server
   /volumes:
     get:
       tags:
@@ -1534,7 +1528,7 @@ paths:
             type: integer
             format: int32
       responses:
-        '202':
+        '200':
           description: Successful operation
           headers:
             X-RateLimit-Remaining:
@@ -1836,7 +1830,7 @@ paths:
             type: integer
             format: int32
       responses:
-        '202':
+        '200':
           description: Successful operation
           headers:
             X-RateLimit-Remaining:
@@ -2124,65 +2118,6 @@ paths:
         - BasicAuthentication: []
         - TokenAuthentication: []
       x-codegen-request-body-name: image
-    delete:
-      tags:
-        - Images
-      summary: Delete images
-      description: >-
-        Delete the specified image; this operation is only supported for private
-        images.
-      operationId: imagesDelete
-      parameters:
-        - name: imageId
-          in: path
-          description: The unique ID of the image.
-          required: true
-          schema:
-            type: string
-        - name: X-Contract-Number
-          in: header
-          description: >-
-            Users with multiple contracts must provide the contract number, for
-            which all API requests are to be executed.
-          schema:
-            type: integer
-            format: int32
-      responses:
-        '202':
-          description: Successful operation
-          headers:
-            X-RateLimit-Remaining:
-              description: >-
-                The number of requests that can still be made without triggering
-                a failure response.
-              schema:
-                type: integer
-                format: int32
-            X-RateLimit-Limit:
-              description: The average number of requests per minute allowed.
-              schema:
-                type: integer
-                format: int32
-            X-RateLimit-Burst:
-              description: The maximum number of concurrent API requests allowed.
-              schema:
-                type: integer
-                format: int32
-          content: {}
-        default:
-          description: >-
-            Any erroneous status code: 400 (parse error), 401 (auth error), 402
-            (trial access), 403 (insufficient privileges), 404 (not found), 405
-            (unsupported HTTP method), 415 (unsupported content type, 422
-            (validation error), 429 (request rate limit exceeded), 500 (server
-            error), or 503 (maintenance).
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-      security:
-        - BasicAuthentication: []
-        - TokenAuthentication: []
     patch:
       tags:
         - Images
@@ -2251,6 +2186,65 @@ paths:
         - BasicAuthentication: []
         - TokenAuthentication: []
       x-codegen-request-body-name: image
+    delete:
+      tags:
+        - Images
+      summary: Delete images
+      description: >-
+        Delete the specified image; this operation is only supported for private
+        images.
+      operationId: imagesDelete
+      parameters:
+        - name: imageId
+          in: path
+          description: The unique ID of the image.
+          required: true
+          schema:
+            type: string
+        - name: X-Contract-Number
+          in: header
+          description: >-
+            Users with multiple contracts must provide the contract number, for
+            which all API requests are to be executed.
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: Successful operation
+          headers:
+            X-RateLimit-Remaining:
+              description: >-
+                The number of requests that can still be made without triggering
+                a failure response.
+              schema:
+                type: integer
+                format: int32
+            X-RateLimit-Limit:
+              description: The average number of requests per minute allowed.
+              schema:
+                type: integer
+                format: int32
+            X-RateLimit-Burst:
+              description: The maximum number of concurrent API requests allowed.
+              schema:
+                type: integer
+                format: int32
+          content: {}
+        default:
+          description: >-
+            Any erroneous status code: 400 (parse error), 401 (auth error), 402
+            (trial access), 403 (insufficient privileges), 404 (not found), 405
+            (unsupported HTTP method), 415 (unsupported content type, 422
+            (validation error), 429 (request rate limit exceeded), 500 (server
+            error), or 503 (maintenance).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - BasicAuthentication: []
+        - TokenAuthentication: []
   /volumes/{volumeId}/restore-snapshot:
     post:
       tags:
@@ -2568,63 +2562,6 @@ paths:
         - BasicAuthentication: []
         - TokenAuthentication: []
       x-codegen-request-body-name: snapshot
-    delete:
-      tags:
-        - Snapshots
-      summary: Delete snapshots
-      description: Deletes the specified snapshot.
-      operationId: snapshotsDelete
-      parameters:
-        - name: snapshotId
-          in: path
-          description: The unique ID of the snapshot.
-          required: true
-          schema:
-            type: string
-        - name: X-Contract-Number
-          in: header
-          description: >-
-            Users with multiple contracts must provide the contract number, for
-            which all API requests are to be executed.
-          schema:
-            type: integer
-            format: int32
-      responses:
-        '202':
-          description: Successful operation
-          headers:
-            X-RateLimit-Remaining:
-              description: >-
-                The number of requests that can still be made without triggering
-                a failure response.
-              schema:
-                type: integer
-                format: int32
-            X-RateLimit-Limit:
-              description: The average number of requests per minute allowed.
-              schema:
-                type: integer
-                format: int32
-            X-RateLimit-Burst:
-              description: The maximum number of concurrent API requests allowed.
-              schema:
-                type: integer
-                format: int32
-          content: {}
-        default:
-          description: >-
-            Any erroneous status code: 400 (parse error), 401 (auth error), 402
-            (trial access), 403 (insufficient privileges), 404 (not found), 405
-            (unsupported HTTP method), 415 (unsupported content type, 422
-            (validation error), 429 (request rate limit exceeded), 500 (server
-            error), or 503 (maintenance).
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-      security:
-        - BasicAuthentication: []
-        - TokenAuthentication: []
     patch:
       tags:
         - Snapshots
@@ -2693,6 +2630,63 @@ paths:
         - BasicAuthentication: []
         - TokenAuthentication: []
       x-codegen-request-body-name: snapshot
+    delete:
+      tags:
+        - Snapshots
+      summary: Delete snapshots
+      description: Deletes the specified snapshot.
+      operationId: snapshotsDelete
+      parameters:
+        - name: snapshotId
+          in: path
+          description: The unique ID of the snapshot.
+          required: true
+          schema:
+            type: string
+        - name: X-Contract-Number
+          in: header
+          description: >-
+            Users with multiple contracts must provide the contract number, for
+            which all API requests are to be executed.
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: Successful operation
+          headers:
+            X-RateLimit-Remaining:
+              description: >-
+                The number of requests that can still be made without triggering
+                a failure response.
+              schema:
+                type: integer
+                format: int32
+            X-RateLimit-Limit:
+              description: The average number of requests per minute allowed.
+              schema:
+                type: integer
+                format: int32
+            X-RateLimit-Burst:
+              description: The maximum number of concurrent API requests allowed.
+              schema:
+                type: integer
+                format: int32
+          content: {}
+        default:
+          description: >-
+            Any erroneous status code: 400 (parse error), 401 (auth error), 402
+            (trial access), 403 (insufficient privileges), 404 (not found), 405
+            (unsupported HTTP method), 415 (unsupported content type, 422
+            (validation error), 429 (request rate limit exceeded), 500 (server
+            error), or 503 (maintenance).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - BasicAuthentication: []
+        - TokenAuthentication: []
   /ipblocks:
     get:
       tags:
@@ -2961,63 +2955,6 @@ paths:
         - BasicAuthentication: []
         - TokenAuthentication: []
       x-codegen-request-body-name: ipblock
-    delete:
-      tags:
-        - IP blocks
-      summary: Delete IP blocks
-      description: Remove the specified IP block.
-      operationId: ipblocksDelete
-      parameters:
-        - name: ipblockId
-          in: path
-          description: The unique ID of the IP block.
-          required: true
-          schema:
-            type: string
-        - name: X-Contract-Number
-          in: header
-          description: >-
-            Users with multiple contracts must provide the contract number, for
-            which all API requests are to be executed.
-          schema:
-            type: integer
-            format: int32
-      responses:
-        '202':
-          description: Successful operation
-          headers:
-            X-RateLimit-Remaining:
-              description: >-
-                The number of requests that can still be made without triggering
-                a failure response.
-              schema:
-                type: integer
-                format: int32
-            X-RateLimit-Limit:
-              description: The average number of requests per minute allowed.
-              schema:
-                type: integer
-                format: int32
-            X-RateLimit-Burst:
-              description: The maximum number of concurrent API requests allowed.
-              schema:
-                type: integer
-                format: int32
-          content: {}
-        default:
-          description: >-
-            Any erroneous status code: 400 (parse error), 401 (auth error), 402
-            (trial access), 403 (insufficient privileges), 404 (not found), 405
-            (unsupported HTTP method), 415 (unsupported content type, 422
-            (validation error), 429 (request rate limit exceeded), 500 (server
-            error), or 503 (maintenance).
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-      security:
-        - BasicAuthentication: []
-        - TokenAuthentication: []
     patch:
       tags:
         - IP blocks
@@ -3086,6 +3023,63 @@ paths:
         - BasicAuthentication: []
         - TokenAuthentication: []
       x-codegen-request-body-name: ipblock
+    delete:
+      tags:
+        - IP blocks
+      summary: Delete IP blocks
+      description: Remove the specified IP block.
+      operationId: ipblocksDelete
+      parameters:
+        - name: ipblockId
+          in: path
+          description: The unique ID of the IP block.
+          required: true
+          schema:
+            type: string
+        - name: X-Contract-Number
+          in: header
+          description: >-
+            Users with multiple contracts must provide the contract number, for
+            which all API requests are to be executed.
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: Successful operation
+          headers:
+            X-RateLimit-Remaining:
+              description: >-
+                The number of requests that can still be made without triggering
+                a failure response.
+              schema:
+                type: integer
+                format: int32
+            X-RateLimit-Limit:
+              description: The average number of requests per minute allowed.
+              schema:
+                type: integer
+                format: int32
+            X-RateLimit-Burst:
+              description: The maximum number of concurrent API requests allowed.
+              schema:
+                type: integer
+                format: int32
+          content: {}
+        default:
+          description: >-
+            Any erroneous status code: 400 (parse error), 401 (auth error), 402
+            (trial access), 403 (insufficient privileges), 404 (not found), 405
+            (unsupported HTTP method), 415 (unsupported content type, 422
+            (validation error), 429 (request rate limit exceeded), 500 (server
+            error), or 503 (maintenance).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - BasicAuthentication: []
+        - TokenAuthentication: []
   /lans:
     get:
       tags:
@@ -3364,63 +3358,6 @@ paths:
         - BasicAuthentication: []
         - TokenAuthentication: []
       x-codegen-request-body-name: lan
-    delete:
-      tags:
-        - LANs
-      summary: Delete LANs
-      description: Delete the specified LAN.
-      operationId: lansDelete
-      parameters:
-        - name: lanId
-          in: path
-          description: The unique ID of the LAN.
-          required: true
-          schema:
-            type: string
-        - name: X-Contract-Number
-          in: header
-          description: >-
-            Users with multiple contracts must provide the contract number, for
-            which all API requests are to be executed.
-          schema:
-            type: integer
-            format: int32
-      responses:
-        '202':
-          description: Successful operation
-          headers:
-            X-RateLimit-Remaining:
-              description: >-
-                The number of requests that can still be made without triggering
-                a failure response.
-              schema:
-                type: integer
-                format: int32
-            X-RateLimit-Limit:
-              description: The average number of requests per minute allowed.
-              schema:
-                type: integer
-                format: int32
-            X-RateLimit-Burst:
-              description: The maximum number of concurrent API requests allowed.
-              schema:
-                type: integer
-                format: int32
-          content: {}
-        default:
-          description: >-
-            Any erroneous status code: 400 (parse error), 401 (auth error), 402
-            (trial access), 403 (insufficient privileges), 404 (not found), 405
-            (unsupported HTTP method), 415 (unsupported content type, 422
-            (validation error), 429 (request rate limit exceeded), 500 (server
-            error), or 503 (maintenance).
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-      security:
-        - BasicAuthentication: []
-        - TokenAuthentication: []
     patch:
       tags:
         - LANs
@@ -3489,6 +3426,63 @@ paths:
         - BasicAuthentication: []
         - TokenAuthentication: []
       x-codegen-request-body-name: lan
+    delete:
+      tags:
+        - LANs
+      summary: Delete LANs
+      description: Delete the specified LAN.
+      operationId: lansDelete
+      parameters:
+        - name: lanId
+          in: path
+          description: The unique ID of the LAN.
+          required: true
+          schema:
+            type: string
+        - name: X-Contract-Number
+          in: header
+          description: >-
+            Users with multiple contracts must provide the contract number, for
+            which all API requests are to be executed.
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: Successful operation
+          headers:
+            X-RateLimit-Remaining:
+              description: >-
+                The number of requests that can still be made without triggering
+                a failure response.
+              schema:
+                type: integer
+                format: int32
+            X-RateLimit-Limit:
+              description: The average number of requests per minute allowed.
+              schema:
+                type: integer
+                format: int32
+            X-RateLimit-Burst:
+              description: The maximum number of concurrent API requests allowed.
+              schema:
+                type: integer
+                format: int32
+          content: {}
+        default:
+          description: >-
+            Any erroneous status code: 400 (parse error), 401 (auth error), 402
+            (trial access), 403 (insufficient privileges), 404 (not found), 405
+            (unsupported HTTP method), 415 (unsupported content type, 422
+            (validation error), 429 (request rate limit exceeded), 500 (server
+            error), or 503 (maintenance).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - BasicAuthentication: []
+        - TokenAuthentication: []
   /nics:
     get:
       tags:
@@ -3777,63 +3771,6 @@ paths:
         - BasicAuthentication: []
         - TokenAuthentication: []
       x-codegen-request-body-name: nic
-    delete:
-      tags:
-        - Network interfaces
-      summary: Delete NICs
-      description: Remove the specified NIC.
-      operationId: nicsDelete
-      parameters:
-        - name: nicId
-          in: path
-          description: The unique ID of the NIC.
-          required: true
-          schema:
-            type: string
-        - name: X-Contract-Number
-          in: header
-          description: >-
-            Users with multiple contracts must provide the contract number, for
-            which all API requests are to be executed.
-          schema:
-            type: integer
-            format: int32
-      responses:
-        '202':
-          description: Successful operation
-          headers:
-            X-RateLimit-Remaining:
-              description: >-
-                The number of requests that can still be made without triggering
-                a failure response.
-              schema:
-                type: integer
-                format: int32
-            X-RateLimit-Limit:
-              description: The average number of requests per minute allowed.
-              schema:
-                type: integer
-                format: int32
-            X-RateLimit-Burst:
-              description: The maximum number of concurrent API requests allowed.
-              schema:
-                type: integer
-                format: int32
-          content: {}
-        default:
-          description: >-
-            Any erroneous status code: 400 (parse error), 401 (auth error), 402
-            (trial access), 403 (insufficient privileges), 404 (not found), 405
-            (unsupported HTTP method), 415 (unsupported content type, 422
-            (validation error), 429 (request rate limit exceeded), 500 (server
-            error), or 503 (maintenance).
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-      security:
-        - BasicAuthentication: []
-        - TokenAuthentication: []
     patch:
       tags:
         - Network interfaces
@@ -3902,6 +3839,63 @@ paths:
         - BasicAuthentication: []
         - TokenAuthentication: []
       x-codegen-request-body-name: nic
+    delete:
+      tags:
+        - Network interfaces
+      summary: Delete NICs
+      description: Remove the specified NIC.
+      operationId: nicsDelete
+      parameters:
+        - name: nicId
+          in: path
+          description: The unique ID of the NIC.
+          required: true
+          schema:
+            type: string
+        - name: X-Contract-Number
+          in: header
+          description: >-
+            Users with multiple contracts must provide the contract number, for
+            which all API requests are to be executed.
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: Successful operation
+          headers:
+            X-RateLimit-Remaining:
+              description: >-
+                The number of requests that can still be made without triggering
+                a failure response.
+              schema:
+                type: integer
+                format: int32
+            X-RateLimit-Limit:
+              description: The average number of requests per minute allowed.
+              schema:
+                type: integer
+                format: int32
+            X-RateLimit-Burst:
+              description: The maximum number of concurrent API requests allowed.
+              schema:
+                type: integer
+                format: int32
+          content: {}
+        default:
+          description: >-
+            Any erroneous status code: 400 (parse error), 401 (auth error), 402
+            (trial access), 403 (insufficient privileges), 404 (not found), 405
+            (unsupported HTTP method), 415 (unsupported content type, 422
+            (validation error), 429 (request rate limit exceeded), 500 (server
+            error), or 503 (maintenance).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - BasicAuthentication: []
+        - TokenAuthentication: []
   /routers:
     get:
       tags:
@@ -4270,7 +4264,7 @@ paths:
             type: integer
             format: int32
       responses:
-        '202':
+        '200':
           description: Successful operation
           headers:
             X-RateLimit-Remaining:
@@ -4673,7 +4667,7 @@ paths:
             type: integer
             format: int32
       responses:
-        '202':
+        '200':
           description: Successful operation
           headers:
             X-RateLimit-Remaining:
@@ -4996,63 +4990,6 @@ paths:
         - BasicAuthentication: []
         - TokenAuthentication: []
       x-codegen-request-body-name: flowlog
-    delete:
-      tags:
-        - Flow Logs
-      summary: Delete Flow Logs
-      description: Delete the specified Flow Log.
-      operationId: flowlogsDelete
-      parameters:
-        - name: flowlogId
-          in: path
-          description: The unique ID of the Flow Log.
-          required: true
-          schema:
-            type: string
-        - name: X-Contract-Number
-          in: header
-          description: >-
-            Users with multiple contracts must provide the contract number, for
-            which all API requests are to be executed.
-          schema:
-            type: integer
-            format: int32
-      responses:
-        '202':
-          description: Successful operation
-          headers:
-            X-RateLimit-Remaining:
-              description: >-
-                The number of requests that can still be made without triggering
-                a failure response.
-              schema:
-                type: integer
-                format: int32
-            X-RateLimit-Limit:
-              description: The average number of requests per minute allowed.
-              schema:
-                type: integer
-                format: int32
-            X-RateLimit-Burst:
-              description: The maximum number of concurrent API requests allowed.
-              schema:
-                type: integer
-                format: int32
-          content: {}
-        default:
-          description: >-
-            Any erroneous status code: 400 (parse error), 401 (auth error), 402
-            (trial access), 403 (insufficient privileges), 404 (not found), 405
-            (unsupported HTTP method), 415 (unsupported content type, 422
-            (validation error), 429 (request rate limit exceeded), 500 (server
-            error), or 503 (maintenance).
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-      security:
-        - BasicAuthentication: []
-        - TokenAuthentication: []
     patch:
       tags:
         - Flow Logs
@@ -5121,6 +5058,63 @@ paths:
         - BasicAuthentication: []
         - TokenAuthentication: []
       x-codegen-request-body-name: flowlog
+    delete:
+      tags:
+        - Flow Logs
+      summary: Delete Flow Logs
+      description: Delete the specified Flow Log.
+      operationId: flowlogsDelete
+      parameters:
+        - name: flowlogId
+          in: path
+          description: The unique ID of the Flow Log.
+          required: true
+          schema:
+            type: string
+        - name: X-Contract-Number
+          in: header
+          description: >-
+            Users with multiple contracts must provide the contract number, for
+            which all API requests are to be executed.
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: Successful operation
+          headers:
+            X-RateLimit-Remaining:
+              description: >-
+                The number of requests that can still be made without triggering
+                a failure response.
+              schema:
+                type: integer
+                format: int32
+            X-RateLimit-Limit:
+              description: The average number of requests per minute allowed.
+              schema:
+                type: integer
+                format: int32
+            X-RateLimit-Burst:
+              description: The maximum number of concurrent API requests allowed.
+              schema:
+                type: integer
+                format: int32
+          content: {}
+        default:
+          description: >-
+            Any erroneous status code: 400 (parse error), 401 (auth error), 402
+            (trial access), 403 (insufficient privileges), 404 (not found), 405
+            (unsupported HTTP method), 415 (unsupported content type, 422
+            (validation error), 429 (request rate limit exceeded), 500 (server
+            error), or 503 (maintenance).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - BasicAuthentication: []
+        - TokenAuthentication: []
   /securitygroups:
     get:
       tags:
@@ -5515,7 +5509,7 @@ paths:
             type: integer
             format: int32
       responses:
-        '202':
+        '200':
           description: Accepted. The request has been accepted for processing.
           headers:
             X-RateLimit-Remaining:
@@ -5559,9 +5553,9 @@ paths:
     get:
       tags:
         - IP Rules
-      summary: List Security Group rules
+      summary: List IP rules
       description: List all rules for the specified Security Group.
-      operationId: securitygroupsrulesGet
+      operationId: iprulesGet
       parameters:
         - name: vpcId
           in: query
@@ -5650,9 +5644,9 @@ paths:
     post:
       tags:
         - IP Rules
-      summary: Create Firewall rule to a Security Group
-      description: Create one firewall rule and attach it to the existing security group
-      operationId: securitygroupsrulesPost
+      summary: Create IP rule to a Security Group
+      description: Create one IP rule and attach it to the existing security group
+      operationId: iprulesPost
       parameters:
         - name: X-Contract-Number
           in: header
@@ -5718,9 +5712,9 @@ paths:
     get:
       tags:
         - IP Rules
-      summary: Retrieve security group rule by id
-      description: Retrieve the properties of the specified Security Group rule.
-      operationId: securitygroupsrulesFindById
+      summary: Retrieve IP rule by id
+      description: Retrieve the properties of the specified IP rule.
+      operationId: iprulesFindById
       parameters:
         - name: ruleId
           in: path
@@ -5783,9 +5777,9 @@ paths:
     put:
       tags:
         - IP Rules
-      summary: Modify a Security Group Rule
-      description: Modifies the properties of the specified Security Group Rule.
-      operationId: securitygroupsrulesPut
+      summary: Modify a IP Rule
+      description: Modifies the properties of the specified IP Rule.
+      operationId: iprulesPut
       parameters:
         - name: ruleId
           in: path
@@ -5856,9 +5850,9 @@ paths:
     delete:
       tags:
         - IP Rules
-      summary: Remove a Firewall Rule from a Security Group
-      description: Removes the specific Firewall Rule from the Security Group and delete the Firewall rule
-      operationId: securitygroupsrulesDelete
+      summary: Remove a IP Rule from a Security Group
+      description: Removes the specific IP Rule from the Security Group and delete the IP rule
+      operationId: iprulesDelete
       parameters:
         - name: ruleId
           in: path
@@ -5918,9 +5912,9 @@ paths:
     patch:
       tags:
         - IP Rules
-      summary: Partially modify Security Group Rules
-      description: Update the properties of the specified Security Group rule.
-      operationId: securitygroupsrulesPatch
+      summary: Partially modify IP Rules
+      description: Update the properties of the specified IP rule.
+      operationId: iprulesPatch
       parameters:
         - name: ruleId
           in: path
@@ -6361,7 +6355,7 @@ components:
           type: integer
           description: UUID of the default router for this datacenter.
           format: int32
-          example: 15f67991
+          example: 15
     Vpc:
       required:
         - properties
