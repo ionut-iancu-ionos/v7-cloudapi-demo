@@ -7091,6 +7091,11 @@ components:
         - properties
       type: object
       properties:
+        id:
+          type: string
+          description: The resource's unique identifier.
+          readOnly: true
+          example: 15f67991-0f51-4efc-a8ad-ef1fb31a480c
         metadata:
           $ref: '#/components/schemas/ElementMetadata'
         properties:
@@ -7475,7 +7480,6 @@ components:
           example:
             - cloud-init-private-image
             - ssd
-            - vnf-nat
           items:
             type: string
         imageAliases:
