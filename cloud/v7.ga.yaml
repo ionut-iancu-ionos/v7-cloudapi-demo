@@ -4948,7 +4948,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/FlowLogPut'
+              $ref: '#/components/schemas/FlowLog'
         required: true
       responses:
         '202':
@@ -6361,6 +6361,11 @@ components:
         - properties
       type: object
       properties:
+        id:
+          type: string
+          description: The resource's unique identifier.
+          readOnly: true
+          example: 15f67991-0f51-4efc-a8ad-ef1fb31a480c
         metadata:
           $ref: '#/components/schemas/ElementMetadata'
         properties:
@@ -6439,6 +6444,11 @@ components:
         - properties
       type: object
       properties:
+        id:
+          type: string
+          description: The resource's unique identifier.
+          readOnly: true
+          example: 15f67991-0f51-4efc-a8ad-ef1fb31a480c
         metadata:
           $ref: '#/components/schemas/ElementMetadata'
         properties:
@@ -6636,6 +6646,11 @@ components:
         - properties
       type: object
       properties:
+        id:
+          type: string
+          description: The resource's unique identifier.
+          readOnly: true
+          example: 15f67991-0f51-4efc-a8ad-ef1fb31a480c
         metadata:
           $ref: '#/components/schemas/ElementMetadata'
         properties:
@@ -6659,6 +6674,11 @@ components:
         - properties
       type: object
       properties:
+        id:
+          type: string
+          description: The resource's unique identifier.
+          readOnly: true
+          example: 15f67991-0f51-4efc-a8ad-ef1fb31a480c
         metadata:
           $ref: '#/components/schemas/ElementMetadata'
         properties:
@@ -6782,6 +6802,11 @@ components:
         - properties
       type: object
       properties:
+        id:
+          type: string
+          description: The resource's unique identifier.
+          readOnly: true
+          example: 15f67991-0f51-4efc-a8ad-ef1fb31a480c
         metadata:
           $ref: '#/components/schemas/ElementMetadata'
         properties:
@@ -6924,15 +6949,13 @@ components:
         - properties
       type: object
       properties:
+        id:
+          type: string
+          description: The resource's unique identifier.
+          readOnly: true
+          example: 15f67991-0f51-4efc-a8ad-ef1fb31a480c
         metadata:
           $ref: '#/components/schemas/ElementMetadata'
-        properties:
-          $ref: '#/components/schemas/FlowLogProperties'
-    FlowLogPut:
-      required:
-        - properties
-      type: object
-      properties:
         properties:
           $ref: '#/components/schemas/FlowLogProperties'
     FlowLogs:
@@ -7092,6 +7115,11 @@ components:
         - properties
       type: object
       properties:
+        id:
+          type: string
+          description: The resource's unique identifier.
+          readOnly: true
+          example: 15f67991-0f51-4efc-a8ad-ef1fb31a480c
         metadata:
           $ref: '#/components/schemas/ElementMetadata'
         properties:
@@ -7358,6 +7386,11 @@ components:
         - properties
       type: object
       properties:
+        id:
+          type: string
+          description: The resource's unique identifier.
+          readOnly: true
+          example: 15f67991-0f51-4efc-a8ad-ef1fb31a480c
         metadata:
           $ref: '#/components/schemas/ElementMetadata'
         properties:
@@ -7511,6 +7544,11 @@ components:
         - properties
       type: object
       properties:
+        id:
+          type: string
+          description: The resource's unique identifier.
+          readOnly: true
+          example: 15f67991-0f51-4efc-a8ad-ef1fb31a480c
         metadata:
           $ref: '#/components/schemas/ElementMetadata'
         properties:
@@ -7565,6 +7603,11 @@ components:
         - properties
       type: object
       properties:
+        id:
+          type: string
+          description: The resource's unique identifier.
+          readOnly: true
+          example: 15f67991-0f51-4efc-a8ad-ef1fb31a480c
         metadata:
           $ref: '#/components/schemas/ElementMetadata'
         properties:
@@ -7699,6 +7742,11 @@ components:
         - properties
       type: object
       properties:
+        id:
+          type: string
+          description: The resource's unique identifier.
+          readOnly: true
+          example: 15f67991-0f51-4efc-a8ad-ef1fb31a480c
         metadata:
           $ref: '#/components/schemas/ElementMetadata'
         properties:
@@ -7808,6 +7856,11 @@ components:
         - properties
       type: object
       properties:
+        id:
+          type: string
+          description: The resource's unique identifier.
+          readOnly: true
+          example: 15f67991-0f51-4efc-a8ad-ef1fb31a480c
         metadata:
           $ref: '#/components/schemas/ElementMetadata'
         properties:
@@ -7892,6 +7945,11 @@ components:
         - properties
       type: object
       properties:
+        id:
+          type: string
+          description: The resource's unique identifier.
+          readOnly: true
+          example: 15f67991-0f51-4efc-a8ad-ef1fb31a480c
         metadata:
           $ref: '#/components/schemas/ElementMetadata'
         properties:
@@ -8033,6 +8091,11 @@ components:
         - properties
       type: object
       properties:
+        id:
+          type: string
+          description: The resource's unique identifier.
+          readOnly: true
+          example: 15f67991-0f51-4efc-a8ad-ef1fb31a480c
         metadata:
           $ref: '#/components/schemas/ElementMetadata'
         properties:
@@ -8091,6 +8154,11 @@ components:
         - properties
       type: object
       properties:
+        id:
+          type: string
+          description: The resource's unique identifier.
+          readOnly: true
+          example: 15f67991-0f51-4efc-a8ad-ef1fb31a480c
         metadata:
           $ref: '#/components/schemas/ElementMetadata'
         properties:
