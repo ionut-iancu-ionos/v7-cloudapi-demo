@@ -6188,7 +6188,7 @@ paths:
   /metadata/locations/{locationId}:
     get:
       tags:
-        - Locations
+        - Metadata
       summary: Get Location by region and ID
       description: >-
         Retrieves the available physical locations where you can deploy cloud
