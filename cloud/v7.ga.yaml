@@ -450,7 +450,7 @@ paths:
       parameters:
         - name: vpcId
           in: query
-          description: The unique ID of the vpc
+          description: The unique ID of the vpc to filter results.
           schema:
             type: string
         - name: X-Contract-Number
@@ -860,17 +860,17 @@ paths:
       tags:
         - Servers
       summary: List servers
-      description: List all servers within the vpc or data center.
+      description: List all servers on the contract.
       operationId: serversGet
       parameters:
         - name: vpcId
           in: query
-          description: The unique ID of the vpc.
+          description: The unique ID of the vpc to filter results.
           schema:
             type: string
         - name: datacenterId
           in: query
-          description: The unique ID of the data center.
+          description: The unique ID of the data center to filter results.
           schema:
             type: string
         - name: X-Contract-Number
@@ -947,7 +947,7 @@ paths:
         - Servers
       summary: Create a Server
       description: >-
-        Creates a server within the specified data center or vpc.
+        Creates a standalone server or within the specified data center.
       operationId: serversPost
       parameters:
         - name: X-Contract-Number
@@ -1073,7 +1073,7 @@ paths:
         - Servers
       summary: Modify a Server by ID
       description: >-
-        Modifies the properties of the specified server within the data center.
+        Modifies the properties of the specified server.
       operationId: serversPut
       parameters:
         - name: serverId
@@ -1141,7 +1141,7 @@ paths:
       tags:
         - Servers
       summary: Partially modify servers
-      description: Update the properties of the specified server within the data center.
+      description: Update the properties of the specified server.
       operationId: serversPatch
       parameters:
         - name: serverId
@@ -1208,11 +1208,9 @@ paths:
     delete:
       tags:
         - Servers
-      summary: Delete servers
+      summary: Delete server based on its Id
       description: >-
-        Delete the specified server in your data center. The attached storage
-        volumes will also be removed if the query parameter is set to true
-        otherwise a separate API call must be made for these actions.
+        Delete the specified server.
       operationId: serversDelete
       parameters:
         - name: serverId
@@ -1229,11 +1227,6 @@ paths:
           schema:
             type: integer
             format: int32
-        - name: deleteVolumes
-          in: query
-          description: If true, all attached storage volumes will also be deleted.
-          schema:
-            type: boolean
       responses:
         '200':
           description: Successful operation
@@ -1280,17 +1273,17 @@ paths:
       parameters:
         - name: vpcId
           in: query
-          description: The unique ID of the vpc.
+          description: The unique ID of the vpc to filter results.
           schema:
             type: string
         - name: datacenterId
           in: query
-          description: The unique ID of the data center.
+          description: The unique ID of the data center to filter results.
           schema:
             type: string
         - name: serverId
           in: query
-          description: The unique ID of the server.
+          description: The unique ID of the server to filter results.
           schema:
             type: string
         - name: X-Contract-Number
@@ -1365,19 +1358,14 @@ paths:
     post:
       tags:
         - Volumes
-      summary: Create or attach a Volume to a Server
+      summary: Create a Volume.
       description: >-
-        Creates or attaches an existing storage volume to the specified server.
+        Creates a storage volume and optionally attaches the volume to a specified server.
 
 
-        You can create and optionally attach an existing volume in the VDC to a server.
+        You can create and optionally attach an existing volume to a server.
         To move a volume from one server to another, you must first detach the volume from
         the first server and attach it to the second server.
-
-
-        It is also possible to create and attach a volume in one step by simply
-        providing a new volume description as a payload. The only difference is
-        the URL; see 'Creating a Volume' for details about volumes.
 
 
         Note that the combined total of attached volumes and NICs cannot exceed
@@ -1393,7 +1381,7 @@ paths:
             type: integer
             format: int32
       requestBody:
-        description: The volume to be attached (or created and attached).
+        description: The volume to be created (or created and attached).
         content:
           application/json:
             schema:
@@ -1699,8 +1687,8 @@ paths:
     get:
       tags:
         - CD-ROMs
-      summary: 'Get Attached CD-ROMs '
-      description: Lists all CD-ROMs attached to the specified server.
+      summary: List CD-ROMs
+      description: Lists all CD-ROMs.
       operationId: cdromsGet
       parameters:
         - name: vpcId
@@ -1790,14 +1778,15 @@ paths:
     post:
       tags:
         - CD-ROMs
-      summary: Attach a CD-ROM
+      summary: Create a CD-ROM
       description: >-
-        Attachs a CD-ROM to an existing server specified by its ID. 
+        Creates a CD-ROM and optionally attaches it to an existing server 
+        specified by its ID. 
 
 
-        CD-ROMs cannot be created stand-alone like volumes. They are either
-        attached to a server or do not exist. They always have an ISO-Image
-        associated; empty CD-ROMs can not be provisioned. It is possible to
+        CD-ROMs can be created stand-alone like volumes. They can also be
+        attached to a server. They always have an ISO-Image associated; 
+        empty CD-ROMs can not be provisioned. It is possible to
         attach up to two CD-ROMs to the same server. 
 
 
@@ -1863,25 +1852,72 @@ paths:
     get:
       tags:
         - CD-ROMs
-      summary: Get Attached CD-ROM by ID
-      description: Retrieves the properties of the CD-ROM attached to the specified server.
+      summary: Get CD-ROM by ID
+      description: Retrieves the properties of the CD-ROM.
       operationId: cdromsFindById
       parameters:
-        - name: vpcId
-          in: query
-          description: The unique ID of the vpc.
+        - name: cdromId
+          in: path
+          description: The unique ID of the CD-ROM.
+          required: true
           schema:
             type: string
-        - name: datacenterId
-          in: query
-          description: The unique ID of the data center.
+        - name: X-Contract-Number
+          in: header
+          description: >-
+            Users with multiple contracts must provide the contract number, for
+            which all API requests are to be executed.
           schema:
-            type: string
-        - name: serverId
-          in: query
-          description: The unique ID of the server.
-          schema:
-            type: string
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: Successful operation
+          headers:
+            X-RateLimit-Remaining:
+              description: >-
+                The number of requests that can still be made without triggering
+                a failure response.
+              schema:
+                type: integer
+                format: int32
+            X-RateLimit-Limit:
+              description: The average number of requests per minute allowed.
+              schema:
+                type: integer
+                format: int32
+            X-RateLimit-Burst:
+              description: The maximum number of concurrent API requests allowed.
+              schema:
+                type: integer
+                format: int32
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Image'
+        default:
+          description: >-
+            Any erroneous status code: 400 (parse error), 401 (auth error), 402
+            (trial access), 403 (insufficient privileges), 404 (not found), 405
+            (unsupported HTTP method), 415 (unsupported content type, 422
+            (validation error), 429 (request rate limit exceeded), 500 (server
+            error), or 503 (maintenance).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - BasicAuthentication: []
+        - TokenAuthentication: []
+    put:
+      tags:
+        - CD-ROMs
+      summary: Modifies CD-ROM by ID
+      description: -<
+        Modifies the properties of the CD-ROM. The CD-ROM can be also
+        detached from the server.
+      operationId: cdromsPut
+      parameters:
         - name: cdromId
           in: path
           description: The unique ID of the CD-ROM.
@@ -1938,11 +1974,11 @@ paths:
     delete:
       tags:
         - CD-ROMs
-      summary: Detach a CD-ROM by ID
+      summary: Delete a CD-ROM by ID
       description: |-
-        Detachs the specified CD-ROM from the server.
+        Deletes the specified CD-ROM.
 
-        Detaching a CD-ROM deletes the CD-ROM. The image will not be deleted.
+        Deleting a CD-ROM detaches it from the server. The image will not be deleted.
 
         Note that detaching a CD-ROM leads to a reset of the server.
       operationId: cdromsDelete
@@ -2824,7 +2860,7 @@ paths:
     get:
       tags:
         - IP blocks
-      summary: 'List IP blocks '
+      summary: List IP blocks
       description: List all reserved IP blocks.
       operationId: ipblocksGet
       parameters:
@@ -3218,17 +3254,17 @@ paths:
       tags:
         - LANs
       summary: List LANs
-      description: List all LANs within the data center.
+      description: List all LANs.
       operationId: lansGet
       parameters:
         - name: vpcId
           in: query
-          description: The unique ID of the vpc.
+          description: The unique ID of the vpc to filter results.
           schema:
             type: string
         - name: datacenterId
           in: query
-          description: The unique ID of the data center.
+          description: The unique ID of the data center to filter results.
           schema:
             type: string
         - name: X-Contract-Number
@@ -3304,7 +3340,7 @@ paths:
       tags:
         - LANs
       summary: Create LANs
-      description: Creates a LAN within a vpc or a data center.
+      description: Creates a standalone LAN or within a data center.
       operationId: lansPost
       parameters:
         - name: X-Contract-Number
@@ -3621,27 +3657,27 @@ paths:
       tags:
         - Network interfaces
       summary: List Nics
-      description: List all NICs, attached to the specified Resource.
+      description: List all NICs.
       operationId: nicsGet
       parameters:
         - name: vpcId
           in: query
-          description: The unique ID of the vpc.
+          description: The unique ID of the vpc to filter results.
           schema:
             type: string
         - name: datacenterId
           in: query
-          description: The unique ID of the data center.
+          description: The unique ID of the data center to filter results.
           schema:
             type: string
         - name: serverId
           in: query
-          description: The unique ID of the server.
+          description: The unique ID of the server to filter results.
           schema:
             type: string
         - name: lanId
           in: query
-          description: The unique ID of the LAN.
+          description: The unique ID of the LAN to filter results.
           schema:
             type: string
         - name: X-Contract-Number
@@ -3717,7 +3753,7 @@ paths:
       tags:
         - Network interfaces
       summary: Create NICs
-      description: Create a NIC to the specified Resource.
+      description: Create a NIC and optionally attach it to the specified Resource.
       operationId: nicsPost
       parameters:
         - name: X-Contract-Number
@@ -4034,12 +4070,12 @@ paths:
       tags:
         - Virtual routers
       summary: List virtual routers
-      description: Retrieves all virtual routers within the vpc.
+      description: Retrieves all virtual routers.
       operationId: routersGet
       parameters:
         - name: vpcId
           in: query
-          description: The unique ID of the vpc.
+          description: The unique ID of the vpc to filter results.
           schema:
             type: string
         - name: X-Contract-Number
@@ -4115,7 +4151,7 @@ paths:
       tags:
         - Virtual routers
       summary: Create a virtual router
-      description: Creates a virtual router within the specified vpc.
+      description: Creates a virtual router and optionally attach it to the specified vpc.
       operationId: routersPost
       parameters:
         - name: X-Contract-Number
@@ -4131,7 +4167,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/VirtualRouterRequest'
+              $ref: '#/components/schemas/VirtualRouter'
         required: true
       responses:
         '202':
@@ -4260,7 +4296,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/VirtualRouterRequest'
+              $ref: '#/components/schemas/VirtualRouter'
         required: true
       responses:
         '202':
@@ -4328,7 +4364,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/VirtualRouterRequestProperties'
+              $ref: '#/components/schemas/VirtualRouterProperties'
         required: true
       responses:
         '202':
@@ -4375,9 +4411,8 @@ paths:
         - Virtual routers
       summary: Delete a virtual router
       description: >-
-        Removes the specified virtual router from the data center. Virtual router
-        can be deleted only if it is not assigned to any LANs or NICs and if it
-        is not a default router. 
+        Removes the specified virtual router. Virtual router can be deleted only 
+        if it is not assigned to any LANs or NICs and if it is not a default router. 
         Once the virtual router is deleted, all it's virtual routes will also be 
         removed.
       operationId: routersDelete
@@ -4437,17 +4472,17 @@ paths:
       tags:
         - Virtual routes
       summary: List virtual routes
-      description: Retrieves all virtual routes for the specified virtual router.
+      description: Retrieves all virtual routes.
       operationId: routesGet
       parameters:
         - name: vpcId
           in: query
-          description: The unique ID of the vpc.
+          description: The unique ID of the vpc to filter results.
           schema:
             type: string
         - name: routerId
           in: query
-          description: The unique ID of the virtual router.
+          description: The unique ID of the virtual router to filter results.
           schema:
             type: string
         - name: X-Contract-Number
@@ -4523,7 +4558,7 @@ paths:
       tags:
         - Virtual routes
       summary: Create a virtual route
-      description: Creates a virtual route for the specified virtual Router.
+      description: Creates a virtual route and optionally attach it to the specified virtual Router.
       operationId: routesPost
       parameters:
         - name: X-Contract-Number
@@ -4782,7 +4817,7 @@ paths:
       tags:
         - Virtual routes
       summary: Delete a virtual route
-      description: Removes the specified virtual route from the virtual router.
+      description: Removes the specified virtual route.
       operationId: routesDelete
       parameters:
         - name: routeId
@@ -4845,22 +4880,22 @@ paths:
       parameters:
         - name: vpcId
           in: query
-          description: The unique ID of the vpc.
+          description: The unique ID of the vpc to filter results.
           schema:
             type: string
         - name: datacenterId
           in: query
-          description: The unique ID of the data center.
+          description: The unique ID of the data center to filter results.
           schema:
             type: string
         - name: serverId
           in: query
-          description: The unique ID of the server.
+          description: The unique ID of the server to filter results.
           schema:
             type: string
         - name: nicId
           in: query
-          description: The unique ID of the NIC.
+          description: The unique ID of the NIC to filter results.
           schema:
             type: string
         - name: X-Contract-Number
@@ -4936,7 +4971,7 @@ paths:
       tags:
         - Flow Logs
       summary: Create a Flow Log
-      description: Adds a new Flow Log for the specified NIC.
+      description: Adds a new Flow Log for the specified resource (optional).
       operationId: flowlogsPost
       parameters:
         - name: X-Contract-Number
@@ -5258,12 +5293,12 @@ paths:
       parameters:
         - name: vpcId
           in: query
-          description: The unique ID of the vpc.
+          description: The unique ID of the vpc to filter results.
           schema:
             type: string
         - name: datacenterId
           in: query
-          description: The unique ID of the data center.
+          description: The unique ID of the data center to filter results.
           schema:
             type: string
         - name: X-Contract-Number
@@ -5357,7 +5392,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SecurityGroupRequest'
+              $ref: '#/components/schemas/SecurityGroup'
         required: true
       responses:
         '202':
@@ -5499,7 +5534,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SecurityGroupRequest'
+              $ref: '#/components/schemas/SecurityGroup'
         required: true
       responses:
         '202':
@@ -5687,22 +5722,22 @@ paths:
       tags:
         - IP Rules
       summary: List IP rules
-      description: List all rules for the specified Security Group.
+      description: List all rules.
       operationId: iprulesGet
       parameters:
         - name: vpcId
           in: query
-          description: The unique ID of the vpc.
+          description: The unique ID of the vpc to filter results.
           schema:
             type: string
         - name: datacenterId
           in: query
-          description: The unique ID of the data center.
+          description: The unique ID of the data center to filter results.
           schema:
             type: string
         - name: securityGroupId
           in: query
-          description: The unique ID of the security group.
+          description: The unique ID of the security group to filter results.
           schema:
             type: string
         - name: X-Contract-Number
@@ -5752,7 +5787,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/FirewallRules'
+                $ref: '#/components/schemas/IPRules'
         default:
           description: >-
             Any erroneous status code:
@@ -5777,8 +5812,10 @@ paths:
     post:
       tags:
         - IP Rules
-      summary: Create IP rule to a Security Group
-      description: Create one IP rule and attach it to the existing security group
+      summary: Create IP rule
+      description: -<
+        Create one IP rule. As part of the request the IP rule can 
+        also be attached to an existing security group
       operationId: iprulesPost
       parameters:
         - name: X-Contract-Number
@@ -5790,11 +5827,11 @@ paths:
             type: integer
             format: int32
       requestBody:
-        description: The firewall to be attached (or created and attached).
+        description: The IP Rule to be created.
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/FirewallRule'
+              $ref: '#/components/schemas/IPRule'
         required: true
       responses:
         '200':
@@ -5818,7 +5855,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/FirewallRule'
+                $ref: '#/components/schemas/IPRule'
         default:
           description: >-
             Any erroneous status code:
@@ -5840,7 +5877,7 @@ paths:
       security:
         - TokenAuthentication: []
         - BasicAuthentication: []
-      x-codegen-request-body-name: firewallRule
+      x-codegen-request-body-name: ipRule
   /iprules/{ruleId}:
     get:
       tags:
@@ -5851,7 +5888,7 @@ paths:
       parameters:
         - name: ruleId
           in: path
-          description: The unique ID of the Security Group rule.
+          description: The unique ID of the IP rule.
           required: true
           schema:
             type: string
@@ -5885,7 +5922,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/FirewallRule'
+                $ref: '#/components/schemas/IPRule'
         default:
           description: >-
             Any erroneous status code:
@@ -5916,7 +5953,7 @@ paths:
       parameters:
         - name: ruleId
           in: path
-          description: The unique ID of the Security Group Rule.
+          description: The unique ID of the IP Rule.
           required: true
           schema:
             type: string
@@ -5929,11 +5966,11 @@ paths:
             type: integer
             format: int32
       requestBody:
-        description: The modified Security Group Rule.
+        description: The modified IP Rule.
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/FirewallRule'
+              $ref: '#/components/schemas/IPRule'
         required: true
       responses:
         '202':
@@ -5957,7 +5994,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/FirewallRule'
+                $ref: '#/components/schemas/IPRule'
         default:
           description: >-
             Any erroneous status code:
@@ -5979,17 +6016,17 @@ paths:
       security:
         - BasicAuthentication: []
         - TokenAuthentication: []
-      x-codegen-request-body-name: rule
+      x-codegen-request-body-name: iprule
     delete:
       tags:
         - IP Rules
-      summary: Remove a IP Rule from a Security Group
-      description: Removes the specific IP Rule from the Security Group and delete the IP rule
+      summary: Remove a IP Rule
+      description: Removes the specific IP Rule
       operationId: iprulesDelete
       parameters:
         - name: ruleId
           in: path
-          description: The unique ID of the firewall rule.
+          description: The unique ID of the ip rule.
           required: true
           schema:
             type: string
@@ -6051,7 +6088,7 @@ paths:
       parameters:
         - name: ruleId
           in: path
-          description: The unique ID of the Security Group Rule.
+          description: The unique ID of the IP Rule.
           required: true
           schema:
             type: string
@@ -6064,11 +6101,11 @@ paths:
             type: integer
             format: int32
       requestBody:
-        description: The properties of the Security Group Rule to be updated.
+        description: The properties of the IP Rule to be updated.
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/FirewallRuleProperties'
+              $ref: '#/components/schemas/IPRuleProperties'
         required: true
       responses:
         '202':
@@ -6092,7 +6129,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/FirewallRule'
+                $ref: '#/components/schemas/IPRule'
         default:
           description: >-
             Any erroneous status code:
@@ -6114,12 +6151,12 @@ paths:
       security:
         - BasicAuthentication: []
         - TokenAuthentication: []
-      x-codegen-request-body-name: rule
+      x-codegen-request-body-name: iprule
   /metadata/locations:
     get:
       tags:
         - Metadata
-      summary: Get Locations by region
+      summary: Get Locations optionally filtered by region
       description: >-
         Retrieves the available physical locations where you can deploy cloud
         resources in a VDC based on a region. 
@@ -6131,7 +6168,7 @@ paths:
       parameters:
         - name: region
           in: query
-          description: The unique ID of the region.
+          description: The unique ID of the region to filter results.
           schema:
             type: string
         - name: X-Contract-Number
@@ -6185,7 +6222,7 @@ paths:
     get:
       tags:
         - Metadata
-      summary: Get Location by region and ID
+      summary: Get Location by ID
       description: >-
         Retrieves the information about the location specified by its ID. The
         'locationId' consists of the three-digit identifier of the city
@@ -6441,6 +6478,35 @@ components:
             - MAINTENANCE
             - FAILED_MAINTENANCE
             - UNKNOWN
+    Vpcs:
+      type: object
+      properties:
+        items:
+          type: array
+          description: Array of items in the collection.
+          readOnly: true
+          items:
+            $ref: '#/components/schemas/Vpc'
+        offset:
+          $ref: '#/components/schemas/PaginationOffset'
+        limit:
+          $ref: '#/components/schemas/PaginationLimit'
+        _links:
+          $ref: '#/components/schemas/PaginationLinks'
+    Vpc:
+      required:
+        - properties
+      type: object
+      properties:
+        id:
+          type: string
+          description: The resource's unique identifier.
+          readOnly: true
+          example: 15f67991-0f51-4efc-a8ad-ef1fb31a480c
+        metadata:
+          $ref: '#/components/schemas/ElementMetadata'
+        properties:
+          $ref: '#/components/schemas/VpcProperties'
     VpcProperties:
       required:
         - location
@@ -6485,10 +6551,25 @@ components:
           x-prerelease: true
         defaultRouterId:
           type: integer
-          description: UUID of the default router for this datacenter.
+          description: UUID of the default router for this vpc.
           format: int32
           example: 15
-    Vpc:
+    Datacenters:
+      type: object
+      properties:
+        items:
+          type: array
+          description: Array of items in the collection.
+          readOnly: true
+          items:
+            $ref: '#/components/schemas/Datacenter'
+        offset:
+          $ref: '#/components/schemas/PaginationOffset'
+        limit:
+          $ref: '#/components/schemas/PaginationLimit'
+        _links:
+          $ref: '#/components/schemas/PaginationLinks'
+    Datacenter:
       required:
         - properties
       type: object
@@ -6501,22 +6582,7 @@ components:
         metadata:
           $ref: '#/components/schemas/ElementMetadata'
         properties:
-          $ref: '#/components/schemas/VpcProperties'
-    Vpcs:
-      type: object
-      properties:
-        items:
-          type: array
-          description: Array of items in the collection.
-          readOnly: true
-          items:
-            $ref: '#/components/schemas/Vpc'
-        offset:
-          $ref: '#/components/schemas/PaginationOffset'
-        limit:
-          $ref: '#/components/schemas/PaginationLimit'
-        _links:
-          $ref: '#/components/schemas/PaginationLinks'
+          $ref: '#/components/schemas/DatacenterProperties'
     DatacenterProperties:
       required:
         - location
@@ -6571,7 +6637,22 @@ components:
           readOnly: true
           items:
             $ref: '#/components/schemas/CpuArchitectureProperties'
-    Datacenter:
+    Servers:
+      type: object
+      properties:
+        items:
+          type: array
+          description: Array of items in the collection.
+          readOnly: true
+          items:
+            $ref: '#/components/schemas/Server'
+        offset:
+          $ref: '#/components/schemas/PaginationOffset'
+        limit:
+          $ref: '#/components/schemas/PaginationLimit'
+        _links:
+          $ref: '#/components/schemas/PaginationLinks'
+    Server:
       required:
         - properties
       type: object
@@ -6584,8 +6665,144 @@ components:
         metadata:
           $ref: '#/components/schemas/ElementMetadata'
         properties:
-          $ref: '#/components/schemas/DatacenterProperties'
-    Datacenters:
+          $ref: '#/components/schemas/ServerProperties'
+    ServerProperties:
+      type: object
+      properties:
+        templateUuid:
+          type: string
+          description: >-
+            The ID of the template for creating a CUBE server; the available
+            templates for CUBE servers can be found on the templates resource.
+          example: 15f67991-0f51-4efc-a8ad-ef1fb31a480c
+        name:
+          type: string
+          description: The name of the  resource.
+          example: My resource
+        hostname:
+          type: string
+          description: >-
+            The hostname of the  resource.
+            Allowed characters are a-z, 0-9 and - (minus).
+            Hostname should not start with minus and should not be longer than 63 characters.
+          example: myHostname
+        cores:
+          type: integer
+          description: The total number of cores for the enterprise server.
+          format: int32
+          example: 4
+        ram:
+          type: integer
+          description: >-
+            The memory size for the enterprise server in MB, such as 2048. Size
+            must be specified in multiples of 256 MB with a minimum of 256 MB;
+            however, if you set ramHotPlug to TRUE then you must use a minimum
+            of 1024 MB. If you set the RAM size more than 240GB, then ramHotPlug
+            will be set to FALSE and can not be set to TRUE unless RAM size not
+            set to less than 240GB.
+          format: int32
+          example: 4096
+        availabilityZone:
+          type: string
+          description: The availability zone in which the server should be provisioned.
+          example: AUTO
+          enum:
+            - AUTO
+            - ZONE_1
+            - ZONE_2
+        vmState:
+          type: string
+          description: Status of the virtual machine.
+          readOnly: true
+          example: RUNNING
+          enum:
+            - NOSTATE
+            - RUNNING
+            - BLOCKED
+            - PAUSED
+            - SHUTDOWN
+            - SHUTOFF
+            - CRASHED
+            - SUSPENDED
+        bootCdrom:
+          $ref: '#/components/schemas/ResourceReference'
+        bootVolume:
+          $ref: '#/components/schemas/ResourceReference'
+        cpuFamily:
+          type: string
+          description: >-
+            CPU architecture on which server gets provisioned; not all CPU
+            architectures are available in all datacenter regions; available CPU
+            architectures can be retrieved from the datacenter resource; must
+            not be provided for CUBE and VCPU servers.
+          example: INTEL_ICELAKE
+        type:
+          type: string
+          description: 'Server type: CUBE, ENTERPRISE or VCPU.'
+          example: CUBE
+        datacenter:
+          type: string
+          format: : uuid
+          description: The id of the datacenter to be attached to
+          nullable: true
+          example: a4c6c98b-45b4-4b30-95c7-fab73eeb3089
+        placementGroupId:
+          type: "string"
+          description: "The placement group ID that belongs to this server; Requires system privileges, for internal usage
+            only"
+          x-internal: true
+          example: null
+        nicMultiQueue:
+          type: boolean
+          description: >-
+            Activate or deactivate the Multi Queue feature on all NICs of this server. This feature is beneficial to 
+            enable when the NICs are experiencing performance issues (e.g. low throughput). Toggling this
+            feature will also initiate a restart of the server. If the specified value is `true`, the feature will 
+            be activated; if it is not specified or set to `false`, the feature will be deactivated.
+            It is not allowed for servers of type Cube.
+          example: true
+          default: false
+    ServerOperation:
+      required:
+        - properties
+      type: object
+      properties:
+        properties:
+          $ref: '#/components/schemas/ServerOperationProperties'
+    ServerOperationProperties:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The requested operation
+          example: START
+          enum:
+            - REBOOT
+            - START
+            - STOP
+            - SUSPEND
+            - RESUME
+            - UPGRADE
+            - TOKEN
+            - REMOTECONSOLE
+    ServerOperationResponse:
+      type: object
+      properties:
+        url:
+          type: string
+          description: The remote console url with the jwToken parameter for access
+          readOnly: true
+          nullable: true
+          example: >-
+            https://dcd.ionos.com/noVNC?token=eyJ0eXAiOiJKV1QiLCJraWQiOiI0MWM1MDFlNC03NGY3LTQwYjctYmMxMi1lZWIzMTAzNThlZDkiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJpb25vc2Nsb3VkIiwiaWF0IjoxNjAyNDg5NTkzMDcxLCJzZXJ2ZXIiOnsidXVpZCI6IjMwNGEwZGVlLWE3OTgtNDNhNi04MzIyLTk3M2NiYzc3Yjg4ZCIsIm5hbWUiOiJTZXJ2ZXIifX0.TND9kJd8GXM39XP5PMH_LnF_99al4MEkI_eoEowPvPztirgM50aZEdg6SuLYQzg-R7vrA7hEFaK4NJb2BUUsIZYVMhjl1QmKUE5TnP0Q2zYnIfNQNZFDu2rKrOydPCkPQwlMVvvZLeBSz7lrKYujF-qZ_yY_6SHlFtt-rg6IznRtup8AFziXtl-9cEsWU92_GCTd5LiriQrsnFAiGRbb0p2_6OYAQAH9FeWu4cxrbSwUmeR7Q4klJyZqFd0fv6UTFBtpSiyci7rsB142MXyLcqM4PrBkgd9P5OFbJYf5lbsb9pW04wLSl9rqoWGgZvWsqpuzosUkQRZt_O5yuYmT9w
+        token:
+          type: string
+          description: The jwToken for the server.
+          readOnly: true
+          nullable: true
+          example: >-
+            eyJ0eXAiOiJKV1QiLCJraWQiOiI0MWM1MDFlNC03NGY3LTQwYjctYmMxMi1lZWIzMTAzNThlZDkiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJpb25vc2Nsb3VkIiwiaWF0IjoxNjAyNDg5NTkzMDcxLCJzZXJ2ZXIiOnsidXVpZCI6IjMwNGEwZGVlLWE3OTgtNDNhNi04MzIyLTk3M2NiYzc3Yjg4ZCIsIm5hbWUiOiJTZXJ2ZXIifX0.TND9kJd8GXM39XP5PMH_LnF_99al4MEkI_eoEowPvPztirgM50aZEdg6SuLYQzg-R7vrA7hEFaK4NJb2BUUsIZYVMhjl1QmKUE5TnP0Q2zYnIfNQNZFDu2rKrOydPCkPQwlMVvvZLeBSz7lrKYujF-qZ_yY_6SHlFtt-rg6IznRtup8AFziXtl-9cEsWU92_GCTd5LiriQrsnFAiGRbb0p2_6OYAQAH9FeWu4cxrbSwUmeR7Q4klJyZqFd0fv6UTFBtpSiyci7rsB142MXyLcqM4PrBkgd9P5OFbJYf5lbsb9pW04wLSl9rqoWGgZvWsqpuzosUkQRZt_O5yuYmT9w
+    Volumes:
       type: object
       properties:
         items:
@@ -6593,13 +6810,27 @@ components:
           description: Array of items in the collection.
           readOnly: true
           items:
-            $ref: '#/components/schemas/Datacenter'
+            $ref: '#/components/schemas/Volume'
         offset:
           $ref: '#/components/schemas/PaginationOffset'
         limit:
           $ref: '#/components/schemas/PaginationLimit'
         _links:
           $ref: '#/components/schemas/PaginationLinks'
+    Volume:
+      required:
+        - properties
+      type: object
+      properties:
+        id:
+          type: string
+          description: The resource's unique identifier.
+          readOnly: true
+          example: 15f67991-0f51-4efc-a8ad-ef1fb31a480c
+        metadata:
+          $ref: '#/components/schemas/ElementMetadata'
+        properties:
+          $ref: '#/components/schemas/VolumeProperties'
     VolumeProperties:
       required:
         - size
@@ -6773,20 +7004,6 @@ components:
             - AUTO
             - NONE
             - PRIMARY
-    Volume:
-      required:
-        - properties
-      type: object
-      properties:
-        id:
-          type: string
-          description: The resource's unique identifier.
-          readOnly: true
-          example: 15f67991-0f51-4efc-a8ad-ef1fb31a480c
-        metadata:
-          $ref: '#/components/schemas/ElementMetadata'
-        properties:
-          $ref: '#/components/schemas/VolumeProperties'
     Cdroms:
       type: object
       properties:
@@ -6801,6 +7018,15 @@ components:
           $ref: '#/components/schemas/PaginationLimit'
         _links:
           $ref: '#/components/schemas/PaginationLinks'
+    Images:
+      type: object
+      properties:
+        items:
+          type: array
+          description: Array of items in the collection.
+          readOnly: true
+          items:
+            $ref: '#/components/schemas/Image'
     Image:
       required:
         - properties
@@ -6827,6 +7053,7 @@ components:
         server:
           type: string
           description: The uuid of the server to be attached to.
+          nullable: true
           example: addc0728-2878-4ef0-96c3-742684048398
         description:
           type: string
@@ -6929,7 +7156,22 @@ components:
           enum:
             - NONE
             - V1
-    FirewallRule:
+    Lans:
+      type: object
+      properties:
+        items:
+          type: array
+          description: Array of items in the collection.
+          readOnly: true
+          items:
+            $ref: '#/components/schemas/Lan'
+        offset:
+          $ref: '#/components/schemas/PaginationOffset'
+        limit:
+          $ref: '#/components/schemas/PaginationLimit'
+        _links:
+          $ref: '#/components/schemas/PaginationLinks'
+    Lan:
       required:
         - properties
       type: object
@@ -6942,220 +7184,7 @@ components:
         metadata:
           $ref: '#/components/schemas/ElementMetadata'
         properties:
-          $ref: '#/components/schemas/FirewallRuleProperties'
-    FirewallRules:
-      type: object
-      properties:
-        items:
-          type: array
-          description: Array of items in the collection.
-          readOnly: true
-          items:
-            $ref: '#/components/schemas/FirewallRule'
-        offset:
-          $ref: '#/components/schemas/PaginationOffset'
-        limit:
-          $ref: '#/components/schemas/PaginationLimit'
-        _links:
-          $ref: '#/components/schemas/PaginationLinks'
-    FirewallRuleProperties:
-      required:
-        - protocol
-      type: object
-      properties:
-        name:
-          type: string
-          description: The name of the  resource.
-          example: My resource
-        securityGroup:
-          type: string
-          description: The uuid of the security group to which the rule belongs to
-          example: fde83b97-f515-420c-ab10-b3cfaaf45155
-        protocol:
-          type: string
-          description: >-
-            The protocol for the rule. Property cannot be modified after it is
-            created (disallowed in update requests).
-          example: TCP
-          enum:
-            - TCP
-            - UDP
-            - ICMP
-            - ICMPv6
-            - GRE
-            - VRRP
-            - ESP
-            - AH
-            - ANY
-        sourceMac:
-          type: string
-          description: >-
-            Only traffic originating from the respective MAC address is allowed.
-            Valid format: aa:bb:cc:dd:ee:ff. Value null allows traffic from any
-            MAC address.
-          nullable: true
-          example: 00:0a:95:9d:68:16
-        ipVersion:
-          type: string
-          description: >-
-            The IP version for this rule. If sourceIp or targetIp are specified,
-            you can omit this value - the IP version will then be deduced from
-            the IP address(es) used; if you specify it anyway, it must match the
-            specified IP address(es). If neither sourceIp nor targetIp are
-            specified, this rule allows traffic only for the specified IP
-            version. If neither sourceIp, targetIp nor ipVersion are specified,
-            this rule will only allow IPv4 traffic.
-          nullable: true
-          example: IPv4
-          enum:
-            - IPv4
-            - IPv6
-        sourceIp:
-          type: string
-          description: >-
-            Only traffic originating from the respective IP address (or CIDR
-            block) is allowed. Value null allows traffic from any IP address
-            (according to the selected ipVersion).
-          nullable: true
-          example: 22.231.113.64
-        targetIp:
-          type: string
-          description: >-
-            If the target NIC has multiple IP addresses, only the traffic
-            directed to the respective IP address (or CIDR block) of the NIC is
-            allowed. Value null allows traffic to any target IP address
-            (according to the selected ipVersion).
-          nullable: true
-          example: 22.231.113.64
-        icmpCode:
-          maximum: 254
-          minimum: 0
-          type: integer
-          description: >-
-            Defines the allowed code (from 0 to 254) if protocol ICMP or ICMPv6
-            is chosen. Value null allows all codes.
-          format: int32
-          nullable: true
-          example: 0
-        icmpType:
-          maximum: 254
-          minimum: 0
-          type: integer
-          description: >-
-            Defines the allowed type (from 0 to 254) if the protocol ICMP or
-            ICMPv6 is chosen. Value null allows all types.
-          format: int32
-          nullable: true
-          example: 8
-        portRangeStart:
-          maximum: 65535
-          minimum: 1
-          type: integer
-          description: >-
-            Defines the start range of the allowed port (from 1 to 65535) if
-            protocol TCP or UDP is chosen. Leave portRangeStart and portRangeEnd
-            value null to allow all ports.
-          format: int32
-          example: 8
-        portRangeEnd:
-          maximum: 65535
-          minimum: 1
-          type: integer
-          description: >-
-            Defines the end range of the allowed port (from 1 to 65535) if the
-            protocol TCP or UDP is chosen. Leave portRangeStart and portRangeEnd
-            null to allow all ports.
-          format: int32
-          example: 8
-        type:
-          type: string
-          description: >-
-            The type of the firewall rule. If not specified, the default INGRESS
-            value is used.
-          example: INGRESS
-          enum:
-            - INGRESS
-            - EGRESS
-    FlowLog:
-      required:
-        - properties
-      type: object
-      properties:
-        id:
-          type: string
-          description: The resource's unique identifier.
-          readOnly: true
-          example: 15f67991-0f51-4efc-a8ad-ef1fb31a480c
-        metadata:
-          $ref: '#/components/schemas/ElementMetadata'
-        properties:
-          $ref: '#/components/schemas/FlowLogProperties'
-    FlowLogs:
-      type: object
-      properties:
-        items:
-          type: array
-          description: Array of items in the collection.
-          readOnly: true
-          items:
-            $ref: '#/components/schemas/FlowLog'
-        offset:
-          $ref: '#/components/schemas/PaginationOffset'
-        limit:
-          $ref: '#/components/schemas/PaginationLimit'
-        _links:
-          $ref: '#/components/schemas/PaginationLinks'
-    FlowLogProperties:
-      required:
-        - action
-        - bucket
-        - direction
-        - name
-      type: object
-      properties:
-        name:
-          type: string
-          description: The resource name.
-          example: My resource
-        nic:
-          type: string
-          description: The nicId where the flowLog will be attached.
-          nullable: true
-          example: fde83b97-f515-420c-ab10-b3cfaaf45155
-        server:
-          type: string
-          description: The serverId where the flowLog will be attached.
-          nullable: true
-          example: addc0728-2878-4ef0-96c3-742684048398
-        action:
-          type: string
-          description: Specifies the traffic action pattern.
-          example: ACCEPTED
-          enum:
-            - ACCEPTED
-            - REJECTED
-            - ALL
-        direction:
-          type: string
-          description: Specifies the traffic direction pattern.
-          example: INGRESS
-          enum:
-            - INGRESS
-            - EGRESS
-            - BIDIRECTIONAL
-        bucket:
-          type: string
-          description: The bucket name of an existing IONOS Cloud Object storage bucket.
-          example: bucketName/key
-    IPFailover:
-      type: object
-      properties:
-        ip:
-          type: string
-          example: 192.18.2.231
-        nicUuid:
-          type: string
-          example: 3c11273c-b3e1-4ca3-8134-84fd2dd4ebec
+          $ref: '#/components/schemas/LanProperties'
     LanProperties:
       type: object
       properties:
@@ -7166,10 +7195,12 @@ components:
         vpc:
           type: string
           description: The id of the vpc to be attached to.
+          nullable: true
           example: addc0728-2878-4ef0-96c3-742684048398
         datacenter:
           type: string
           description: The id of the datacenter to be attached to.
+          nullable: true
           example: addc0728-2878-4ef0-96c3-742684048398
         ipFailover:
           type: array
@@ -7218,29 +7249,14 @@ components:
           x-internal: true
           description: The VNI value that is assigned to the LAN.
           example: 123
-    Lan:
-      required:
-        - properties
-      type: object
-      properties:
-        id:
-          type: string
-          description: The resource's unique identifier.
-          readOnly: true
-          example: 15f67991-0f51-4efc-a8ad-ef1fb31a480c
-        metadata:
-          $ref: '#/components/schemas/ElementMetadata'
-        properties:
-          $ref: '#/components/schemas/LanProperties'
-    Lans:
+    Nics:
       type: object
       properties:
         items:
           type: array
           description: Array of items in the collection.
-          readOnly: true
           items:
-            $ref: '#/components/schemas/Lan'
+            $ref: '#/components/schemas/Nic'
         offset:
           $ref: '#/components/schemas/PaginationOffset'
         limit:
@@ -7359,7 +7375,7 @@ components:
         firewallType:
           type: string
           description: >-
-            The type of firewall rules that will be allowed on the NIC. If not
+            The type of IP rules that will be allowed on the NIC. If not
             specified, the default INGRESS value is used.
           example: INGRESS
           enum:
@@ -7383,24 +7399,93 @@ components:
           example: 7
         vnet:
           type: string
-          description: "The vnet ID that belongs to this NIC; Requires system privileges, for internal usage
-            only"
+          description: -<
+            The vnet ID that belongs to this NIC; Requires system privileges,
+            for internal usage only
           x-internal: true
           example: null
-    Nics:
+        router:
+          $ref: '#/components/schemas/ResourceReference'
+    FlowLogs:
       type: object
       properties:
         items:
           type: array
           description: Array of items in the collection.
+          readOnly: true
           items:
-            $ref: '#/components/schemas/Nic'
+            $ref: '#/components/schemas/FlowLog'
         offset:
           $ref: '#/components/schemas/PaginationOffset'
         limit:
           $ref: '#/components/schemas/PaginationLimit'
         _links:
           $ref: '#/components/schemas/PaginationLinks'
+    FlowLog:
+      required:
+        - properties
+      type: object
+      properties:
+        id:
+          type: string
+          description: The resource's unique identifier.
+          readOnly: true
+          example: 15f67991-0f51-4efc-a8ad-ef1fb31a480c
+        metadata:
+          $ref: '#/components/schemas/ElementMetadata'
+        properties:
+          $ref: '#/components/schemas/FlowLogProperties'
+    FlowLogProperties:
+      required:
+        - action
+        - bucket
+        - direction
+        - name
+      type: object
+      properties:
+        name:
+          type: string
+          description: The resource name.
+          example: My resource
+        nic:
+          type: string
+          description: The nicId where the flowLog will be attached.
+          nullable: true
+          example: fde83b97-f515-420c-ab10-b3cfaaf45155
+        server:
+          type: string
+          description: The serverId where the flowLog will be attached.
+          nullable: true
+          example: addc0728-2878-4ef0-96c3-742684048398
+        action:
+          type: string
+          description: Specifies the traffic action pattern.
+          example: ACCEPTED
+          enum:
+            - ACCEPTED
+            - REJECTED
+            - ALL
+        direction:
+          type: string
+          description: Specifies the traffic direction pattern.
+          example: INGRESS
+          enum:
+            - INGRESS
+            - EGRESS
+            - BIDIRECTIONAL
+        bucket:
+          type: string
+          description: The bucket name of an existing IONOS Cloud Object storage bucket.
+          example: bucketName/key
+    IPFailover:
+      type: object
+      properties:
+        ip:
+          type: string
+          example: 192.18.2.231
+        nicUuid:
+          type: string
+          example: 3c11273c-b3e1-4ca3-8134-84fd2dd4ebec
     ResourceReference:
       required:
         - id
@@ -7409,110 +7494,6 @@ components:
         id:
           type: string
           description: The resource's unique identifier.
-    ServerProperties:
-      type: object
-      properties:
-        templateUuid:
-          type: string
-          description: >-
-            The ID of the template for creating a CUBE server; the available
-            templates for CUBE servers can be found on the templates resource.
-          example: 15f67991-0f51-4efc-a8ad-ef1fb31a480c
-        name:
-          type: string
-          description: The name of the  resource.
-          example: My resource
-        hostname:
-          type: string
-          description: >-
-            The hostname of the  resource.
-            Allowed characters are a-z, 0-9 and - (minus).
-            Hostname should not start with minus and should not be longer than 63 characters.
-          example: myHostname
-        cores:
-          type: integer
-          description: The total number of cores for the enterprise server.
-          format: int32
-          example: 4
-        ram:
-          type: integer
-          description: >-
-            The memory size for the enterprise server in MB, such as 2048. Size
-            must be specified in multiples of 256 MB with a minimum of 256 MB;
-            however, if you set ramHotPlug to TRUE then you must use a minimum
-            of 1024 MB. If you set the RAM size more than 240GB, then ramHotPlug
-            will be set to FALSE and can not be set to TRUE unless RAM size not
-            set to less than 240GB.
-          format: int32
-          example: 4096
-        availabilityZone:
-          type: string
-          description: The availability zone in which the server should be provisioned.
-          example: AUTO
-          enum:
-            - AUTO
-            - ZONE_1
-            - ZONE_2
-        vmState:
-          type: string
-          description: Status of the virtual machine.
-          readOnly: true
-          example: RUNNING
-          enum:
-            - NOSTATE
-            - RUNNING
-            - BLOCKED
-            - PAUSED
-            - SHUTDOWN
-            - SHUTOFF
-            - CRASHED
-            - SUSPENDED
-        bootCdrom:
-          $ref: '#/components/schemas/ResourceReference'
-        bootVolume:
-          $ref: '#/components/schemas/ResourceReference'
-        cpuFamily:
-          type: string
-          description: >-
-            CPU architecture on which server gets provisioned; not all CPU
-            architectures are available in all datacenter regions; available CPU
-            architectures can be retrieved from the datacenter resource; must
-            not be provided for CUBE and VCPU servers.
-          example: INTEL_ICELAKE
-        type:
-          type: string
-          description: 'Server type: CUBE, ENTERPRISE or VCPU.'
-          example: CUBE
-        datacenter:
-          type: string
-          description: The id of the datacenter to be attached to
-          nullable: true
-          example: a4c6c98b-45b4-4b30-95c7-fab73eeb3089
-        placementGroupId:
-          type: "string"
-          description: "The placement group ID that belongs to this server; Requires system privileges, for internal usage
-            only"
-          x-internal: true
-          example: null
-        nicMultiQueue:
-          type: boolean
-          description: >-
-            Activate or deactivate the Multi Queue feature on all NICs of this server. This feature is beneficial to 
-            enable when the NICs are experiencing performance issues (e.g. low throughput). Toggling this
-            feature will also initiate a restart of the server. If the specified value is `true`, the feature will 
-            be activated; if it is not specified or set to `false`, the feature will be deactivated.
-            It is not allowed for servers of type Cube.
-          example: true
-          default: false
-    Images:
-      type: object
-      properties:
-        items:
-          type: array
-          description: Array of items in the collection.
-          readOnly: true
-          items:
-            $ref: '#/components/schemas/Image'
     IpBlock:
       required:
         - properties
@@ -7589,86 +7570,6 @@ components:
           $ref: '#/components/schemas/PaginationLimit'
         _links:
           $ref: '#/components/schemas/PaginationLinks'
-    LocationProperties:
-      type: object
-      properties:
-        name:
-          type: string
-          description: The location name.
-          example: berlin
-        region:
-          type: string
-          description: The regions where the location is
-          example: de
-        features:
-          type: array
-          description: A list of available features in the location.
-          readOnly: true
-          example:
-            - cloud-init-private-image
-            - ssd
-          items:
-            type: string
-        imageAliases:
-          type: array
-          description: A list of image aliases available in the location.
-          readOnly: true
-          example:
-            - windows:2012r2_iso
-            - windows:2019_iso
-            - ubuntu:18.04_iso
-          items:
-            type: string
-        cpuArchitecture:
-          type: array
-          description: >-
-            A list of available CPU types and related resources available in the
-            location.
-          readOnly: true
-          items:
-            $ref: '#/components/schemas/CpuArchitectureProperties'
-    CpuArchitectureProperties:
-      type: object
-      properties:
-        cpuFamily:
-          type: string
-          description: A valid CPU family name.
-          example: INTEL_ICELAKE
-        maxCores:
-          type: integer
-          description: The maximum number of cores available.
-          format: int32
-          example: 62
-        maxRam:
-          type: integer
-          description: The maximum RAM size in MB.
-          format: int32
-          example: 245760
-        vendor:
-          type: string
-          description: A valid CPU vendor name.
-          example: AuthenticAMD
-    Location:
-      required:
-        - properties
-      type: object
-      properties:
-        id:
-          type: string
-          description: The resource's unique identifier.
-          readOnly: true
-          example: 15f67991-0f51-4efc-a8ad-ef1fb31a480c
-        properties:
-          $ref: '#/components/schemas/LocationProperties'
-    Locations:
-      type: object
-      properties:
-        items:
-          type: array
-          description: Array of items in the collection.
-          readOnly: true
-          items:
-            $ref: '#/components/schemas/Location'
     IpConsumer:
       type: object
       properties:
@@ -7690,24 +7591,16 @@ components:
           type: string
         k8sClusterUuid:
           type: string
-    ServerOperationResponse:
+    Snapshots:
       type: object
       properties:
-        url:
-          type: string
-          description: The remote console url with the jwToken parameter for access
+        items:
+          type: array
+          description: Array of items in the collection.
           readOnly: true
-          nullable: true
-          example: >-
-            https://dcd.ionos.com/noVNC?token=eyJ0eXAiOiJKV1QiLCJraWQiOiI0MWM1MDFlNC03NGY3LTQwYjctYmMxMi1lZWIzMTAzNThlZDkiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJpb25vc2Nsb3VkIiwiaWF0IjoxNjAyNDg5NTkzMDcxLCJzZXJ2ZXIiOnsidXVpZCI6IjMwNGEwZGVlLWE3OTgtNDNhNi04MzIyLTk3M2NiYzc3Yjg4ZCIsIm5hbWUiOiJTZXJ2ZXIifX0.TND9kJd8GXM39XP5PMH_LnF_99al4MEkI_eoEowPvPztirgM50aZEdg6SuLYQzg-R7vrA7hEFaK4NJb2BUUsIZYVMhjl1QmKUE5TnP0Q2zYnIfNQNZFDu2rKrOydPCkPQwlMVvvZLeBSz7lrKYujF-qZ_yY_6SHlFtt-rg6IznRtup8AFziXtl-9cEsWU92_GCTd5LiriQrsnFAiGRbb0p2_6OYAQAH9FeWu4cxrbSwUmeR7Q4klJyZqFd0fv6UTFBtpSiyci7rsB142MXyLcqM4PrBkgd9P5OFbJYf5lbsb9pW04wLSl9rqoWGgZvWsqpuzosUkQRZt_O5yuYmT9w
-        token:
-          type: string
-          description: The jwToken for the server.
-          readOnly: true
-          nullable: true
-          example: >-
-            eyJ0eXAiOiJKV1QiLCJraWQiOiI0MWM1MDFlNC03NGY3LTQwYjctYmMxMi1lZWIzMTAzNThlZDkiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJpb25vc2Nsb3VkIiwiaWF0IjoxNjAyNDg5NTkzMDcxLCJzZXJ2ZXIiOnsidXVpZCI6IjMwNGEwZGVlLWE3OTgtNDNhNi04MzIyLTk3M2NiYzc3Yjg4ZCIsIm5hbWUiOiJTZXJ2ZXIifX0.TND9kJd8GXM39XP5PMH_LnF_99al4MEkI_eoEowPvPztirgM50aZEdg6SuLYQzg-R7vrA7hEFaK4NJb2BUUsIZYVMhjl1QmKUE5TnP0Q2zYnIfNQNZFDu2rKrOydPCkPQwlMVvvZLeBSz7lrKYujF-qZ_yY_6SHlFtt-rg6IznRtup8AFziXtl-9cEsWU92_GCTd5LiriQrsnFAiGRbb0p2_6OYAQAH9FeWu4cxrbSwUmeR7Q4klJyZqFd0fv6UTFBtpSiyci7rsB142MXyLcqM4PrBkgd9P5OFbJYf5lbsb9pW04wLSl9rqoWGgZvWsqpuzosUkQRZt_O5yuYmT9w
-    Server:
+          items:
+            $ref: '#/components/schemas/Snapshot'
+    Snapshot:
       required:
         - properties
       type: object
@@ -7720,45 +7613,7 @@ components:
         metadata:
           $ref: '#/components/schemas/ElementMetadata'
         properties:
-          $ref: '#/components/schemas/ServerProperties'
-    Servers:
-      type: object
-      properties:
-        items:
-          type: array
-          description: Array of items in the collection.
-          readOnly: true
-          items:
-            $ref: '#/components/schemas/Server'
-        offset:
-          $ref: '#/components/schemas/PaginationOffset'
-        limit:
-          $ref: '#/components/schemas/PaginationLimit'
-        _links:
-          $ref: '#/components/schemas/PaginationLinks'
-    ServerOperation:
-      required:
-        - properties
-      type: object
-      properties:
-        properties:
-          $ref: '#/components/schemas/ServerOperationProperties'
-    ServerOperationProperties:
-      type: object
-      properties:
-        name:
-          type: string
-          description: The requested operation
-          example: START
-          enum:
-          - REBOOT
-          - START
-          - STOP
-          - SUSPEND
-          - RESUME
-          - UPGRADE
-          - TOKEN
-          - REMOTECONSOLE
+          $ref: '#/components/schemas/SnapshotProperties'
     SnapshotProperties:
       type: object
       properties:
@@ -7846,20 +7701,6 @@ components:
             - RHEL
             - LINUX
             - OTHER
-    Snapshot:
-      required:
-        - properties
-      type: object
-      properties:
-        id:
-          type: string
-          description: The resource's unique identifier.
-          readOnly: true
-          example: 15f67991-0f51-4efc-a8ad-ef1fb31a480c
-        metadata:
-          $ref: '#/components/schemas/ElementMetadata'
-        properties:
-          $ref: '#/components/schemas/SnapshotProperties'
     CreateSnapshot:
       type: object
       properties:
@@ -7914,30 +7755,6 @@ components:
           format: uuid
           description: The uuid of the volume
           example: a4c6c98b-45b4-4b30-95c7-fab73eeb3089
-    Snapshots:
-      type: object
-      properties:
-        items:
-          type: array
-          description: Array of items in the collection.
-          readOnly: true
-          items:
-            $ref: '#/components/schemas/Snapshot'
-    Volumes:
-      type: object
-      properties:
-        items:
-          type: array
-          description: Array of items in the collection.
-          readOnly: true
-          items:
-            $ref: '#/components/schemas/Volume'
-        offset:
-          $ref: '#/components/schemas/PaginationOffset'
-        limit:
-          $ref: '#/components/schemas/PaginationLimit'
-        _links:
-          $ref: '#/components/schemas/PaginationLinks'
     VirtualRouters:
       type: object
       properties:
@@ -7953,13 +7770,6 @@ components:
           $ref: '#/components/schemas/PaginationLimit'
         _links:
           $ref: '#/components/schemas/PaginationLinks'
-    VirtualRouterRequest:
-      required:
-        - properties
-      type: object
-      properties:
-        properties:
-          $ref: '#/components/schemas/VirtualRouterRequestProperties'
     VirtualRouter:
       required:
         - properties
@@ -7974,29 +7784,6 @@ components:
           $ref: '#/components/schemas/ElementMetadata'
         properties:
           $ref: '#/components/schemas/VirtualRouterProperties'
-    VirtualRouterRequestProperties:
-      type: object
-      properties:
-        name:
-          type: string
-          description: The name of the virtual router.
-          example: My virtual router
-        vpc:
-          type: string
-          format: uuid
-          description: The id of the vpc.
-          example: aa5f6bcf-c9db-46d3-9d4c-330aa90647aa
-        description:
-          type: string
-          description: The description of the virtual router.
-          example: My virtual router description.
-        default:
-          type: boolean
-          description: >-
-            Indicates if the virtual router is the default router of the vpc.
-            There can be only one default router in a vpc.
-          example: true
-          default: false
     VirtualRouterProperties:
       type: object
       properties:
@@ -8121,6 +7908,346 @@ components:
         can influence licensed software (e.g. Windows) behavior
       example: true
       default: false
+    SecurityGroups:
+      type: object
+      properties:
+        items:
+          type: array
+          description: Array of items in the collection.
+          readOnly: true
+          items:
+            $ref: '#/components/schemas/SecurityGroup'
+        offset:
+          $ref: '#/components/schemas/PaginationOffset'
+        limit:
+          $ref: '#/components/schemas/PaginationLimit'
+        _links:
+          $ref: '#/components/schemas/PaginationLinks'
+    SecurityGroup:
+      required:
+        - properties
+      type: object
+      properties:
+        id:
+          type: string
+          description: The resource's unique identifier.
+          readOnly: true
+          example: 15f67991-0f51-4efc-a8ad-ef1fb31a480c
+        metadata:
+          $ref: '#/components/schemas/ElementMetadata'
+        properties:
+          $ref: '#/components/schemas/SecurityGroupProperties'
+    SecurityGroupProperties:
+      required:
+        - name
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 60
+          description: The name of the security group.
+          nullable: true
+          example: My security group
+        vpc:
+          type: string
+          format: uuid
+          description: The id of the vpc.
+          nullable: true
+          example: aa5f6bcf-c9db-46d3-9d4c-330aa90647aa
+        datacenter:
+          type: string
+          format: uuid
+          description: The id of the datacenter.
+          nullable: true
+          example: 8ff2cefe-9d76-4083-af00-46aef9b3578b
+        nic:
+          type: string
+          format: uuid
+          description: The id of the nic.
+          example: 485e0c30-a26f-4a0b-b655-b7cf9c730aa8
+        description:
+          type: string
+          maxLength: 300
+          description: The description of the security group.
+          example: My security group description
+    IPRules:
+      type: object
+      properties:
+        items:
+          type: array
+          description: Array of items in the collection.
+          readOnly: true
+          items:
+            $ref: '#/components/schemas/IPRule'
+        offset:
+          $ref: '#/components/schemas/PaginationOffset'
+        limit:
+          $ref: '#/components/schemas/PaginationLimit'
+        _links:
+          $ref: '#/components/schemas/PaginationLinks'
+    IPRule:
+      required:
+        - properties
+      type: object
+      properties:
+        id:
+          type: string
+          description: The resource's unique identifier.
+          readOnly: true
+          example: 15f67991-0f51-4efc-a8ad-ef1fb31a480c
+        metadata:
+          $ref: '#/components/schemas/ElementMetadata'
+        properties:
+          $ref: '#/components/schemas/IPRuleProperties'
+    IPRuleProperties:
+      required:
+        - protocol
+      type: object
+      properties:
+        name:
+          type: string
+          description: The name of the  resource.
+          example: My resource
+        securityGroup:
+          type: string
+          description: The uuid of the security group to which the ip rule belongs to
+          nullable: true
+          example: fde83b97-f515-420c-ab10-b3cfaaf45155
+        protocol:
+          type: string
+          description: >-
+            The protocol for the rule. Property cannot be modified after it is
+            created (disallowed in update requests).
+          example: TCP
+          enum:
+            - TCP
+            - UDP
+            - ICMP
+            - ICMPv6
+            - GRE
+            - VRRP
+            - ESP
+            - AH
+            - ANY
+        sourceMac:
+          type: string
+          description: >-
+            Only traffic originating from the respective MAC address is allowed.
+            Valid format: aa:bb:cc:dd:ee:ff. Value null allows traffic from any
+            MAC address.
+          nullable: true
+          example: 00:0a:95:9d:68:16
+        ipVersion:
+          type: string
+          description: >-
+            The IP version for this rule. If sourceIp or targetIp are specified,
+            you can omit this value - the IP version will then be deduced from
+            the IP address(es) used; if you specify it anyway, it must match the
+            specified IP address(es). If neither sourceIp nor targetIp are
+            specified, this rule allows traffic only for the specified IP
+            version. If neither sourceIp, targetIp nor ipVersion are specified,
+            this rule will only allow IPv4 traffic.
+          nullable: true
+          example: IPv4
+          enum:
+            - IPv4
+            - IPv6
+        sourceIp:
+          type: string
+          description: >-
+            Only traffic originating from the respective IP address (or CIDR
+            block) is allowed. Value null allows traffic from any IP address
+            (according to the selected ipVersion).
+          nullable: true
+          example: 22.231.113.64
+        targetIp:
+          type: string
+          description: >-
+            If the target NIC has multiple IP addresses, only the traffic
+            directed to the respective IP address (or CIDR block) of the NIC is
+            allowed. Value null allows traffic to any target IP address
+            (according to the selected ipVersion).
+          nullable: true
+          example: 22.231.113.64
+        icmpCode:
+          maximum: 254
+          minimum: 0
+          type: integer
+          description: >-
+            Defines the allowed code (from 0 to 254) if protocol ICMP or ICMPv6
+            is chosen. Value null allows all codes.
+          format: int32
+          nullable: true
+          example: 0
+        icmpType:
+          maximum: 254
+          minimum: 0
+          type: integer
+          description: >-
+            Defines the allowed type (from 0 to 254) if the protocol ICMP or
+            ICMPv6 is chosen. Value null allows all types.
+          format: int32
+          nullable: true
+          example: 8
+        portRangeStart:
+          maximum: 65535
+          minimum: 1
+          type: integer
+          description: >-
+            Defines the start range of the allowed port (from 1 to 65535) if
+            protocol TCP or UDP is chosen. Leave portRangeStart and portRangeEnd
+            value null to allow all ports.
+          format: int32
+          example: 8
+        portRangeEnd:
+          maximum: 65535
+          minimum: 1
+          type: integer
+          description: >-
+            Defines the end range of the allowed port (from 1 to 65535) if the
+            protocol TCP or UDP is chosen. Leave portRangeStart and portRangeEnd
+            null to allow all ports.
+          format: int32
+          example: 8
+        type:
+          type: string
+          description: >-
+            The type of the IP rule. If not specified, the default INGRESS
+            value is used.
+          example: INGRESS
+          enum:
+            - INGRESS
+            - EGRESS
+    Locations:
+      type: object
+      properties:
+        items:
+          type: array
+          description: Array of items in the collection.
+          readOnly: true
+          items:
+            $ref: '#/components/schemas/Location'
+    Location:
+      required:
+        - properties
+      type: object
+      properties:
+        id:
+          type: string
+          description: The resource's unique identifier.
+          readOnly: true
+          example: 15f67991-0f51-4efc-a8ad-ef1fb31a480c
+        properties:
+          $ref: '#/components/schemas/LocationProperties'
+    LocationProperties:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The location name.
+          example: berlin
+        region:
+          type: string
+          description: The regions where the location is
+          example: de
+        features:
+          type: array
+          description: A list of available features in the location.
+          readOnly: true
+          example:
+            - cloud-init-private-image
+            - ssd
+          items:
+            type: string
+        imageAliases:
+          type: array
+          description: A list of image aliases available in the location.
+          readOnly: true
+          example:
+            - windows:2012r2_iso
+            - windows:2019_iso
+            - ubuntu:18.04_iso
+          items:
+            type: string
+        cpuArchitecture:
+          type: array
+          description: >-
+            A list of available CPU types and related resources available in the
+            location.
+          readOnly: true
+          items:
+            $ref: '#/components/schemas/CpuArchitectureProperties'
+    CpuArchitectureProperties:
+      type: object
+      properties:
+        cpuFamily:
+          type: string
+          description: A valid CPU family name.
+          example: INTEL_ICELAKE
+        maxCores:
+          type: integer
+          description: The maximum number of cores available.
+          format: int32
+          example: 62
+        maxRam:
+          type: integer
+          description: The maximum RAM size in MB.
+          format: int32
+          example: 245760
+        vendor:
+          type: string
+          description: A valid CPU vendor name.
+          example: AuthenticAMD
+    Templates:
+      type: object
+      properties:
+        items:
+          type: array
+          description: Array of items in the collection.
+          readOnly: true
+          items:
+            $ref: '#/components/schemas/Template'
+    Template:
+      required:
+        - properties
+      type: object
+      properties:
+        id:
+          type: string
+          description: The resource's unique identifier.
+          readOnly: true
+          example: 15f67991-0f51-4efc-a8ad-ef1fb31a480c
+        properties:
+          $ref: '#/components/schemas/TemplateProperties'
+    TemplateProperties:
+      required:
+        - cores
+        - name
+        - ram
+        - storageSize
+        - category
+      type: object
+      properties:
+        name:
+          type: string
+          description: The resource name.
+          example: My resource
+        cores:
+          type: number
+          description: The CPU cores count.
+          example: 2
+        ram:
+          type: number
+          description: The RAM size in MB.
+          example: 2048
+        storageSize:
+          type: number
+          description: The storage size in GB.
+          example: 10
+        category:
+          type: string
+          description: The description of the template.
+          example: Template category
     Error:
       type: object
       properties:
@@ -8180,125 +8307,6 @@ components:
           format: uri
           readOnly: true
           example: <NEXT-PAGE-URI>
-    SecurityGroups:
-      type: object
-      properties:
-        items:
-          type: array
-          description: Array of items in the collection.
-          readOnly: true
-          items:
-            $ref: '#/components/schemas/SecurityGroup'
-        offset:
-          $ref: '#/components/schemas/PaginationOffset'
-        limit:
-          $ref: '#/components/schemas/PaginationLimit'
-        _links:
-          $ref: '#/components/schemas/PaginationLinks'
-    SecurityGroup:
-      required:
-        - properties
-      type: object
-      properties:
-        id:
-          type: string
-          description: The resource's unique identifier.
-          readOnly: true
-          example: 15f67991-0f51-4efc-a8ad-ef1fb31a480c
-        metadata:
-          $ref: '#/components/schemas/ElementMetadata'
-        properties:
-          $ref: '#/components/schemas/SecurityGroupProperties'
-    SecurityGroupRequest:
-      required:
-        - properties
-      type: object
-      properties:
-        properties:
-          $ref: '#/components/schemas/SecurityGroupProperties'
-    SecurityGroupProperties:
-      required:
-        - name
-      type: object
-      properties:
-        name:
-          type: string
-          maxLength: 60
-          description: The name of the security group.
-          nullable: true
-          example: My security group
-        vpc:
-          type: string
-          format: uuid
-          description: The id of the vpc.
-          nullable: true
-          example: aa5f6bcf-c9db-46d3-9d4c-330aa90647aa
-        datacenter:
-          type: string
-          format: uuid
-          description: The id of the datacenter.
-          nullable: true
-          example: 8ff2cefe-9d76-4083-af00-46aef9b3578b
-        nic:
-          type: string
-          format: uuid
-          description: The id of the nic.
-          example: 485e0c30-a26f-4a0b-b655-b7cf9c730aa8
-        description:
-          type: string
-          maxLength: 300
-          description: The description of the security group.
-          example: My security group description
-    Templates:
-      type: object
-      properties:
-        items:
-          type: array
-          description: Array of items in the collection.
-          readOnly: true
-          items:
-            $ref: '#/components/schemas/Template'
-    Template:
-      required:
-        - properties
-      type: object
-      properties:
-        id:
-          type: string
-          description: The resource's unique identifier.
-          readOnly: true
-          example: 15f67991-0f51-4efc-a8ad-ef1fb31a480c
-        properties:
-          $ref: '#/components/schemas/TemplateProperties'
-    TemplateProperties:
-      required:
-        - cores
-        - name
-        - ram
-        - storageSize
-        - category
-      type: object
-      properties:
-        name:
-          type: string
-          description: The resource name.
-          example: My resource
-        cores:
-          type: number
-          description: The CPU cores count.
-          example: 2
-        ram:
-          type: number
-          description: The RAM size in MB.
-          example: 2048
-        storageSize:
-          type: number
-          description: The storage size in GB.
-          example: 10
-        category:
-          type: string
-          description: The description of the template.
-          example: Template category
   responses:
     apiError:
       description: >-
