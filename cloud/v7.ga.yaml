@@ -6742,7 +6742,7 @@ components:
           example: CUBE
         datacenter:
           type: string
-          format: : uuid
+          format: uuid
           description: The id of the datacenter to be attached to
           nullable: true
           example: a4c6c98b-45b4-4b30-95c7-fab73eeb3089
