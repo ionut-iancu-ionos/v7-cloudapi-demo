@@ -8,10 +8,33 @@ info:
     Center Designer" (DCD) browser-based tool. 
 
      Both methods employ consistent concepts and features, deliver similar power and flexibility, and can be used to perform a multitude of management tasks, including adding servers, volumes, configuring networks, and so on.
-  version: '7.0'
+  version: '7.0.1'
   x-sdk-patch-level: 5
 servers:
-  - url: https://api.ionos.com/cloudapi/v7
+  - url: https://api.de-fra.ionos.com/cloudapi/v7
+    description: Frankfurt, Germany
+  - url: https://api.de-fkb.ionos.com/cloudapi/v7
+    description: Karlsruhe, Germany
+  - url: https://api.de-txl.ionos.com/cloudapi/v7
+    description: Berlin, Germany
+  - url: https://api.de-vit.ionos.com/cloudapi/v7
+    description: Logrono, Spain
+  - url: https://api.fr-nbz.ionos.com/cloudapi/v7
+    description: Niederlauterbach, France
+  - url: https://api.fr-par.ionos.com/cloudapi/v7
+    description: Paris, Germany
+  - url: https://api.gb-bhx.ionos.com/cloudapi/v7
+    description: Worcester, Great Britain
+  - url: https://api.gb-lhr.ionos.com/cloudapi/v7
+    description: London, Great Britain
+  - url: https://api.us-ewr.ionos.com/cloudapi/v7
+    description: Newark, United States
+  - url: https://api.us-las.ionos.com/cloudapi/v7
+    description: Las Vegas, United States
+  - url: https://api.us-lasdev.ionos.com/cloudapi/v7
+    description: Developer, United States
+  - url: https://api.us-mci.ionos.com/cloudapi/v7
+    description: Lenexa, United States
 tags:
   - name: Virtual Private Clouds
   - name: Data centers
