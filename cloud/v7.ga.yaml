@@ -3849,7 +3849,7 @@ paths:
           $ref: '#/components/responses/ServiceUnavailable'
         default:
           $ref: '#/components/responses/UnexpectedError'
-  /volumes/restoresnapshot/{snapshotId}:
+  /volumes/restoresnapshot:
   
     post:
       operationId: volumesRestoresnapshotPost
@@ -3866,14 +3866,6 @@ paths:
         previous values into consideration.
       parameters:
         - $ref: "#/components/parameters/contractNumber"
-        - name: snapshotId
-          in: path
-          schema:
-            type: string
-            format: uuid
-          example: "f580c0e1-7b80-5803-ae94-96c428bf103c"
-          required: true
-          description: The ID (UUID) of the RestoreSnapshot.
       requestBody:
         description: update RestoreSnapshot
         required: true
@@ -3910,7 +3902,7 @@ paths:
           $ref: '#/components/responses/ServiceUnavailable'
         default:
           $ref: '#/components/responses/UnexpectedError'
-  /servers/operations/{serverId}:
+  /servers/operations:
   
     post:
       operationId: serversOperationsPost
@@ -3927,14 +3919,6 @@ paths:
         previous values into consideration.
       parameters:
         - $ref: "#/components/parameters/contractNumber"
-        - name: serverId
-          in: path
-          schema:
-            type: string
-            format: uuid
-          example: "0eade904-be77-54cf-ba4d-ac05a6562116"
-          required: true
-          description: The ID (UUID) of the ServerOperation.
       requestBody:
         description: update ServerOperation
         required: true
@@ -5829,10 +5813,16 @@ components:
           example: a4c6c98b-45b4-4b30-95c7-fab73eeb3089
     ServerOperation:
       required:
-        - name
+        - serverId
+        - operation
       type: object
       properties:
-        name:
+        serverId:
+          type: string
+          format: uuid
+          description: The uuid of the server
+          example: a4c6c98b-45b4-4b30-95c7-fab73eeb3089
+        operation:
           type: string
           description: The requested operation
           example: START
