@@ -104,7 +104,7 @@ tags:
     Creates and manages IP Rules.
     
     This tag groups all operations for ip rules.
-- name: Ip Blocks
+- name: IP Blocks
   description: |
     Creates and manages IP Blocks.
     
@@ -3234,11 +3234,11 @@ paths:
   /ipblocks:
     get:
       operationId: ipblocksGet
-      summary: Retrieve all Ip Blocks
+      summary: Retrieve all IP Blocks
       security:
       - tokenAuth: []
       description: |
-        This endpoint enables retrieving all Ip Blocks using
+        This endpoint enables retrieving all IP Blocks using
         pagination and optional filters.
       parameters:
         - $ref: "#/components/parameters/paginationOffset"
@@ -3247,11 +3247,11 @@ paths:
         - $ref: "#/components/parameters/vpc"
         - $ref: "#/components/parameters/datacenter"
       tags:
-        - Ip Blocks
+        - IP Blocks
       responses:
         "200":
           description: |
-            Returned all requested Ip Blocks successfully.
+            Returned all requested IP Blocks successfully.
           content:
             application/json:
               schema:
@@ -3276,7 +3276,7 @@ paths:
       security:
       - tokenAuth: []
       tags:
-        - Ip Blocks
+        - IP Blocks
       description: |
         Creates a new IpBlock.
         
@@ -3323,7 +3323,7 @@ paths:
       security:
       - tokenAuth: []
       tags:
-        - Ip Blocks
+        - IP Blocks
       description: Returns the IpBlock by ID.
       parameters:
         - $ref: "#/components/parameters/contractNumber"
@@ -3364,7 +3364,7 @@ paths:
       security:
       - tokenAuth: []
       tags:
-        - Ip Blocks
+        - IP Blocks
       description: |
         Ensures that the IpBlock with the provided ID is created or modified.
         The full IpBlock needs to be provided to ensure
@@ -3429,7 +3429,7 @@ paths:
       security:
       - tokenAuth: []
       tags:
-        - Ip Blocks
+        - IP Blocks
       description: Deletes the specified IpBlock.
       parameters:
         - $ref: "#/components/parameters/contractNumber"
@@ -3914,15 +3914,15 @@ paths:
   
     post:
       operationId: serversOperationsPost
-      summary: Post Operation
+      summary: Post ServerOperation
       security:
       - tokenAuth: []
       tags:
         - Server Operations
       description: |
-        Post the operation Operation with the provided ID and tag.
-        The full Operation needs to be provided to ensure
-        (either update or create) the Operation. Non present data will
+        Post the operation ServerOperation with the provided ID and tag.
+        The full ServerOperation needs to be provided to ensure
+        (either update or create) the ServerOperation. Non present data will
         only be filled with defaults or left empty, but not take
         previous values into consideration.
       parameters:
@@ -3932,23 +3932,23 @@ paths:
           schema:
             type: string
             format: uuid
-          example: "b0240f8d-f277-58a3-a36e-b25ca0cb9b15"
+          example: "0eade904-be77-54cf-ba4d-ac05a6562116"
           required: true
-          description: The ID (UUID) of the Operation.
+          description: The ID (UUID) of the ServerOperation.
       requestBody:
-        description: update Operation
+        description: update ServerOperation
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Operation"
+              $ref: "#/components/schemas/ServerOperation"
       responses:
         "201":
-          description: Operation successfully sent.
+          description: ServerOperation successfully sent.
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/OperationResponse"
+                $ref: "#/components/schemas/ServerOperationResponse"
         "400":
           $ref: '#/components/responses/BadRequest'
         "401":
@@ -5034,6 +5034,7 @@ components:
           example: us/las
         vni:
           type: string
+          x-internal: true
           description: >-
             Only settable for VPC and VPC-lite type. Unique identifier for virtual network address.
           nullable: true
@@ -5085,6 +5086,7 @@ components:
     Datacenter:
       required:
         - location
+        - vpcId
       type: object
       properties:
         name:
@@ -5095,10 +5097,10 @@ components:
           type: string
           description: A description for the datacenter, such as staging, production.
           example: My Production Datacenter
-        vpc:
+        vpcId:
           type: string
+          format: uuid
           description: The vpc where the datacenter exists.
-          nullable: true
           example: c031d885-937d-4dc1-b3e1-95085c7046e2
         location:
           type: string
@@ -5136,6 +5138,8 @@ components:
           items:
             $ref: '#/components/schemas/CpuArchitectureProperties'
     Server:
+      required:
+        - datacenterId
       type: object
       properties:
         templateUuid:
@@ -5209,11 +5213,10 @@ components:
           type: string
           description: 'Server type: CUBE, ENTERPRISE or VCPU.'
           example: CUBE
-        datacenter:
+        datacenterId:
           type: string
           format: uuid
           description: The id of the datacenter to be attached to
-          nullable: true
           example: a4c6c98b-45b4-4b30-95c7-fab73eeb3089
         placementGroupId:
           type: "string"
@@ -5233,6 +5236,7 @@ components:
           default: false
     Volume:
       required:
+        - serverId
         - size
       type: object
       properties:
@@ -5240,10 +5244,10 @@ components:
           type: string
           description: The name of the  resource.
           example: My resource
-        server:
+        serverId:
           type: string
+          format: uuid
           description: The uuid of the server to be attached to.
-          nullable: true
           example: addc0728-2878-4ef0-96c3-742684048398
         type:
           type: string
@@ -5418,8 +5422,15 @@ components:
           type: string
           description: The resource name.
           example: My resource
-        server:
+        volumeId:
           type: string
+          format: uuid
+          description: The uuid of the volume to be attached to.
+          nullable: true
+          example: addc0728-2878-4ef0-96c3-742684048398
+        serverId:
+          type: string
+          format: uuid
           description: The uuid of the server to be attached to.
           nullable: true
           example: addc0728-2878-4ef0-96c3-742684048398
@@ -5524,22 +5535,21 @@ components:
           enum:
             - NONE
             - V1
+        applicationType:
+          $ref: "#/components/schemas/ApplicationType"
     Lan:
       type: object
+      required:
+        - datacenterId
       properties:
         name:
           type: string
           description: The name of the  resource.
           example: My resource
-        vpc:
+        datacenterId:
           type: string
-          description: The id of the vpc to be attached to.
-          nullable: true
-          example: addc0728-2878-4ef0-96c3-742684048398
-        datacenter:
-          type: string
+          format: uuid
           description: The id of the datacenter to be attached to.
-          nullable: true
           example: addc0728-2878-4ef0-96c3-742684048398
         ipFailover:
           type: array
@@ -5579,7 +5589,7 @@ components:
           type: boolean
           description: Indicates if the LAN is connected to the internet or not.
           example: true
-        router:
+        routerId:
           $ref: '#/components/schemas/ResourceReference'
         vni:
           type: integer
@@ -5727,13 +5737,15 @@ components:
           type: string
           description: The resource name.
           example: My resource
-        nic:
+        nicId:
           type: string
+          format: uuid
           description: The nicId where the flowLog will be attached.
           nullable: true
           example: fde83b97-f515-420c-ab10-b3cfaaf45155
-        server:
+        serverId:
           type: string
+          format: uuid
           description: The serverId where the flowLog will be attached.
           nullable: true
           example: addc0728-2878-4ef0-96c3-742684048398
@@ -5807,13 +5819,17 @@ components:
       properties:
         snapshotId:
           type: string
-          description: The id of the snapshot
-        volume:
+          format: uuid
+          description: The id of the volume
+          example: eb297fb4-7e08-4709-940c-cdd0f3e3385c
+        volumeId:
           type: string
           format: uuid
           description: The uuid of the volume
           example: a4c6c98b-45b4-4b30-95c7-fab73eeb3089
-    Operation:
+    ServerOperation:
+      required:
+        - name
       type: object
       properties:
         name:
@@ -5829,7 +5845,7 @@ components:
             - UPGRADE
             - TOKEN
             - REMOTECONSOLE
-    OperationResponse:
+    ServerOperationResponse:
       type: object
       properties:
         url:
@@ -5847,13 +5863,15 @@ components:
           example: >-
             eyJ0eXAiOiJKV1QiLCJraWQiOiI0MWM1MDFlNC03NGY3LTQwYjctYmMxMi1lZWIzMTAzNThlZDkiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJpb25vc2Nsb3VkIiwiaWF0IjoxNjAyNDg5NTkzMDcxLCJzZXJ2ZXIiOnsidXVpZCI6IjMwNGEwZGVlLWE3OTgtNDNhNi04MzIyLTk3M2NiYzc3Yjg4ZCIsIm5hbWUiOiJTZXJ2ZXIifX0.TND9kJd8GXM39XP5PMH_LnF_99al4MEkI_eoEowPvPztirgM50aZEdg6SuLYQzg-R7vrA7hEFaK4NJb2BUUsIZYVMhjl1QmKUE5TnP0Q2zYnIfNQNZFDu2rKrOydPCkPQwlMVvvZLeBSz7lrKYujF-qZ_yY_6SHlFtt-rg6IznRtup8AFziXtl-9cEsWU92_GCTd5LiriQrsnFAiGRbb0p2_6OYAQAH9FeWu4cxrbSwUmeR7Q4klJyZqFd0fv6UTFBtpSiyci7rsB142MXyLcqM4PrBkgd9P5OFbJYf5lbsb9pW04wLSl9rqoWGgZvWsqpuzosUkQRZt_O5yuYmT9w
     RouteTable:
+      required:
+        - vpcId
       type: object
       properties:
         name:
           type: string
           description: The name of the route table.
           example: My route table
-        vpc:
+        vpcId:
           type: string
           format: uuid
           description: The id of the vpc.
@@ -5887,13 +5905,14 @@ components:
       required:
         - prefix
         - gatewayType
+        - routeTableId
       type: object
       properties:
         name:
           type: string
           description: The name of the route.
           example: My route
-        router:
+        routeTableId:
           type: string
           format: uuid
           description: The uuid of the route table.
@@ -5917,7 +5936,7 @@ components:
             - INTERNET
             - GUEST
             - PEERING
-        gatewayNic:
+        gatewayNicId:
           type: string
           format: uuid
           description: >-
@@ -5943,19 +5962,19 @@ components:
           description: The name of the security group.
           nullable: true
           example: My security group
-        vpc:
+        vpcId:
           type: string
           format: uuid
           description: The id of the vpc.
           nullable: true
           example: aa5f6bcf-c9db-46d3-9d4c-330aa90647aa
-        datacenter:
+        datacenterId:
           type: string
           format: uuid
           description: The id of the datacenter.
           nullable: true
           example: 8ff2cefe-9d76-4083-af00-46aef9b3578b
-        nic:
+        nicId:
           type: string
           format: uuid
           description: The id of the nic.
@@ -5968,16 +5987,17 @@ components:
     IpRule:
       required:
         - protocol
+        - securityGroupId
       type: object
       properties:
         name:
           type: string
           description: The name of the  resource.
           example: My resource
-        securityGroup:
+        securityGroupId:
           type: string
+          format: uuid
           description: The uuid of the security group to which the ip rule belongs to
-          nullable: true
           example: fde83b97-f515-420c-ab10-b3cfaaf45155
         protocol:
           type: string
@@ -6266,26 +6286,7 @@ components:
                 State of the resource. *AVAILABLE* There are no pending modification
                 requests for this item; *BUSY* There is at least one modification
                 request pending and all following requests will be queued;
-                *INACTIVE* Resource has been de-provisioned; *DEPLOYING* Resource
-                state DEPLOYING - relevant for Kubernetes cluster/nodepool; *ACTIVE*
-                Resource state ACTIVE - relevant for Kubernetes cluster/nodepool;
-                *FAILED* Resource state FAILED - relevant for Kubernetes
-                cluster/nodepool; *SUSPENDED* Resource state SUSPENDED - relevant
-                for Kubernetes cluster/nodepool; *FAILED_SUSPENDED* Resource state
-                FAILED_SUSPENDED - relevant for Kubernetes cluster; *UPDATING*
-                Resource state UPDATING - relevant for Kubernetes cluster/nodepool;
-                *FAILED_UPDATING* Resource state FAILED_UPDATING - relevant for
-                Kubernetes cluster/nodepool; *DESTROYING* Resource state DESTROYING
-                - relevant for Kubernetes cluster; *FAILED_DESTROYING* Resource
-                state FAILED_DESTROYING - relevant for Kubernetes cluster/nodepool;
-                *TERMINATED* Resource state TERMINATED - relevant for Kubernetes
-                cluster/nodepool; *HIBERNATING* Resource state HIBERNATING -
-                relevant for Kubernetes cluster/nodepool; *FAILED_HIBERNATING*
-                Resource state FAILED_HIBERNATING - relevant for Kubernetes
-                cluster/nodepool; *MAINTENANCE* Resource state MAINTENANCE -
-                relevant for Kubernetes cluster/nodepool; *FAILED_HIBERNATING*
-                Resource state FAILED_HIBERNATING - relevant for Kubernetes
-                cluster/nodepool.
+                *INACTIVE* Resource has been de-provisioned;
               readOnly: true
               example: AVAILABLE
               enum:
@@ -6318,6 +6319,7 @@ components:
           description: The description of the consumer.
         nicId:
           type: string
+          format: uuid
           description: The nic where the IP exists.
         serverId:
           type: string
@@ -6331,6 +6333,19 @@ components:
         datacenterName:
           type: string
           description: The name of the datancenter where the IP exists.
+    ApplicationType:
+      type: string
+      example: MSSQL-2019-Standard
+      description: The type of application that is hosted on this volume
+      default: UNKNOWN
+      x-extensible-enum:
+        - MSSQL-2019-Web
+        - MSSQL-2019-Standard
+        - MSSQL-2019-Enterprise
+        - MSSQL-2022-Web
+        - MSSQL-2022-Standard
+        - MSSQL-2022-Enterprise
+        - UNKNOWN
     CpuArchitectureProperties:
       type: object
       properties:
