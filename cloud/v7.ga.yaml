@@ -15,12 +15,12 @@ servers:
     description: Karlsruhe, Germany
   - url: https://api.de-txl.ionos.com/cloudapi/v7
     description: Berlin, Germany
-  - url: https://api.de-vit.ionos.com/cloudapi/v7
+  - url: https://api.es-vit.ionos.com/cloudapi/v7
     description: Logrono, Spain
   - url: https://api.fr-nbz.ionos.com/cloudapi/v7
     description: Niederlauterbach, France
   - url: https://api.fr-par.ionos.com/cloudapi/v7
-    description: Paris, Germany
+    description: Paris, France
   - url: https://api.gb-bhx.ionos.com/cloudapi/v7
     description: Worcester, Great Britain
   - url: https://api.gb-lhr.ionos.com/cloudapi/v7
@@ -29,8 +29,6 @@ servers:
     description: Newark, United States
   - url: https://api.us-las.ionos.com/cloudapi/v7
     description: Las Vegas, United States
-  - url: https://api.us-lasdev.ionos.com/cloudapi/v7
-    description: Developer, United States
   - url: https://api.us-mci.ionos.com/cloudapi/v7
     description: Lenexa, United States
 tags:
@@ -61,19 +59,14 @@ tags:
     This tag groups all operations for snapshots.
 - name: Images
   description: |
-    Creates and manages Images.
+    Manages Images.
     
     This tag groups all operations for images.
-- name: CD-roms
-  description: |
-    Creates and manages CD-roms.
-    
-    This tag groups all operations for cd-roms.
-- name: Network Interaces
+- name: Network Interfaces
   description: |
     Creates and manages Network Intefaces.
     
-    This tag groups all operations for network interaces.
+    This tag groups all operations for network interfaces.
 - name: Local Area Networks
   description: |
     Creates and manages Local Area Networks.
@@ -84,6 +77,11 @@ tags:
     Creates and manages Network ACLs.
     
     This tag groups all operations for network acls.
+- name: Network ACL Rules
+  description: |
+    Creates and manages NetworkAcl Rules.
+    
+    This tag groups all operations for network acl rules.
 - name: Route Tables
   description: |
     Creates and manages Route Tables.
@@ -99,11 +97,11 @@ tags:
     Creates and manages Security Groups.
     
     This tag groups all operations for security groups.
-- name: IP Rules
+- name: Security Group Rules
   description: |
-    Creates and manages IP Rules.
+    Creates and manages Security Group Rules.
     
-    This tag groups all operations for ip rules.
+    This tag groups all operations for security group rules.
 - name: IP Blocks
   description: |
     Creates and manages IP Blocks.
@@ -124,11 +122,11 @@ tags:
     Retrieves Templates.
     
     This tag groups all operations for templates.
-- name: Snaphots Restore
+- name: Restore Snaphots
   description: |
     Performs a snapshot restoration.
     
-    This tag groups all operations for snaphots restore.
+    This tag groups all operations for restore snaphots.
 - name: Server Operations
   description: |
     Performs various operations on Servers like STOP, START, SUSPEND, RESUME.
@@ -1294,6 +1292,7 @@ paths:
         - $ref: "#/components/parameters/contractNumber"
         - $ref: "#/components/parameters/vpc"
         - $ref: "#/components/parameters/datacenter"
+        - $ref: "#/components/parameters/server"
       tags:
         - Images
       responses:
@@ -1462,179 +1461,14 @@ paths:
           $ref: '#/components/responses/ServiceUnavailable'
         default:
           $ref: '#/components/responses/UnexpectedError'
-  /cdroms:
-    get:
-      operationId: cdromsGet
-      summary: Retrieve all CD-roms
-      security:
-      - tokenAuth: []
-      description: |
-        This endpoint enables retrieving all CD-roms using
-        pagination and optional filters.
-      parameters:
-        - $ref: "#/components/parameters/paginationOffset"
-        - $ref: "#/components/parameters/paginationLimit"
-        - $ref: "#/components/parameters/contractNumber"
-        - $ref: "#/components/parameters/vpc"
-        - $ref: "#/components/parameters/datacenter"
-        - $ref: "#/components/parameters/server"
-      tags:
-        - CD-roms
-      responses:
-        "200":
-          description: |
-            Returned all requested CD-roms successfully.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/CDromReadList"
-        "400":
-          $ref: '#/components/responses/BadRequest'
-        "401":
-          $ref: '#/components/responses/Unauthorized'
-        "403":
-          $ref: '#/components/responses/NotAllowed'
-        "429":
-          $ref: '#/components/responses/TooManyRequests'
-        "500":
-          $ref: '#/components/responses/InternalError'
-        "503":
-          $ref: '#/components/responses/ServiceUnavailable'
-        default:
-          $ref: '#/components/responses/UnexpectedError'
-    post:
-      operationId: cdromsPost
-      summary: Create CDrom
-      security:
-      - tokenAuth: []
-      tags:
-        - CD-roms
-      description: |
-        Creates a new CDrom.
-        
-        The full CDrom needs to be provided to create the object.
-        Optional data will be filled with defaults or left empty.
-      parameters:
-        - $ref: "#/components/parameters/contractNumber"
-      requestBody:
-        description: CDrom to create.
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/CDromCreate"
-      responses:
-        "201":
-          description: CDrom successfully created.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/CDromRead"
-        "400":
-          $ref: '#/components/responses/BadRequest'
-        "401":
-          $ref: '#/components/responses/Unauthorized'
-        "403":
-          $ref: '#/components/responses/NotAllowed'
-        "415":
-          $ref: '#/components/responses/UnsupportedMediaType'
-        "422":
-          $ref: '#/components/responses/UnprocessableEntity'
-        "429":
-          $ref: '#/components/responses/TooManyRequests'
-        "500":
-          $ref: '#/components/responses/InternalError'
-        "503":
-          $ref: '#/components/responses/ServiceUnavailable'
-        default:
-          $ref: '#/components/responses/UnexpectedError'
-  /cdroms/{cdromId}:
-    get:
-      operationId: cdromsFindById
-      summary: Retrieve CDrom
-      security:
-      - tokenAuth: []
-      tags:
-        - CD-roms
-      description: Returns the CDrom by ID.
-      parameters:
-        - $ref: "#/components/parameters/contractNumber"
-        - name: cdromId
-          in: path
-          schema:
-            type: string
-            format: uuid
-          example: "a8afc460-3a31-584c-a9d8-1b0e1a15cbac"
-          required: true
-          description: The ID (UUID) of the CDrom.
-      responses:
-        "200":
-          description: Getting CDrom was successful.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/CDromRead"
-        "400":
-          $ref: '#/components/responses/BadRequest'
-        "401":
-          $ref: '#/components/responses/Unauthorized'
-        "403":
-          $ref: '#/components/responses/NotAllowed'
-        "404":
-          $ref: '#/components/responses/NotFound'
-        "429":
-          $ref: '#/components/responses/TooManyRequests'
-        "500":
-          $ref: '#/components/responses/InternalError'
-        "503":
-          $ref: '#/components/responses/ServiceUnavailable'
-        default:
-          $ref: '#/components/responses/UnexpectedError'
-    delete:
-      operationId: cdromsDelete
-      summary: Delete CDrom
-      security:
-      - tokenAuth: []
-      tags:
-        - CD-roms
-      description: Deletes the specified CDrom.
-      parameters:
-        - $ref: "#/components/parameters/contractNumber"
-        - name: cdromId
-          in: path
-          schema:
-            type: string
-            format: uuid
-          example: "a8afc460-3a31-584c-a9d8-1b0e1a15cbac"
-          required: true
-          description: The ID (UUID) of the CDrom.
-      responses:
-        "202":
-          description: Deleting CDrom was successful.
-        "400":
-          $ref: '#/components/responses/BadRequest'
-        "401":
-          $ref: '#/components/responses/Unauthorized'
-        "403":
-          $ref: '#/components/responses/NotAllowed'
-        "404":
-          $ref: '#/components/responses/NotFound'
-        "429":
-          $ref: '#/components/responses/TooManyRequests'
-        "500":
-          $ref: '#/components/responses/InternalError'
-        "503":
-          $ref: '#/components/responses/ServiceUnavailable'
-        default:
-          $ref: '#/components/responses/UnexpectedError'
   /nics:
     get:
       operationId: nicsGet
-      summary: Retrieve all Network Interaces
+      summary: Retrieve all Network Interfaces
       security:
       - tokenAuth: []
       description: |
-        This endpoint enables retrieving all Network Interaces using
+        This endpoint enables retrieving all Network Interfaces using
         pagination and optional filters.
       parameters:
         - $ref: "#/components/parameters/paginationOffset"
@@ -1645,11 +1479,11 @@ paths:
         - $ref: "#/components/parameters/server"
         - $ref: "#/components/parameters/lan"
       tags:
-        - Network Interaces
+        - Network Interfaces
       responses:
         "200":
           description: |
-            Returned all requested Network Interaces successfully.
+            Returned all requested Network Interfaces successfully.
           content:
             application/json:
               schema:
@@ -1674,7 +1508,7 @@ paths:
       security:
       - tokenAuth: []
       tags:
-        - Network Interaces
+        - Network Interfaces
       description: |
         Creates a new Nic.
         
@@ -1721,7 +1555,7 @@ paths:
       security:
       - tokenAuth: []
       tags:
-        - Network Interaces
+        - Network Interfaces
       description: Returns the Nic by ID.
       parameters:
         - $ref: "#/components/parameters/contractNumber"
@@ -1762,7 +1596,7 @@ paths:
       security:
       - tokenAuth: []
       tags:
-        - Network Interaces
+        - Network Interfaces
       description: |
         Ensures that the Nic with the provided ID is created or modified.
         The full Nic needs to be provided to ensure
@@ -1827,7 +1661,7 @@ paths:
       security:
       - tokenAuth: []
       tags:
-        - Network Interaces
+        - Network Interfaces
       description: Deletes the specified Nic.
       parameters:
         - $ref: "#/components/parameters/contractNumber"
@@ -2299,6 +2133,235 @@ paths:
       responses:
         "202":
           description: Deleting NetworkAcl was successful.
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/NotAllowed'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "429":
+          $ref: '#/components/responses/TooManyRequests'
+        "500":
+          $ref: '#/components/responses/InternalError'
+        "503":
+          $ref: '#/components/responses/ServiceUnavailable'
+        default:
+          $ref: '#/components/responses/UnexpectedError'
+  /naclrules:
+    get:
+      operationId: naclrulesGet
+      summary: Retrieve all Network ACL Rules
+      security:
+      - tokenAuth: []
+      description: |
+        This endpoint enables retrieving all Network ACL Rules using
+        pagination and optional filters.
+      parameters:
+        - $ref: "#/components/parameters/paginationOffset"
+        - $ref: "#/components/parameters/paginationLimit"
+        - $ref: "#/components/parameters/contractNumber"
+        - $ref: "#/components/parameters/vpc"
+        - $ref: "#/components/parameters/nacl"
+      tags:
+        - Network ACL Rules
+      responses:
+        "200":
+          description: |
+            Returned all requested Network ACL Rules successfully.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NetworkAclRuleReadList"
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/NotAllowed'
+        "429":
+          $ref: '#/components/responses/TooManyRequests'
+        "500":
+          $ref: '#/components/responses/InternalError'
+        "503":
+          $ref: '#/components/responses/ServiceUnavailable'
+        default:
+          $ref: '#/components/responses/UnexpectedError'
+    post:
+      operationId: naclrulesPost
+      summary: Create NetworkAclRule
+      security:
+      - tokenAuth: []
+      tags:
+        - Network ACL Rules
+      description: |
+        Creates a new NetworkAclRule.
+        
+        The full NetworkAclRule needs to be provided to create the object.
+        Optional data will be filled with defaults or left empty.
+      parameters:
+        - $ref: "#/components/parameters/contractNumber"
+      requestBody:
+        description: NetworkAclRule to create.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NetworkAclRuleCreate"
+      responses:
+        "201":
+          description: NetworkAclRule successfully created.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NetworkAclRuleRead"
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/NotAllowed'
+        "415":
+          $ref: '#/components/responses/UnsupportedMediaType'
+        "422":
+          $ref: '#/components/responses/UnprocessableEntity'
+        "429":
+          $ref: '#/components/responses/TooManyRequests'
+        "500":
+          $ref: '#/components/responses/InternalError'
+        "503":
+          $ref: '#/components/responses/ServiceUnavailable'
+        default:
+          $ref: '#/components/responses/UnexpectedError'
+  /naclrules/{naclruleId}:
+    get:
+      operationId: naclrulesFindById
+      summary: Retrieve NetworkAclRule
+      security:
+      - tokenAuth: []
+      tags:
+        - Network ACL Rules
+      description: Returns the NetworkAclRule by ID.
+      parameters:
+        - $ref: "#/components/parameters/contractNumber"
+        - name: naclruleId
+          in: path
+          schema:
+            type: string
+            format: uuid
+          example: "e775ab89-71e0-50e9-a7ab-db818d4323e7"
+          required: true
+          description: The ID (UUID) of the NetworkAclRule.
+      responses:
+        "200":
+          description: Getting NetworkAclRule was successful.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NetworkAclRuleRead"
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/NotAllowed'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "429":
+          $ref: '#/components/responses/TooManyRequests'
+        "500":
+          $ref: '#/components/responses/InternalError'
+        "503":
+          $ref: '#/components/responses/ServiceUnavailable'
+        default:
+          $ref: '#/components/responses/UnexpectedError'
+    put:
+      operationId: naclrulesPut
+      summary: Ensure NetworkAclRule
+      security:
+      - tokenAuth: []
+      tags:
+        - Network ACL Rules
+      description: |
+        Ensures that the NetworkAclRule with the provided ID is created or modified.
+        The full NetworkAclRule needs to be provided to ensure
+        (either update or create) the NetworkAclRule. Non present data will
+        only be filled with defaults or left empty, but not take
+        previous values into consideration.
+      parameters:
+        - $ref: "#/components/parameters/contractNumber"
+        - name: naclruleId
+          in: path
+          schema:
+            type: string
+            format: uuid
+          example: "e775ab89-71e0-50e9-a7ab-db818d4323e7"
+          required: true
+          description: The ID (UUID) of the NetworkAclRule.
+      requestBody:
+        description: update NetworkAclRule
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NetworkAclRuleEnsure"
+      responses:
+        "200":
+          description: NetworkAclRule successfully updated.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NetworkAclRuleRead"
+        "201":
+          description: NetworkAclRule successfully ensured.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NetworkAclRuleRead"
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/NotAllowed'
+        "409":
+          $ref: '#/components/responses/Conflict'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "415":
+          $ref: '#/components/responses/UnsupportedMediaType'
+        "422":
+          $ref: '#/components/responses/UnprocessableEntity'
+        "429":
+          $ref: '#/components/responses/TooManyRequests'
+        "500":
+          $ref: '#/components/responses/InternalError'
+        "503":
+          $ref: '#/components/responses/ServiceUnavailable'
+        default:
+          $ref: '#/components/responses/UnexpectedError'
+    delete:
+      operationId: naclrulesDelete
+      summary: Delete NetworkAclRule
+      security:
+      - tokenAuth: []
+      tags:
+        - Network ACL Rules
+      description: Deletes the specified NetworkAclRule.
+      parameters:
+        - $ref: "#/components/parameters/contractNumber"
+        - name: naclruleId
+          in: path
+          schema:
+            type: string
+            format: uuid
+          example: "e775ab89-71e0-50e9-a7ab-db818d4323e7"
+          required: true
+          description: The ID (UUID) of the NetworkAclRule.
+      responses:
+        "202":
+          description: Deleting NetworkAclRule was successful.
         "400":
           $ref: '#/components/responses/BadRequest'
         "401":
@@ -3001,14 +3064,14 @@ paths:
           $ref: '#/components/responses/ServiceUnavailable'
         default:
           $ref: '#/components/responses/UnexpectedError'
-  /iprules:
+  /securitygrouprules:
     get:
-      operationId: iprulesGet
-      summary: Retrieve all IP Rules
+      operationId: securitygrouprulesGet
+      summary: Retrieve all Security Group Rules
       security:
       - tokenAuth: []
       description: |
-        This endpoint enables retrieving all IP Rules using
+        This endpoint enables retrieving all Security Group Rules using
         pagination and optional filters.
       parameters:
         - $ref: "#/components/parameters/paginationOffset"
@@ -3018,15 +3081,15 @@ paths:
         - $ref: "#/components/parameters/datacenter"
         - $ref: "#/components/parameters/securitygroup"
       tags:
-        - IP Rules
+        - Security Group Rules
       responses:
         "200":
           description: |
-            Returned all requested IP Rules successfully.
+            Returned all requested Security Group Rules successfully.
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/IpRuleReadList"
+                $ref: "#/components/schemas/SecurityGroupRuleReadList"
         "400":
           $ref: '#/components/responses/BadRequest'
         "401":
@@ -3042,33 +3105,33 @@ paths:
         default:
           $ref: '#/components/responses/UnexpectedError'
     post:
-      operationId: iprulesPost
-      summary: Create IpRule
+      operationId: securitygrouprulesPost
+      summary: Create SecurityGroupRule
       security:
       - tokenAuth: []
       tags:
-        - IP Rules
+        - Security Group Rules
       description: |
-        Creates a new IpRule.
+        Creates a new SecurityGroupRule.
         
-        The full IpRule needs to be provided to create the object.
+        The full SecurityGroupRule needs to be provided to create the object.
         Optional data will be filled with defaults or left empty.
       parameters:
         - $ref: "#/components/parameters/contractNumber"
       requestBody:
-        description: IpRule to create.
+        description: SecurityGroupRule to create.
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/IpRuleCreate"
+              $ref: "#/components/schemas/SecurityGroupRuleCreate"
       responses:
         "201":
-          description: IpRule successfully created.
+          description: SecurityGroupRule successfully created.
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/IpRuleRead"
+                $ref: "#/components/schemas/SecurityGroupRuleRead"
         "400":
           $ref: '#/components/responses/BadRequest'
         "401":
@@ -3087,32 +3150,32 @@ paths:
           $ref: '#/components/responses/ServiceUnavailable'
         default:
           $ref: '#/components/responses/UnexpectedError'
-  /iprules/{ipruleId}:
+  /securitygrouprules/{securitygroupruleId}:
     get:
-      operationId: iprulesFindById
-      summary: Retrieve IpRule
+      operationId: securitygrouprulesFindById
+      summary: Retrieve SecurityGroupRule
       security:
       - tokenAuth: []
       tags:
-        - IP Rules
-      description: Returns the IpRule by ID.
+        - Security Group Rules
+      description: Returns the SecurityGroupRule by ID.
       parameters:
         - $ref: "#/components/parameters/contractNumber"
-        - name: ipruleId
+        - name: securitygroupruleId
           in: path
           schema:
             type: string
             format: uuid
-          example: "8e869dd8-e4b9-5767-bf06-6c1c3d01bccf"
+          example: "37fa64f3-2ac2-5ae8-850d-63e3d9bd4cad"
           required: true
-          description: The ID (UUID) of the IpRule.
+          description: The ID (UUID) of the SecurityGroupRule.
       responses:
         "200":
-          description: Getting IpRule was successful.
+          description: Getting SecurityGroupRule was successful.
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/IpRuleRead"
+                $ref: "#/components/schemas/SecurityGroupRuleRead"
         "400":
           $ref: '#/components/responses/BadRequest'
         "401":
@@ -3130,48 +3193,48 @@ paths:
         default:
           $ref: '#/components/responses/UnexpectedError'
     put:
-      operationId: iprulesPut
-      summary: Ensure IpRule
+      operationId: securitygrouprulesPut
+      summary: Ensure SecurityGroupRule
       security:
       - tokenAuth: []
       tags:
-        - IP Rules
+        - Security Group Rules
       description: |
-        Ensures that the IpRule with the provided ID is created or modified.
-        The full IpRule needs to be provided to ensure
-        (either update or create) the IpRule. Non present data will
+        Ensures that the SecurityGroupRule with the provided ID is created or modified.
+        The full SecurityGroupRule needs to be provided to ensure
+        (either update or create) the SecurityGroupRule. Non present data will
         only be filled with defaults or left empty, but not take
         previous values into consideration.
       parameters:
         - $ref: "#/components/parameters/contractNumber"
-        - name: ipruleId
+        - name: securitygroupruleId
           in: path
           schema:
             type: string
             format: uuid
-          example: "8e869dd8-e4b9-5767-bf06-6c1c3d01bccf"
+          example: "37fa64f3-2ac2-5ae8-850d-63e3d9bd4cad"
           required: true
-          description: The ID (UUID) of the IpRule.
+          description: The ID (UUID) of the SecurityGroupRule.
       requestBody:
-        description: update IpRule
+        description: update SecurityGroupRule
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/IpRuleEnsure"
+              $ref: "#/components/schemas/SecurityGroupRuleEnsure"
       responses:
         "200":
-          description: IpRule successfully updated.
+          description: SecurityGroupRule successfully updated.
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/IpRuleRead"
+                $ref: "#/components/schemas/SecurityGroupRuleRead"
         "201":
-          description: IpRule successfully ensured.
+          description: SecurityGroupRule successfully ensured.
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/IpRuleRead"
+                $ref: "#/components/schemas/SecurityGroupRuleRead"
         "400":
           $ref: '#/components/responses/BadRequest'
         "401":
@@ -3195,26 +3258,26 @@ paths:
         default:
           $ref: '#/components/responses/UnexpectedError'
     delete:
-      operationId: iprulesDelete
-      summary: Delete IpRule
+      operationId: securitygrouprulesDelete
+      summary: Delete SecurityGroupRule
       security:
       - tokenAuth: []
       tags:
-        - IP Rules
-      description: Deletes the specified IpRule.
+        - Security Group Rules
+      description: Deletes the specified SecurityGroupRule.
       parameters:
         - $ref: "#/components/parameters/contractNumber"
-        - name: ipruleId
+        - name: securitygroupruleId
           in: path
           schema:
             type: string
             format: uuid
-          example: "8e869dd8-e4b9-5767-bf06-6c1c3d01bccf"
+          example: "37fa64f3-2ac2-5ae8-850d-63e3d9bd4cad"
           required: true
-          description: The ID (UUID) of the IpRule.
+          description: The ID (UUID) of the SecurityGroupRule.
       responses:
         "202":
-          description: Deleting IpRule was successful.
+          description: Deleting SecurityGroupRule was successful.
         "400":
           $ref: '#/components/responses/BadRequest'
         "401":
@@ -3849,15 +3912,14 @@ paths:
           $ref: '#/components/responses/ServiceUnavailable'
         default:
           $ref: '#/components/responses/UnexpectedError'
-  /volumes/restoresnapshot:
-  
+  /restoresnapshots:
     post:
-      operationId: volumesRestoresnapshotPost
+      operationId: restoresnapshotsPost
       summary: Post RestoreSnapshot
       security:
-      - tokenAuth: []
+        - tokenAuth: []
       tags:
-        - Snaphots Restore
+        - Restore Snaphots
       description: |
         Post the operation RestoreSnapshot with the provided ID and tag.
         The full RestoreSnapshot needs to be provided to ensure
@@ -3902,13 +3964,12 @@ paths:
           $ref: '#/components/responses/ServiceUnavailable'
         default:
           $ref: '#/components/responses/UnexpectedError'
-  /servers/operations:
-  
+  /serveroperations:
     post:
-      operationId: serversOperationsPost
+      operationId: serveroperationsPost
       summary: Post ServerOperation
       security:
-      - tokenAuth: []
+        - tokenAuth: []
       tags:
         - Server Operations
       description: |
@@ -3959,27 +4020,27 @@ components:
   schemas:
     VpcReadList:
       allOf:
-        - type: object
-          required:
-            - id
-          properties:
-            id:
-              description: ID of the list of Vpc resources.
-              type: string
-              format: uuid
-              example: e4d59efb-bffd-5f44-bd9a-b146ad0c2d77
+      - type: object
+        required:
+        - id
+        properties:
+          id:
+            description: ID of the list of Vpc resources.
+            type: string
+            format: uuid
+            example: e4d59efb-bffd-5f44-bd9a-b146ad0c2d77
+          items:
+            description: The list of Vpc resources.
+            type: array
             items:
-              description: The list of Vpc resources.
-              type: array
-              items:
-                $ref: '#/components/schemas/VpcRead'
-        - $ref: '#/components/schemas/Pagination'
+              $ref: '#/components/schemas/VpcRead'
+      - $ref: '#/components/schemas/Pagination'
     VpcRead:
       type: object
       required:
-        - id
-        - metadata
-        - properties
+      - id
+      - metadata
+      - properties
       properties:
         id:
           type: string
@@ -3987,16 +4048,14 @@ components:
           format: uuid
           example: "e50a7f27-79ce-53c6-8c2a-661949161972"
         metadata:
-  
           $ref: '#/components/schemas/ElementMetadata'
-  
         properties:
           $ref: '#/components/schemas/Vpc'
     VpcEnsure:
       type: object
       required:
-        - id
-        - properties
+      - id
+      - properties
       properties:
         id:
           type: string
@@ -4012,7 +4071,7 @@ components:
     VpcCreate:
       type: object
       required:
-        - properties
+      - properties
       properties:
         metadata:
           description: Metadata
@@ -4022,27 +4081,27 @@ components:
           $ref: '#/components/schemas/Vpc'
     DatacenterReadList:
       allOf:
-        - type: object
-          required:
-            - id
-          properties:
-            id:
-              description: ID of the list of Datacenter resources.
-              type: string
-              format: uuid
-              example: f6ebba96-00d9-5acc-8454-d6213506c2ca
+      - type: object
+        required:
+        - id
+        properties:
+          id:
+            description: ID of the list of Datacenter resources.
+            type: string
+            format: uuid
+            example: f6ebba96-00d9-5acc-8454-d6213506c2ca
+          items:
+            description: The list of Datacenter resources.
+            type: array
             items:
-              description: The list of Datacenter resources.
-              type: array
-              items:
-                $ref: '#/components/schemas/DatacenterRead'
-        - $ref: '#/components/schemas/Pagination'
+              $ref: '#/components/schemas/DatacenterRead'
+      - $ref: '#/components/schemas/Pagination'
     DatacenterRead:
       type: object
       required:
-        - id
-        - metadata
-        - properties
+      - id
+      - metadata
+      - properties
       properties:
         id:
           type: string
@@ -4050,16 +4109,14 @@ components:
           format: uuid
           example: "d6e4e4d9-e542-5089-96c6-0087a38fda91"
         metadata:
-  
           $ref: '#/components/schemas/ElementMetadata'
-  
         properties:
           $ref: '#/components/schemas/Datacenter'
     DatacenterEnsure:
       type: object
       required:
-        - id
-        - properties
+      - id
+      - properties
       properties:
         id:
           type: string
@@ -4075,7 +4132,7 @@ components:
     DatacenterCreate:
       type: object
       required:
-        - properties
+      - properties
       properties:
         metadata:
           description: Metadata
@@ -4085,27 +4142,27 @@ components:
           $ref: '#/components/schemas/Datacenter'
     ServerReadList:
       allOf:
-        - type: object
-          required:
-            - id
-          properties:
-            id:
-              description: ID of the list of Server resources.
-              type: string
-              format: uuid
-              example: 70330e63-425b-597f-91d7-f86c030a6a30
+      - type: object
+        required:
+        - id
+        properties:
+          id:
+            description: ID of the list of Server resources.
+            type: string
+            format: uuid
+            example: 70330e63-425b-597f-91d7-f86c030a6a30
+          items:
+            description: The list of Server resources.
+            type: array
             items:
-              description: The list of Server resources.
-              type: array
-              items:
-                $ref: '#/components/schemas/ServerRead'
-        - $ref: '#/components/schemas/Pagination'
+              $ref: '#/components/schemas/ServerRead'
+      - $ref: '#/components/schemas/Pagination'
     ServerRead:
       type: object
       required:
-        - id
-        - metadata
-        - properties
+      - id
+      - metadata
+      - properties
       properties:
         id:
           type: string
@@ -4113,16 +4170,14 @@ components:
           format: uuid
           example: "10ac0074-96c1-5d50-8852-81bd6272cb18"
         metadata:
-  
           $ref: '#/components/schemas/ElementMetadata'
-  
         properties:
           $ref: '#/components/schemas/Server'
     ServerEnsure:
       type: object
       required:
-        - id
-        - properties
+      - id
+      - properties
       properties:
         id:
           type: string
@@ -4138,7 +4193,7 @@ components:
     ServerCreate:
       type: object
       required:
-        - properties
+      - properties
       properties:
         metadata:
           description: Metadata
@@ -4148,27 +4203,27 @@ components:
           $ref: '#/components/schemas/Server'
     VolumeReadList:
       allOf:
-        - type: object
-          required:
-            - id
-          properties:
-            id:
-              description: ID of the list of Volume resources.
-              type: string
-              format: uuid
-              example: 4da5de3a-bebb-51b2-96a8-694a89c1b1e0
+      - type: object
+        required:
+        - id
+        properties:
+          id:
+            description: ID of the list of Volume resources.
+            type: string
+            format: uuid
+            example: 4da5de3a-bebb-51b2-96a8-694a89c1b1e0
+          items:
+            description: The list of Volume resources.
+            type: array
             items:
-              description: The list of Volume resources.
-              type: array
-              items:
-                $ref: '#/components/schemas/VolumeRead'
-        - $ref: '#/components/schemas/Pagination'
+              $ref: '#/components/schemas/VolumeRead'
+      - $ref: '#/components/schemas/Pagination'
     VolumeRead:
       type: object
       required:
-        - id
-        - metadata
-        - properties
+      - id
+      - metadata
+      - properties
       properties:
         id:
           type: string
@@ -4176,16 +4231,14 @@ components:
           format: uuid
           example: "21a4723d-bd52-5800-908d-d4fe55517b48"
         metadata:
-  
           $ref: '#/components/schemas/ElementMetadata'
-  
         properties:
           $ref: '#/components/schemas/Volume'
     VolumeEnsure:
       type: object
       required:
-        - id
-        - properties
+      - id
+      - properties
       properties:
         id:
           type: string
@@ -4201,7 +4254,7 @@ components:
     VolumeCreate:
       type: object
       required:
-        - properties
+      - properties
       properties:
         metadata:
           description: Metadata
@@ -4211,27 +4264,27 @@ components:
           $ref: '#/components/schemas/Volume'
     SnapshotReadList:
       allOf:
-        - type: object
-          required:
-            - id
-          properties:
-            id:
-              description: ID of the list of Snapshot resources.
-              type: string
-              format: uuid
-              example: b9cb6c65-8997-58bb-b7d1-93e5da5a6525
+      - type: object
+        required:
+        - id
+        properties:
+          id:
+            description: ID of the list of Snapshot resources.
+            type: string
+            format: uuid
+            example: b9cb6c65-8997-58bb-b7d1-93e5da5a6525
+          items:
+            description: The list of Snapshot resources.
+            type: array
             items:
-              description: The list of Snapshot resources.
-              type: array
-              items:
-                $ref: '#/components/schemas/SnapshotRead'
-        - $ref: '#/components/schemas/Pagination'
+              $ref: '#/components/schemas/SnapshotRead'
+      - $ref: '#/components/schemas/Pagination'
     SnapshotRead:
       type: object
       required:
-        - id
-        - metadata
-        - properties
+      - id
+      - metadata
+      - properties
       properties:
         id:
           type: string
@@ -4239,16 +4292,14 @@ components:
           format: uuid
           example: "a8784665-3d99-5464-af32-30a2967f58e7"
         metadata:
-  
           $ref: '#/components/schemas/ElementMetadata'
-  
         properties:
           $ref: '#/components/schemas/Snapshot'
     SnapshotEnsure:
       type: object
       required:
-        - id
-        - properties
+      - id
+      - properties
       properties:
         id:
           type: string
@@ -4264,7 +4315,7 @@ components:
     SnapshotCreate:
       type: object
       required:
-        - properties
+      - properties
       properties:
         metadata:
           description: Metadata
@@ -4274,27 +4325,27 @@ components:
           $ref: '#/components/schemas/Snapshot'
     ImageReadList:
       allOf:
-        - type: object
-          required:
-            - id
-          properties:
-            id:
-              description: ID of the list of Image resources.
-              type: string
-              format: uuid
-              example: 6e8d5f3e-dca1-5a0a-87f1-c8f9753ffa8a
+      - type: object
+        required:
+        - id
+        properties:
+          id:
+            description: ID of the list of Image resources.
+            type: string
+            format: uuid
+            example: 6e8d5f3e-dca1-5a0a-87f1-c8f9753ffa8a
+          items:
+            description: The list of Image resources.
+            type: array
             items:
-              description: The list of Image resources.
-              type: array
-              items:
-                $ref: '#/components/schemas/ImageRead'
-        - $ref: '#/components/schemas/Pagination'
+              $ref: '#/components/schemas/ImageRead'
+      - $ref: '#/components/schemas/Pagination'
     ImageRead:
       type: object
       required:
-        - id
-        - metadata
-        - properties
+      - id
+      - metadata
+      - properties
       properties:
         id:
           type: string
@@ -4302,16 +4353,14 @@ components:
           format: uuid
           example: "78916e89-f0ed-5816-b86d-5e55b6f2a884"
         metadata:
-  
           $ref: '#/components/schemas/ElementMetadata'
-  
         properties:
           $ref: '#/components/schemas/Image'
     ImageEnsure:
       type: object
       required:
-        - id
-        - properties
+      - id
+      - properties
       properties:
         id:
           type: string
@@ -4324,75 +4373,29 @@ components:
           example: {}
         properties:
           $ref: '#/components/schemas/Image'
-    CDromReadList:
-      allOf:
-        - type: object
-          required:
-            - id
-          properties:
-            id:
-              description: ID of the list of CDrom resources.
-              type: string
-              format: uuid
-              example: e8ba3edb-7ebc-598f-b992-7591ce0613bc
-            items:
-              description: The list of CDrom resources.
-              type: array
-              items:
-                $ref: '#/components/schemas/CDromRead'
-        - $ref: '#/components/schemas/Pagination'
-    CDromRead:
-      type: object
-      required:
-        - id
-        - metadata
-        - properties
-      properties:
-        id:
-          type: string
-          description: The ID (UUID) of the CDrom.
-          format: uuid
-          example: "a8afc460-3a31-584c-a9d8-1b0e1a15cbac"
-        metadata:
-  
-          $ref: '#/components/schemas/ElementMetadata'
-  
-        properties:
-          $ref: '#/components/schemas/CDrom'
-    CDromCreate:
-      type: object
-      required:
-        - properties
-      properties:
-        metadata:
-          description: Metadata
-          additionalProperties: true
-          example: {}
-        properties:
-          $ref: '#/components/schemas/CDrom'
     NicReadList:
       allOf:
-        - type: object
-          required:
-            - id
-          properties:
-            id:
-              description: ID of the list of Nic resources.
-              type: string
-              format: uuid
-              example: 8d204bd4-3423-5f87-aa0c-a91c4def4b88
+      - type: object
+        required:
+        - id
+        properties:
+          id:
+            description: ID of the list of Nic resources.
+            type: string
+            format: uuid
+            example: 8d204bd4-3423-5f87-aa0c-a91c4def4b88
+          items:
+            description: The list of Nic resources.
+            type: array
             items:
-              description: The list of Nic resources.
-              type: array
-              items:
-                $ref: '#/components/schemas/NicRead'
-        - $ref: '#/components/schemas/Pagination'
+              $ref: '#/components/schemas/NicRead'
+      - $ref: '#/components/schemas/Pagination'
     NicRead:
       type: object
       required:
-        - id
-        - metadata
-        - properties
+      - id
+      - metadata
+      - properties
       properties:
         id:
           type: string
@@ -4400,16 +4403,14 @@ components:
           format: uuid
           example: "95e1de1e-dfe1-59f4-8da5-cb2ae5178fa9"
         metadata:
-  
           $ref: '#/components/schemas/ElementMetadata'
-  
         properties:
           $ref: '#/components/schemas/Nic'
     NicEnsure:
       type: object
       required:
-        - id
-        - properties
+      - id
+      - properties
       properties:
         id:
           type: string
@@ -4425,7 +4426,7 @@ components:
     NicCreate:
       type: object
       required:
-        - properties
+      - properties
       properties:
         metadata:
           description: Metadata
@@ -4435,27 +4436,27 @@ components:
           $ref: '#/components/schemas/Nic'
     LanReadList:
       allOf:
-        - type: object
-          required:
-            - id
-          properties:
-            id:
-              description: ID of the list of Lan resources.
-              type: string
-              format: uuid
-              example: 0cf82afb-556f-53f3-af68-8f492a2effc2
+      - type: object
+        required:
+        - id
+        properties:
+          id:
+            description: ID of the list of Lan resources.
+            type: string
+            format: uuid
+            example: 0cf82afb-556f-53f3-af68-8f492a2effc2
+          items:
+            description: The list of Lan resources.
+            type: array
             items:
-              description: The list of Lan resources.
-              type: array
-              items:
-                $ref: '#/components/schemas/LanRead'
-        - $ref: '#/components/schemas/Pagination'
+              $ref: '#/components/schemas/LanRead'
+      - $ref: '#/components/schemas/Pagination'
     LanRead:
       type: object
       required:
-        - id
-        - metadata
-        - properties
+      - id
+      - metadata
+      - properties
       properties:
         id:
           type: string
@@ -4463,16 +4464,14 @@ components:
           format: uuid
           example: "3d52d3ec-da61-5b48-878e-461d604debdb"
         metadata:
-  
           $ref: '#/components/schemas/ElementMetadata'
-  
         properties:
           $ref: '#/components/schemas/Lan'
     LanEnsure:
       type: object
       required:
-        - id
-        - properties
+      - id
+      - properties
       properties:
         id:
           type: string
@@ -4488,7 +4487,7 @@ components:
     LanCreate:
       type: object
       required:
-        - properties
+      - properties
       properties:
         metadata:
           description: Metadata
@@ -4498,27 +4497,27 @@ components:
           $ref: '#/components/schemas/Lan'
     NetworkAclReadList:
       allOf:
-        - type: object
-          required:
-            - id
-          properties:
-            id:
-              description: ID of the list of NetworkAcl resources.
-              type: string
-              format: uuid
-              example: b3becf8c-148b-5aef-bce6-166a0a8a6058
+      - type: object
+        required:
+        - id
+        properties:
+          id:
+            description: ID of the list of NetworkAcl resources.
+            type: string
+            format: uuid
+            example: b3becf8c-148b-5aef-bce6-166a0a8a6058
+          items:
+            description: The list of NetworkAcl resources.
+            type: array
             items:
-              description: The list of NetworkAcl resources.
-              type: array
-              items:
-                $ref: '#/components/schemas/NetworkAclRead'
-        - $ref: '#/components/schemas/Pagination'
+              $ref: '#/components/schemas/NetworkAclRead'
+      - $ref: '#/components/schemas/Pagination'
     NetworkAclRead:
       type: object
       required:
-        - id
-        - metadata
-        - properties
+      - id
+      - metadata
+      - properties
       properties:
         id:
           type: string
@@ -4526,16 +4525,14 @@ components:
           format: uuid
           example: "f187bce3-4b78-59de-a3e7-10f2b61ad742"
         metadata:
-  
           $ref: '#/components/schemas/ElementMetadata'
-  
         properties:
           $ref: '#/components/schemas/NetworkAcl'
     NetworkAclEnsure:
       type: object
       required:
-        - id
-        - properties
+      - id
+      - properties
       properties:
         id:
           type: string
@@ -4551,7 +4548,7 @@ components:
     NetworkAclCreate:
       type: object
       required:
-        - properties
+      - properties
       properties:
         metadata:
           description: Metadata
@@ -4559,29 +4556,90 @@ components:
           example: {}
         properties:
           $ref: '#/components/schemas/NetworkAcl'
+    NetworkAclRuleReadList:
+      allOf:
+      - type: object
+        required:
+        - id
+        properties:
+          id:
+            description: ID of the list of NetworkAclRule resources.
+            type: string
+            format: uuid
+            example: 11815ad2-8e58-5fa6-bbe8-438d615994d7
+          items:
+            description: The list of NetworkAclRule resources.
+            type: array
+            items:
+              $ref: '#/components/schemas/NetworkAclRuleRead'
+      - $ref: '#/components/schemas/Pagination'
+    NetworkAclRuleRead:
+      type: object
+      required:
+      - id
+      - metadata
+      - properties
+      properties:
+        id:
+          type: string
+          description: The ID (UUID) of the NetworkAclRule.
+          format: uuid
+          example: "e775ab89-71e0-50e9-a7ab-db818d4323e7"
+        metadata:
+          $ref: '#/components/schemas/ElementMetadata'
+        properties:
+          $ref: '#/components/schemas/NetworkAclRule'
+    NetworkAclRuleEnsure:
+      type: object
+      required:
+      - id
+      - properties
+      properties:
+        id:
+          type: string
+          description: The ID (UUID) of the NetworkAclRule.
+          format: uuid
+          example: "e775ab89-71e0-50e9-a7ab-db818d4323e7"
+        metadata:
+          description: Metadata
+          additionalProperties: true
+          example: {}
+        properties:
+          $ref: '#/components/schemas/NetworkAclRule'
+    NetworkAclRuleCreate:
+      type: object
+      required:
+      - properties
+      properties:
+        metadata:
+          description: Metadata
+          additionalProperties: true
+          example: {}
+        properties:
+          $ref: '#/components/schemas/NetworkAclRule'
     RouteTableReadList:
       allOf:
-        - type: object
-          required:
-            - id
-          properties:
-            id:
-              description: ID of the list of RouteTable resources.
-              type: string
-              format: uuid
-              example: 685d96e8-716e-5f61-8ffe-a14a3128aaf4
+      - type: object
+        required:
+        - id
+        properties:
+          id:
+            description: ID of the list of RouteTable resources.
+            type: string
+            format: uuid
+            example: 685d96e8-716e-5f61-8ffe-a14a3128aaf4
+          items:
+            description: The list of RouteTable resources.
+            type: array
             items:
-              description: The list of RouteTable resources.
-              type: array
-              items:
-                $ref: '#/components/schemas/RouteTableRead'
-        - $ref: '#/components/schemas/Pagination'
+              $ref: '#/components/schemas/RouteTableRead'
+      - $ref: '#/components/schemas/Pagination'
     RouteTableRead:
       type: object
       required:
-        - id
-        - metadata
-        - properties
+      - id
+      - metadata
+      - properties
       properties:
         id:
           type: string
@@ -4589,16 +4647,14 @@ components:
           format: uuid
           example: "82525854-b4ab-5360-b28b-174476941c7f"
         metadata:
-  
           $ref: '#/components/schemas/ElementMetadata'
-  
         properties:
           $ref: '#/components/schemas/RouteTable'
     RouteTableEnsure:
       type: object
       required:
-        - id
-        - properties
+      - id
+      - properties
       properties:
         id:
           type: string
@@ -4614,7 +4670,7 @@ components:
     RouteTableCreate:
       type: object
       required:
-        - properties
+      - properties
       properties:
         metadata:
           description: Metadata
@@ -4624,27 +4680,27 @@ components:
           $ref: '#/components/schemas/RouteTable'
     RouteReadList:
       allOf:
-        - type: object
-          required:
-            - id
-          properties:
-            id:
-              description: ID of the list of Route resources.
-              type: string
-              format: uuid
-              example: f01a9077-8faa-5b64-8743-2b3ddba0c498
+      - type: object
+        required:
+        - id
+        properties:
+          id:
+            description: ID of the list of Route resources.
+            type: string
+            format: uuid
+            example: f01a9077-8faa-5b64-8743-2b3ddba0c498
+          items:
+            description: The list of Route resources.
+            type: array
             items:
-              description: The list of Route resources.
-              type: array
-              items:
-                $ref: '#/components/schemas/RouteRead'
-        - $ref: '#/components/schemas/Pagination'
+              $ref: '#/components/schemas/RouteRead'
+      - $ref: '#/components/schemas/Pagination'
     RouteRead:
       type: object
       required:
-        - id
-        - metadata
-        - properties
+      - id
+      - metadata
+      - properties
       properties:
         id:
           type: string
@@ -4652,16 +4708,14 @@ components:
           format: uuid
           example: "50982018-bb17-5cb9-bcd4-97f8bbc7dc23"
         metadata:
-  
           $ref: '#/components/schemas/ElementMetadata'
-  
         properties:
           $ref: '#/components/schemas/Route'
     RouteEnsure:
       type: object
       required:
-        - id
-        - properties
+      - id
+      - properties
       properties:
         id:
           type: string
@@ -4677,7 +4731,7 @@ components:
     RouteCreate:
       type: object
       required:
-        - properties
+      - properties
       properties:
         metadata:
           description: Metadata
@@ -4687,27 +4741,27 @@ components:
           $ref: '#/components/schemas/Route'
     SecurityGroupReadList:
       allOf:
-        - type: object
-          required:
-            - id
-          properties:
-            id:
-              description: ID of the list of SecurityGroup resources.
-              type: string
-              format: uuid
-              example: 85157506-8f11-5714-8daf-ff9f2750913c
+      - type: object
+        required:
+        - id
+        properties:
+          id:
+            description: ID of the list of SecurityGroup resources.
+            type: string
+            format: uuid
+            example: 85157506-8f11-5714-8daf-ff9f2750913c
+          items:
+            description: The list of SecurityGroup resources.
+            type: array
             items:
-              description: The list of SecurityGroup resources.
-              type: array
-              items:
-                $ref: '#/components/schemas/SecurityGroupRead'
-        - $ref: '#/components/schemas/Pagination'
+              $ref: '#/components/schemas/SecurityGroupRead'
+      - $ref: '#/components/schemas/Pagination'
     SecurityGroupRead:
       type: object
       required:
-        - id
-        - metadata
-        - properties
+      - id
+      - metadata
+      - properties
       properties:
         id:
           type: string
@@ -4715,16 +4769,14 @@ components:
           format: uuid
           example: "f2966c32-28d2-5a3f-9356-979d5ce2bf5d"
         metadata:
-  
           $ref: '#/components/schemas/ElementMetadata'
-  
         properties:
           $ref: '#/components/schemas/SecurityGroup'
     SecurityGroupEnsure:
       type: object
       required:
-        - id
-        - properties
+      - id
+      - properties
       properties:
         id:
           type: string
@@ -4740,7 +4792,7 @@ components:
     SecurityGroupCreate:
       type: object
       required:
-        - properties
+      - properties
       properties:
         metadata:
           description: Metadata
@@ -4748,92 +4800,90 @@ components:
           example: {}
         properties:
           $ref: '#/components/schemas/SecurityGroup'
-    IpRuleReadList:
+    SecurityGroupRuleReadList:
       allOf:
-        - type: object
-          required:
-            - id
-          properties:
-            id:
-              description: ID of the list of IpRule resources.
-              type: string
-              format: uuid
-              example: b99b6b29-19b4-568f-8519-5054efd67055
+      - type: object
+        required:
+        - id
+        properties:
+          id:
+            description: ID of the list of SecurityGroupRule resources.
+            type: string
+            format: uuid
+            example: 27e303a6-07f1-546e-ab95-24dec7fbb028
+          items:
+            description: The list of SecurityGroupRule resources.
+            type: array
             items:
-              description: The list of IpRule resources.
-              type: array
-              items:
-                $ref: '#/components/schemas/IpRuleRead'
-        - $ref: '#/components/schemas/Pagination'
-    IpRuleRead:
+              $ref: '#/components/schemas/SecurityGroupRuleRead'
+      - $ref: '#/components/schemas/Pagination'
+    SecurityGroupRuleRead:
       type: object
       required:
-        - id
-        - metadata
-        - properties
+      - id
+      - metadata
+      - properties
       properties:
         id:
           type: string
-          description: The ID (UUID) of the IpRule.
+          description: The ID (UUID) of the SecurityGroupRule.
           format: uuid
-          example: "8e869dd8-e4b9-5767-bf06-6c1c3d01bccf"
+          example: "37fa64f3-2ac2-5ae8-850d-63e3d9bd4cad"
         metadata:
-  
           $ref: '#/components/schemas/ElementMetadata'
-  
         properties:
-          $ref: '#/components/schemas/IpRule'
-    IpRuleEnsure:
+          $ref: '#/components/schemas/SecurityGroupRule'
+    SecurityGroupRuleEnsure:
       type: object
       required:
-        - id
-        - properties
+      - id
+      - properties
       properties:
         id:
           type: string
-          description: The ID (UUID) of the IpRule.
+          description: The ID (UUID) of the SecurityGroupRule.
           format: uuid
-          example: "8e869dd8-e4b9-5767-bf06-6c1c3d01bccf"
+          example: "37fa64f3-2ac2-5ae8-850d-63e3d9bd4cad"
         metadata:
           description: Metadata
           additionalProperties: true
           example: {}
         properties:
-          $ref: '#/components/schemas/IpRule'
-    IpRuleCreate:
+          $ref: '#/components/schemas/SecurityGroupRule'
+    SecurityGroupRuleCreate:
       type: object
       required:
-        - properties
+      - properties
       properties:
         metadata:
           description: Metadata
           additionalProperties: true
           example: {}
         properties:
-          $ref: '#/components/schemas/IpRule'
+          $ref: '#/components/schemas/SecurityGroupRule'
     IpBlockReadList:
       allOf:
-        - type: object
-          required:
-            - id
-          properties:
-            id:
-              description: ID of the list of IpBlock resources.
-              type: string
-              format: uuid
-              example: 5b7131b8-7ab5-5840-b7ee-162a5dd3c492
+      - type: object
+        required:
+        - id
+        properties:
+          id:
+            description: ID of the list of IpBlock resources.
+            type: string
+            format: uuid
+            example: 5b7131b8-7ab5-5840-b7ee-162a5dd3c492
+          items:
+            description: The list of IpBlock resources.
+            type: array
             items:
-              description: The list of IpBlock resources.
-              type: array
-              items:
-                $ref: '#/components/schemas/IpBlockRead'
-        - $ref: '#/components/schemas/Pagination'
+              $ref: '#/components/schemas/IpBlockRead'
+      - $ref: '#/components/schemas/Pagination'
     IpBlockRead:
       type: object
       required:
-        - id
-        - metadata
-        - properties
+      - id
+      - metadata
+      - properties
       properties:
         id:
           type: string
@@ -4841,16 +4891,14 @@ components:
           format: uuid
           example: "a480b1c3-c104-589b-b1d4-e181f1d25069"
         metadata:
-  
           $ref: '#/components/schemas/ElementMetadata'
-  
         properties:
           $ref: '#/components/schemas/IpBlock'
     IpBlockEnsure:
       type: object
       required:
-        - id
-        - properties
+      - id
+      - properties
       properties:
         id:
           type: string
@@ -4866,7 +4914,7 @@ components:
     IpBlockCreate:
       type: object
       required:
-        - properties
+      - properties
       properties:
         metadata:
           description: Metadata
@@ -4876,27 +4924,27 @@ components:
           $ref: '#/components/schemas/IpBlock'
     FlowLogReadList:
       allOf:
-        - type: object
-          required:
-            - id
-          properties:
-            id:
-              description: ID of the list of FlowLog resources.
-              type: string
-              format: uuid
-              example: 3c38d028-8e38-5554-84d6-93c124bb39e5
+      - type: object
+        required:
+        - id
+        properties:
+          id:
+            description: ID of the list of FlowLog resources.
+            type: string
+            format: uuid
+            example: 3c38d028-8e38-5554-84d6-93c124bb39e5
+          items:
+            description: The list of FlowLog resources.
+            type: array
             items:
-              description: The list of FlowLog resources.
-              type: array
-              items:
-                $ref: '#/components/schemas/FlowLogRead'
-        - $ref: '#/components/schemas/Pagination'
+              $ref: '#/components/schemas/FlowLogRead'
+      - $ref: '#/components/schemas/Pagination'
     FlowLogRead:
       type: object
       required:
-        - id
-        - metadata
-        - properties
+      - id
+      - metadata
+      - properties
       properties:
         id:
           type: string
@@ -4904,16 +4952,14 @@ components:
           format: uuid
           example: "8ef19972-2ea3-5618-8455-0c04a6051f58"
         metadata:
-  
           $ref: '#/components/schemas/ElementMetadata'
-  
         properties:
           $ref: '#/components/schemas/FlowLog'
     FlowLogEnsure:
       type: object
       required:
-        - id
-        - properties
+      - id
+      - properties
       properties:
         id:
           type: string
@@ -4929,7 +4975,7 @@ components:
     FlowLogCreate:
       type: object
       required:
-        - properties
+      - properties
       properties:
         metadata:
           description: Metadata
@@ -4939,26 +4985,26 @@ components:
           $ref: '#/components/schemas/FlowLog'
     LocationReadList:
       allOf:
-        - type: object
-          required:
-            - id
-          properties:
-            id:
-              description: ID of the list of Location resources.
-              type: string
-              format: uuid
-              example: 4155ea15-b118-5132-87a4-4dff9bedd618
+      - type: object
+        required:
+        - id
+        properties:
+          id:
+            description: ID of the list of Location resources.
+            type: string
+            format: uuid
+            example: 4155ea15-b118-5132-87a4-4dff9bedd618
+          items:
+            description: The list of Location resources.
+            type: array
             items:
-              description: The list of Location resources.
-              type: array
-              items:
-                $ref: '#/components/schemas/LocationRead'
-        - $ref: '#/components/schemas/Pagination'
+              $ref: '#/components/schemas/LocationRead'
+      - $ref: '#/components/schemas/Pagination'
     LocationRead:
       type: object
       required:
-        - id
-        - properties
+      - id
+      - properties
       properties:
         id:
           type: string
@@ -4969,26 +5015,26 @@ components:
           $ref: '#/components/schemas/Location'
     TemplateReadList:
       allOf:
-        - type: object
-          required:
-            - id
-          properties:
-            id:
-              description: ID of the list of Template resources.
-              type: string
-              format: uuid
-              example: 0c7eeeda-156b-5814-b1af-6543f1c24c5b
+      - type: object
+        required:
+        - id
+        properties:
+          id:
+            description: ID of the list of Template resources.
+            type: string
+            format: uuid
+            example: 0c7eeeda-156b-5814-b1af-6543f1c24c5b
+          items:
+            description: The list of Template resources.
+            type: array
             items:
-              description: The list of Template resources.
-              type: array
-              items:
-                $ref: '#/components/schemas/TemplateRead'
-        - $ref: '#/components/schemas/Pagination'
+              $ref: '#/components/schemas/TemplateRead'
+      - $ref: '#/components/schemas/Pagination'
     TemplateRead:
       type: object
       required:
-        - id
-        - properties
+      - id
+      - properties
       properties:
         id:
           type: string
@@ -5050,9 +5096,17 @@ components:
           format: uuid
           readOnly: true
           example: 9359e713-edff-4378-b3a5-54c59bd7dd13
+        securitygroups:
+          type: array
+          description: >-
+            List containing details of the security groups assigned to this vpc.
+          items:
+            type: string
+            format: uuid
+            example: '15f67991-0f51-4efc-a8ad-ef1fb31a480c'
         defaultSecurityGroup:
           description: >-
-            This will become the default security group for the datacenter, replacing the old one if already exists.
+            This will become the default security group for the vpc, replacing the old one if already exists.
             This security group must already exists prior to this request.
             Provide this field only if the `createDefaultSecurityGroup` field is missing. You cannot provide both of them
           type: string
@@ -5181,6 +5235,14 @@ components:
             - SHUTOFF
             - CRASHED
             - SUSPENDED
+        cdroms:
+          type: array
+          description: >-
+            List containing details of the CD-Roms s assigned to this server.
+          items:
+            type: string
+            format: uuid
+            example: '15f67991-0f51-4efc-a8ad-ef1fb31a480c'
         bootCdrom:
           $ref: '#/components/schemas/ResourceReference'
         bootVolume:
@@ -5218,9 +5280,16 @@ components:
             It is not allowed for servers of type Cube.
           example: true
           default: false
+        securitygroups:
+          type: array
+          description: >-
+            List containing details of the security groups assigned to this server.
+          items:
+            type: string
+            format: uuid
+            example: '15f67991-0f51-4efc-a8ad-ef1fb31a480c'
     Volume:
       required:
-        - serverId
         - size
       type: object
       properties:
@@ -5394,9 +5463,6 @@ components:
             - AUTO
             - NONE
             - PRIMARY
-    CDrom:
-      allOf:
-        - $ref: '#/components/schemas/Image'
     Image:
       required:
         - licenceType
@@ -5573,6 +5639,14 @@ components:
           type: boolean
           description: Indicates if the LAN is connected to the internet or not.
           example: true
+        networkAcls:
+          type: array
+          description: >-
+            List containing details of the Network ACLs assigned to this lan.
+          items:
+            type: string
+            format: uuid
+            example: '15f67991-0f51-4efc-a8ad-ef1fb31a480c'
         routerId:
           $ref: '#/components/schemas/ResourceReference'
         vni:
@@ -5655,17 +5729,17 @@ components:
           example: true
           default: true
           x-prerelease: true
-        lan:
+        lanId:
           type: string
           description: >-
-            The LAN uuid the NIC will be on.
+            The LAN uuid the nic will be on.
           format: uuid
           nullable: true
           example: fde83b97-f515-420c-ab10-b3cfaaf45155
-        server:
+        serverId:
           type: string
           description: >-
-            The server uuid the NIC will be on.
+            The server uuid the Vpc will be on.
           format: uuid
           nullable: true
           example: fde83b97-f515-420c-ab10-b3cfaaf45155
@@ -5680,11 +5754,19 @@ components:
         firewallType:
           type: string
           description: >-
-            The type of IP rules that will be allowed on the NIC. If not
+            The type of rules that will be allowed on the NIC. If not
             specified, the default INGRESS value is used.
           example: INGRESS
           allOf:
             - $ref: '#/components/schemas/RuleType'
+        securitygroups:
+          type: array
+          description: >-
+            List containing details of the security groups assigned to this nic.
+          items:
+            type: string
+            format: uuid
+            example: '15f67991-0f51-4efc-a8ad-ef1fb31a480c'
         deviceNumber:
           type: integer
           description: >-
@@ -5883,14 +5965,18 @@ components:
             List containing details of the LANs assigned to this route table.
           readOnly: true
           items:
-            $ref: '#/components/schemas/ResourceReference'
+            type: string
+            format: uuid
+            example: '15f67991-0f51-4efc-a8ad-ef1fb31a480c'
         nics:
           type: array
           description: >-
             List containing details of the NICs assigned to this route table.
           readOnly: true
           items:
-            $ref: '#/components/schemas/ResourceReference'
+            type: string
+            format: uuid
+            example: '15f67991-0f51-4efc-a8ad-ef1fb31a480c'
     Route:
       required:
         - prefix
@@ -5952,29 +6038,12 @@ components:
           description: The name of the security group.
           nullable: true
           example: My security group
-        vpcId:
-          type: string
-          format: uuid
-          description: The id of the vpc.
-          nullable: true
-          example: aa5f6bcf-c9db-46d3-9d4c-330aa90647aa
-        datacenterId:
-          type: string
-          format: uuid
-          description: The id of the datacenter.
-          nullable: true
-          example: 8ff2cefe-9d76-4083-af00-46aef9b3578b
-        nicId:
-          type: string
-          format: uuid
-          description: The id of the nic.
-          example: 485e0c30-a26f-4a0b-b655-b7cf9c730aa8
         description:
           type: string
           maxLength: 300
           description: The description of the security group.
           example: My security group description
-    IpRule:
+    SecurityGroupRule:
       required:
         - protocol
         - securityGroupId
@@ -5987,7 +6056,7 @@ components:
         securityGroupId:
           type: string
           format: uuid
-          description: The uuid of the security group to which the ip rule belongs to
+          description: The uuid of the security group to which the rule belongs to
           example: fde83b97-f515-420c-ab10-b3cfaaf45155
         protocol:
           type: string
@@ -6088,26 +6157,44 @@ components:
         type:
           type: string
           description: >-
-            The type of the IP rule. If not specified, the default INGRESS
+            The type of the rule. If not specified, the default INGRESS
             value is used.
           example: INGRESS
           allOf:
             - $ref: '#/components/schemas/RuleType'
     NetworkAcl:
-      required:
-        - type
-        - protocol
       type: object
       properties:
         name:
           type: string
           description: The name of the  resource.
           example: My resource
+        vpcId:
+          type: string
+          description: The vpcId for this network ACL.
+    NetworkAclRule:
+      required:
+        - protocol
+        - networkAclId
+      type: object
+      properties:
+        name:
+          type: string
+          description: The name of the  resource.
+          example: My resource
+        networkAclId:
+          type: string
+          format: uuid
+          description: The uuid of the network acl to which the rule belongs to
+          example: fde83b97-f515-420c-ab10-b3cfaaf45155
         type:
           type: string
           description: >-
-            The type of the IP rule.
-          example: SSH
+            The type of the rule. If not specified, the default INGRESS
+            value is used.
+          example: INGRESS
+          allOf:
+            - $ref: '#/components/schemas/RuleType'
         protocol:
           type: string
           description: >-
@@ -6124,21 +6211,6 @@ components:
             - ESP
             - AH
             - ANY
-        ipVersion:
-          type: string
-          description: >-
-            The IP version for this rule. If sourceIp or targetIp are specified,
-            you can omit this value - the IP version will then be deduced from
-            the IP address(es) used; if you specify it anyway, it must match the
-            specified IP address(es). If neither sourceIp nor targetIp are
-            specified, this rule allows traffic only for the specified IP
-            version. If neither sourceIp, targetIp nor ipVersion are specified,
-            this rule will only allow IPv4 traffic.
-          nullable: true
-          example: IPv4
-          enum:
-            - IPv4
-            - IPv6
         sourceCidr:
           type: string
           description: >-
@@ -6176,7 +6248,7 @@ components:
             null to allow all ports.
           format: int32
           example: 8
-        allowDeny:
+        action:
           type: string
           description: >-
             Whether to allow or deny the specified traffic.
@@ -6184,6 +6256,32 @@ components:
           enum:
             - ALLOW
             - DENY
+        priority:
+          type: integer
+          format: int32
+          description: >-
+            The priority of the rule.
+          example: 1
+        icmpCode:
+          maximum: 254
+          minimum: 0
+          type: integer
+          description: >-
+            Defines the allowed code (from 0 to 254) if protocol ICMP or ICMPv6
+            is chosen. Value null allows all codes.
+          format: int32
+          nullable: true
+          example: 0
+        icmpType:
+          maximum: 254
+          minimum: 0
+          type: integer
+          description: >-
+            Defines the allowed type (from 0 to 254) if the protocol ICMP or
+            ICMPv6 is chosen. Value null allows all types.
+          format: int32
+          nullable: true
+          example: 8
     RuleType:
       type: string
       enum:
@@ -6322,7 +6420,7 @@ components:
           description: The datacenter where the IP exists.
         datacenterName:
           type: string
-          description: The name of the datancenter where the IP exists.
+          description: The name of the datacenter where the IP exists.
     ApplicationType:
       type: string
       example: MSSQL-2019-Standard
@@ -6385,6 +6483,7 @@ components:
         id:
           type: string
           description: The resource's unique identifier.
+          example: '15f67991-0f51-4efc-a8ad-ef1fb31a480c'
     Error:
       description: |
         The Error object is used to represent an error response from the API.
@@ -6653,46 +6752,53 @@ components:
       description: Filter resources by vpc.
       required: false
       schema:
-        $ref: '#/components/schemas/Vpc'
+        type: string
     datacenter:
-      name: "filter.datancenter"
+      name: "filter.datacenter"
       in: query
       description: Filter resources by datacenter.
       required: false
       schema:
-        $ref: '#/components/schemas/Datacenter'
+        type: string
     server:
       name: "filter.server"
       in: query
       description: Filter resources by server.
       required: false
       schema:
-        $ref: '#/components/schemas/Server'
+        type: string
     lan:
       name: "filter.lan"
       in: query
       description: Filter resources by lan.
       required: false
       schema:
-        $ref: '#/components/schemas/Lan'
+        type: string
     nic:
       name: "filter.nic"
       in: query
       description: Filter resources by nic.
       required: false
       schema:
-        $ref: '#/components/schemas/Nic'
+        type: string
     routetable:
       name: "filter.routetable"
       in: query
       description: Filter resources by routetable.
       required: false
       schema:
-        $ref: '#/components/schemas/RouteTable'
+        type: string
     securitygroup:
       name: "filter.securitygroup"
       in: query
       description: Filter resources by security group.
       required: false
       schema:
-        $ref: '#/components/schemas/SecurityGroup'
+        type: string
+    nacl:
+      name: "filter.nacl"
+      in: query
+      description: Filter resources by NetworkAcl.
+      required: false
+      schema:
+        type: string
