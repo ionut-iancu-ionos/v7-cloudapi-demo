@@ -5,7 +5,9 @@ info:
     IONOS Enterprise-grade Infrastructure as a Service (IaaS) solutions can be
     managed through the Cloud API, in addition or as an alternative to the "Data
     Center Designer" (DCD) browser-based tool. 
-     Both methods employ consistent concepts and features, deliver similar power and flexibility, and can be used to perform a multitude of management tasks, including adding servers, volumes, configuring networks, and so on.
+    Both methods employ consistent concepts and features, deliver similar power and
+    flexibility, and can be used to perform a multitude of management tasks, including
+    adding servers, volumes, configuring networks, and so on.
   version: '7.0.1'
   x-sdk-patch-level: 5
 servers:
@@ -32,6 +34,26 @@ servers:
   - url: https://api.us-mci.ionos.com/cloudapi/v7
     description: Lenexa, United States
 tags:
+- name: Locations
+  description: |
+    Retrieves Locations.
+    
+    This tag groups all operations for locations.
+- name: Templates
+  description: |
+    Retrieves Templates.
+    
+    This tag groups all operations for templates.
+- name: IP Blocks
+  description: |
+    Creates and manages IP Blocks.
+    
+    This tag groups all operations for ip blocks.
+- name: Images
+  description: |
+    Manages Images.
+    
+    This tag groups all operations for images.
 - name: Virtual Private Clouds
   description: |
     Creates and manages Virtual Private Clouds.
@@ -57,11 +79,6 @@ tags:
     Creates and manages Snapshots.
     
     This tag groups all operations for snapshots.
-- name: Images
-  description: |
-    Manages Images.
-    
-    This tag groups all operations for images.
 - name: Network Interfaces
   description: |
     Creates and manages Network Intefaces.
@@ -72,6 +89,11 @@ tags:
     Creates and manages Local Area Networks.
     
     This tag groups all operations for local area networks.
+- name: Flow Logs
+  description: |
+    Creates and manages Flow Logs.
+    
+    This tag groups all operations for flow logs.
 - name: Network ACLs
   description: |
     Creates and manages Network ACLs.
@@ -102,26 +124,6 @@ tags:
     Creates and manages Security Group Rules.
     
     This tag groups all operations for security group rules.
-- name: IP Blocks
-  description: |
-    Creates and manages IP Blocks.
-    
-    This tag groups all operations for ip blocks.
-- name: Flow Logs
-  description: |
-    Creates and manages Flow Logs.
-    
-    This tag groups all operations for flow logs.
-- name: Locations
-  description: |
-    Retrieves Locations.
-    
-    This tag groups all operations for locations.
-- name: Templates
-  description: |
-    Retrieves Templates.
-    
-    This tag groups all operations for templates.
 - name: Restore Snaphots
   description: |
     Performs a snapshot restoration.
@@ -133,6 +135,577 @@ tags:
     
     This tag groups all operations for server operations.
 paths:
+  /metadata/locations:
+    get:
+      operationId: metadataLocationsGet
+      summary: Retrieve all Locations
+      security:
+      - tokenAuth: []
+      description: |
+        This endpoint enables retrieving all Locations using
+        pagination and optional filters.
+      parameters:
+        - $ref: "#/components/parameters/paginationOffset"
+        - $ref: "#/components/parameters/paginationLimit"
+        - $ref: "#/components/parameters/contractNumber"
+      tags:
+        - Locations
+      responses:
+        "200":
+          description: |
+            Returned all requested Locations successfully.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LocationReadList"
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/NotAllowed'
+        "429":
+          $ref: '#/components/responses/TooManyRequests'
+        "500":
+          $ref: '#/components/responses/InternalError'
+        "503":
+          $ref: '#/components/responses/ServiceUnavailable'
+        default:
+          $ref: '#/components/responses/UnexpectedError'
+  /metadata/locations/{locationId}:
+    get:
+      operationId: metadataLocationsFindById
+      summary: Retrieve Location
+      security:
+      - tokenAuth: []
+      tags:
+        - Locations
+      description: Returns the Location by ID.
+      parameters:
+        - $ref: "#/components/parameters/contractNumber"
+        - name: locationId
+          in: path
+          schema:
+            type: string
+            format: uuid
+          example: "f59e4bc2-6aff-5ecc-b745-321db2fdd071"
+          required: true
+          description: The ID (UUID) of the Location.
+      responses:
+        "200":
+          description: Getting Location was successful.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LocationRead"
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/NotAllowed'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "429":
+          $ref: '#/components/responses/TooManyRequests'
+        "500":
+          $ref: '#/components/responses/InternalError'
+        "503":
+          $ref: '#/components/responses/ServiceUnavailable'
+        default:
+          $ref: '#/components/responses/UnexpectedError'
+  /metadata/templates:
+    get:
+      operationId: metadataTemplatesGet
+      summary: Retrieve all Templates
+      security:
+      - tokenAuth: []
+      description: |
+        This endpoint enables retrieving all Templates using
+        pagination and optional filters.
+      parameters:
+        - $ref: "#/components/parameters/paginationOffset"
+        - $ref: "#/components/parameters/paginationLimit"
+        - $ref: "#/components/parameters/contractNumber"
+      tags:
+        - Templates
+      responses:
+        "200":
+          description: |
+            Returned all requested Templates successfully.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TemplateReadList"
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/NotAllowed'
+        "429":
+          $ref: '#/components/responses/TooManyRequests'
+        "500":
+          $ref: '#/components/responses/InternalError'
+        "503":
+          $ref: '#/components/responses/ServiceUnavailable'
+        default:
+          $ref: '#/components/responses/UnexpectedError'
+  /metadata/templates/{templateId}:
+    get:
+      operationId: metadataTemplatesFindById
+      summary: Retrieve Template
+      security:
+      - tokenAuth: []
+      tags:
+        - Templates
+      description: Returns the Template by ID.
+      parameters:
+        - $ref: "#/components/parameters/contractNumber"
+        - name: templateId
+          in: path
+          schema:
+            type: string
+            format: uuid
+          example: "5afb3086-5b37-5cc0-b126-075231c7bcb6"
+          required: true
+          description: The ID (UUID) of the Template.
+      responses:
+        "200":
+          description: Getting Template was successful.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TemplateRead"
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/NotAllowed'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "429":
+          $ref: '#/components/responses/TooManyRequests'
+        "500":
+          $ref: '#/components/responses/InternalError'
+        "503":
+          $ref: '#/components/responses/ServiceUnavailable'
+        default:
+          $ref: '#/components/responses/UnexpectedError'
+  /ipblocks:
+    get:
+      operationId: ipblocksGet
+      summary: Retrieve all IP Blocks
+      security:
+      - tokenAuth: []
+      description: |
+        This endpoint enables retrieving all IP Blocks using
+        pagination and optional filters.
+      parameters:
+        - $ref: "#/components/parameters/paginationOffset"
+        - $ref: "#/components/parameters/paginationLimit"
+        - $ref: "#/components/parameters/contractNumber"
+        - $ref: "#/components/parameters/vpc"
+        - $ref: "#/components/parameters/datacenter"
+      tags:
+        - IP Blocks
+      responses:
+        "200":
+          description: |
+            Returned all requested IP Blocks successfully.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IpBlockReadList"
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/NotAllowed'
+        "429":
+          $ref: '#/components/responses/TooManyRequests'
+        "500":
+          $ref: '#/components/responses/InternalError'
+        "503":
+          $ref: '#/components/responses/ServiceUnavailable'
+        default:
+          $ref: '#/components/responses/UnexpectedError'
+    post:
+      operationId: ipblocksPost
+      summary: Create IpBlock
+      security:
+      - tokenAuth: []
+      tags:
+        - IP Blocks
+      description: |
+        Creates a new IpBlock.
+        
+        The full IpBlock needs to be provided to create the object.
+        Optional data will be filled with defaults or left empty.
+      parameters:
+        - $ref: "#/components/parameters/contractNumber"
+      requestBody:
+        description: IpBlock to create.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/IpBlockCreate"
+      responses:
+        "201":
+          description: IpBlock successfully created.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IpBlockRead"
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/NotAllowed'
+        "415":
+          $ref: '#/components/responses/UnsupportedMediaType'
+        "422":
+          $ref: '#/components/responses/UnprocessableEntity'
+        "429":
+          $ref: '#/components/responses/TooManyRequests'
+        "500":
+          $ref: '#/components/responses/InternalError'
+        "503":
+          $ref: '#/components/responses/ServiceUnavailable'
+        default:
+          $ref: '#/components/responses/UnexpectedError'
+  /ipblocks/{ipblockId}:
+    get:
+      operationId: ipblocksFindById
+      summary: Retrieve IpBlock
+      security:
+      - tokenAuth: []
+      tags:
+        - IP Blocks
+      description: Returns the IpBlock by ID.
+      parameters:
+        - $ref: "#/components/parameters/contractNumber"
+        - name: ipblockId
+          in: path
+          schema:
+            type: string
+            format: uuid
+          example: "a480b1c3-c104-589b-b1d4-e181f1d25069"
+          required: true
+          description: The ID (UUID) of the IpBlock.
+      responses:
+        "200":
+          description: Getting IpBlock was successful.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IpBlockRead"
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/NotAllowed'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "429":
+          $ref: '#/components/responses/TooManyRequests'
+        "500":
+          $ref: '#/components/responses/InternalError'
+        "503":
+          $ref: '#/components/responses/ServiceUnavailable'
+        default:
+          $ref: '#/components/responses/UnexpectedError'
+    put:
+      operationId: ipblocksPut
+      summary: Ensure IpBlock
+      security:
+      - tokenAuth: []
+      tags:
+        - IP Blocks
+      description: |
+        Ensures that the IpBlock with the provided ID is created or modified.
+        The full IpBlock needs to be provided to ensure
+        (either update or create) the IpBlock. Non present data will
+        only be filled with defaults or left empty, but not take
+        previous values into consideration.
+      parameters:
+        - $ref: "#/components/parameters/contractNumber"
+        - name: ipblockId
+          in: path
+          schema:
+            type: string
+            format: uuid
+          example: "a480b1c3-c104-589b-b1d4-e181f1d25069"
+          required: true
+          description: The ID (UUID) of the IpBlock.
+      requestBody:
+        description: update IpBlock
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/IpBlockEnsure"
+      responses:
+        "200":
+          description: IpBlock successfully updated.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IpBlockRead"
+        "201":
+          description: IpBlock successfully ensured.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IpBlockRead"
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/NotAllowed'
+        "409":
+          $ref: '#/components/responses/Conflict'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "415":
+          $ref: '#/components/responses/UnsupportedMediaType'
+        "422":
+          $ref: '#/components/responses/UnprocessableEntity'
+        "429":
+          $ref: '#/components/responses/TooManyRequests'
+        "500":
+          $ref: '#/components/responses/InternalError'
+        "503":
+          $ref: '#/components/responses/ServiceUnavailable'
+        default:
+          $ref: '#/components/responses/UnexpectedError'
+    delete:
+      operationId: ipblocksDelete
+      summary: Delete IpBlock
+      security:
+      - tokenAuth: []
+      tags:
+        - IP Blocks
+      description: Deletes the specified IpBlock.
+      parameters:
+        - $ref: "#/components/parameters/contractNumber"
+        - name: ipblockId
+          in: path
+          schema:
+            type: string
+            format: uuid
+          example: "a480b1c3-c104-589b-b1d4-e181f1d25069"
+          required: true
+          description: The ID (UUID) of the IpBlock.
+      responses:
+        "202":
+          description: Deleting IpBlock was successful.
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/NotAllowed'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "429":
+          $ref: '#/components/responses/TooManyRequests'
+        "500":
+          $ref: '#/components/responses/InternalError'
+        "503":
+          $ref: '#/components/responses/ServiceUnavailable'
+        default:
+          $ref: '#/components/responses/UnexpectedError'
+  /images:
+    get:
+      operationId: imagesGet
+      summary: Retrieve all Images
+      security:
+      - tokenAuth: []
+      description: |
+        This endpoint enables retrieving all Images using
+        pagination and optional filters.
+      parameters:
+        - $ref: "#/components/parameters/paginationOffset"
+        - $ref: "#/components/parameters/paginationLimit"
+        - $ref: "#/components/parameters/contractNumber"
+        - $ref: "#/components/parameters/vpc"
+        - $ref: "#/components/parameters/datacenter"
+        - $ref: "#/components/parameters/server"
+      tags:
+        - Images
+      responses:
+        "200":
+          description: |
+            Returned all requested Images successfully.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ImageReadList"
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/NotAllowed'
+        "429":
+          $ref: '#/components/responses/TooManyRequests'
+        "500":
+          $ref: '#/components/responses/InternalError'
+        "503":
+          $ref: '#/components/responses/ServiceUnavailable'
+        default:
+          $ref: '#/components/responses/UnexpectedError'
+  /images/{imageId}:
+    get:
+      operationId: imagesFindById
+      summary: Retrieve Image
+      security:
+      - tokenAuth: []
+      tags:
+        - Images
+      description: Returns the Image by ID.
+      parameters:
+        - $ref: "#/components/parameters/contractNumber"
+        - name: imageId
+          in: path
+          schema:
+            type: string
+            format: uuid
+          example: "78916e89-f0ed-5816-b86d-5e55b6f2a884"
+          required: true
+          description: The ID (UUID) of the Image.
+      responses:
+        "200":
+          description: Getting Image was successful.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ImageRead"
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/NotAllowed'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "429":
+          $ref: '#/components/responses/TooManyRequests'
+        "500":
+          $ref: '#/components/responses/InternalError'
+        "503":
+          $ref: '#/components/responses/ServiceUnavailable'
+        default:
+          $ref: '#/components/responses/UnexpectedError'
+    put:
+      operationId: imagesPut
+      summary: Ensure Image
+      security:
+      - tokenAuth: []
+      tags:
+        - Images
+      description: |
+        Ensures that the Image with the provided ID is created or modified.
+        The full Image needs to be provided to ensure
+        (either update or create) the Image. Non present data will
+        only be filled with defaults or left empty, but not take
+        previous values into consideration.
+      parameters:
+        - $ref: "#/components/parameters/contractNumber"
+        - name: imageId
+          in: path
+          schema:
+            type: string
+            format: uuid
+          example: "78916e89-f0ed-5816-b86d-5e55b6f2a884"
+          required: true
+          description: The ID (UUID) of the Image.
+      requestBody:
+        description: update Image
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ImageEnsure"
+      responses:
+        "200":
+          description: Image successfully updated.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ImageRead"
+        "201":
+          description: Image successfully ensured.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ImageRead"
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/NotAllowed'
+        "409":
+          $ref: '#/components/responses/Conflict'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "415":
+          $ref: '#/components/responses/UnsupportedMediaType'
+        "422":
+          $ref: '#/components/responses/UnprocessableEntity'
+        "429":
+          $ref: '#/components/responses/TooManyRequests'
+        "500":
+          $ref: '#/components/responses/InternalError'
+        "503":
+          $ref: '#/components/responses/ServiceUnavailable'
+        default:
+          $ref: '#/components/responses/UnexpectedError'
+    delete:
+      operationId: imagesDelete
+      summary: Delete Image
+      security:
+      - tokenAuth: []
+      tags:
+        - Images
+      description: Deletes the specified Image.
+      parameters:
+        - $ref: "#/components/parameters/contractNumber"
+        - name: imageId
+          in: path
+          schema:
+            type: string
+            format: uuid
+          example: "78916e89-f0ed-5816-b86d-5e55b6f2a884"
+          required: true
+          description: The ID (UUID) of the Image.
+      responses:
+        "202":
+          description: Deleting Image was successful.
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/NotAllowed'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "429":
+          $ref: '#/components/responses/TooManyRequests'
+        "500":
+          $ref: '#/components/responses/InternalError'
+        "503":
+          $ref: '#/components/responses/ServiceUnavailable'
+        default:
+          $ref: '#/components/responses/UnexpectedError'
   /vpcs:
     get:
       operationId: vpcsGet
@@ -1277,190 +1850,6 @@ paths:
           $ref: '#/components/responses/ServiceUnavailable'
         default:
           $ref: '#/components/responses/UnexpectedError'
-  /images:
-    get:
-      operationId: imagesGet
-      summary: Retrieve all Images
-      security:
-      - tokenAuth: []
-      description: |
-        This endpoint enables retrieving all Images using
-        pagination and optional filters.
-      parameters:
-        - $ref: "#/components/parameters/paginationOffset"
-        - $ref: "#/components/parameters/paginationLimit"
-        - $ref: "#/components/parameters/contractNumber"
-        - $ref: "#/components/parameters/vpc"
-        - $ref: "#/components/parameters/datacenter"
-        - $ref: "#/components/parameters/server"
-      tags:
-        - Images
-      responses:
-        "200":
-          description: |
-            Returned all requested Images successfully.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ImageReadList"
-        "400":
-          $ref: '#/components/responses/BadRequest'
-        "401":
-          $ref: '#/components/responses/Unauthorized'
-        "403":
-          $ref: '#/components/responses/NotAllowed'
-        "429":
-          $ref: '#/components/responses/TooManyRequests'
-        "500":
-          $ref: '#/components/responses/InternalError'
-        "503":
-          $ref: '#/components/responses/ServiceUnavailable'
-        default:
-          $ref: '#/components/responses/UnexpectedError'
-  /images/{imageId}:
-    get:
-      operationId: imagesFindById
-      summary: Retrieve Image
-      security:
-      - tokenAuth: []
-      tags:
-        - Images
-      description: Returns the Image by ID.
-      parameters:
-        - $ref: "#/components/parameters/contractNumber"
-        - name: imageId
-          in: path
-          schema:
-            type: string
-            format: uuid
-          example: "78916e89-f0ed-5816-b86d-5e55b6f2a884"
-          required: true
-          description: The ID (UUID) of the Image.
-      responses:
-        "200":
-          description: Getting Image was successful.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ImageRead"
-        "400":
-          $ref: '#/components/responses/BadRequest'
-        "401":
-          $ref: '#/components/responses/Unauthorized'
-        "403":
-          $ref: '#/components/responses/NotAllowed'
-        "404":
-          $ref: '#/components/responses/NotFound'
-        "429":
-          $ref: '#/components/responses/TooManyRequests'
-        "500":
-          $ref: '#/components/responses/InternalError'
-        "503":
-          $ref: '#/components/responses/ServiceUnavailable'
-        default:
-          $ref: '#/components/responses/UnexpectedError'
-    put:
-      operationId: imagesPut
-      summary: Ensure Image
-      security:
-      - tokenAuth: []
-      tags:
-        - Images
-      description: |
-        Ensures that the Image with the provided ID is created or modified.
-        The full Image needs to be provided to ensure
-        (either update or create) the Image. Non present data will
-        only be filled with defaults or left empty, but not take
-        previous values into consideration.
-      parameters:
-        - $ref: "#/components/parameters/contractNumber"
-        - name: imageId
-          in: path
-          schema:
-            type: string
-            format: uuid
-          example: "78916e89-f0ed-5816-b86d-5e55b6f2a884"
-          required: true
-          description: The ID (UUID) of the Image.
-      requestBody:
-        description: update Image
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/ImageEnsure"
-      responses:
-        "200":
-          description: Image successfully updated.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ImageRead"
-        "201":
-          description: Image successfully ensured.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ImageRead"
-        "400":
-          $ref: '#/components/responses/BadRequest'
-        "401":
-          $ref: '#/components/responses/Unauthorized'
-        "403":
-          $ref: '#/components/responses/NotAllowed'
-        "409":
-          $ref: '#/components/responses/Conflict'
-        "404":
-          $ref: '#/components/responses/NotFound'
-        "415":
-          $ref: '#/components/responses/UnsupportedMediaType'
-        "422":
-          $ref: '#/components/responses/UnprocessableEntity'
-        "429":
-          $ref: '#/components/responses/TooManyRequests'
-        "500":
-          $ref: '#/components/responses/InternalError'
-        "503":
-          $ref: '#/components/responses/ServiceUnavailable'
-        default:
-          $ref: '#/components/responses/UnexpectedError'
-    delete:
-      operationId: imagesDelete
-      summary: Delete Image
-      security:
-      - tokenAuth: []
-      tags:
-        - Images
-      description: Deletes the specified Image.
-      parameters:
-        - $ref: "#/components/parameters/contractNumber"
-        - name: imageId
-          in: path
-          schema:
-            type: string
-            format: uuid
-          example: "78916e89-f0ed-5816-b86d-5e55b6f2a884"
-          required: true
-          description: The ID (UUID) of the Image.
-      responses:
-        "202":
-          description: Deleting Image was successful.
-        "400":
-          $ref: '#/components/responses/BadRequest'
-        "401":
-          $ref: '#/components/responses/Unauthorized'
-        "403":
-          $ref: '#/components/responses/NotAllowed'
-        "404":
-          $ref: '#/components/responses/NotFound'
-        "429":
-          $ref: '#/components/responses/TooManyRequests'
-        "500":
-          $ref: '#/components/responses/InternalError'
-        "503":
-          $ref: '#/components/responses/ServiceUnavailable'
-        default:
-          $ref: '#/components/responses/UnexpectedError'
   /nics:
     get:
       operationId: nicsGet
@@ -1905,6 +2294,237 @@ paths:
       responses:
         "202":
           description: Deleting Lan was successful.
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/NotAllowed'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "429":
+          $ref: '#/components/responses/TooManyRequests'
+        "500":
+          $ref: '#/components/responses/InternalError'
+        "503":
+          $ref: '#/components/responses/ServiceUnavailable'
+        default:
+          $ref: '#/components/responses/UnexpectedError'
+  /flowlogs:
+    get:
+      operationId: flowlogsGet
+      summary: Retrieve all Flow Logs
+      security:
+      - tokenAuth: []
+      description: |
+        This endpoint enables retrieving all Flow Logs using
+        pagination and optional filters.
+      parameters:
+        - $ref: "#/components/parameters/paginationOffset"
+        - $ref: "#/components/parameters/paginationLimit"
+        - $ref: "#/components/parameters/contractNumber"
+        - $ref: "#/components/parameters/vpc"
+        - $ref: "#/components/parameters/datacenter"
+        - $ref: "#/components/parameters/server"
+        - $ref: "#/components/parameters/nic"
+      tags:
+        - Flow Logs
+      responses:
+        "200":
+          description: |
+            Returned all requested Flow Logs successfully.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FlowLogReadList"
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/NotAllowed'
+        "429":
+          $ref: '#/components/responses/TooManyRequests'
+        "500":
+          $ref: '#/components/responses/InternalError'
+        "503":
+          $ref: '#/components/responses/ServiceUnavailable'
+        default:
+          $ref: '#/components/responses/UnexpectedError'
+    post:
+      operationId: flowlogsPost
+      summary: Create FlowLog
+      security:
+      - tokenAuth: []
+      tags:
+        - Flow Logs
+      description: |
+        Creates a new FlowLog.
+        
+        The full FlowLog needs to be provided to create the object.
+        Optional data will be filled with defaults or left empty.
+      parameters:
+        - $ref: "#/components/parameters/contractNumber"
+      requestBody:
+        description: FlowLog to create.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FlowLogCreate"
+      responses:
+        "201":
+          description: FlowLog successfully created.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FlowLogRead"
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/NotAllowed'
+        "415":
+          $ref: '#/components/responses/UnsupportedMediaType'
+        "422":
+          $ref: '#/components/responses/UnprocessableEntity'
+        "429":
+          $ref: '#/components/responses/TooManyRequests'
+        "500":
+          $ref: '#/components/responses/InternalError'
+        "503":
+          $ref: '#/components/responses/ServiceUnavailable'
+        default:
+          $ref: '#/components/responses/UnexpectedError'
+  /flowlogs/{flowlogId}:
+    get:
+      operationId: flowlogsFindById
+      summary: Retrieve FlowLog
+      security:
+      - tokenAuth: []
+      tags:
+        - Flow Logs
+      description: Returns the FlowLog by ID.
+      parameters:
+        - $ref: "#/components/parameters/contractNumber"
+        - name: flowlogId
+          in: path
+          schema:
+            type: string
+            format: uuid
+          example: "8ef19972-2ea3-5618-8455-0c04a6051f58"
+          required: true
+          description: The ID (UUID) of the FlowLog.
+      responses:
+        "200":
+          description: Getting FlowLog was successful.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FlowLogRead"
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/NotAllowed'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "429":
+          $ref: '#/components/responses/TooManyRequests'
+        "500":
+          $ref: '#/components/responses/InternalError'
+        "503":
+          $ref: '#/components/responses/ServiceUnavailable'
+        default:
+          $ref: '#/components/responses/UnexpectedError'
+    put:
+      operationId: flowlogsPut
+      summary: Ensure FlowLog
+      security:
+      - tokenAuth: []
+      tags:
+        - Flow Logs
+      description: |
+        Ensures that the FlowLog with the provided ID is created or modified.
+        The full FlowLog needs to be provided to ensure
+        (either update or create) the FlowLog. Non present data will
+        only be filled with defaults or left empty, but not take
+        previous values into consideration.
+      parameters:
+        - $ref: "#/components/parameters/contractNumber"
+        - name: flowlogId
+          in: path
+          schema:
+            type: string
+            format: uuid
+          example: "8ef19972-2ea3-5618-8455-0c04a6051f58"
+          required: true
+          description: The ID (UUID) of the FlowLog.
+      requestBody:
+        description: update FlowLog
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FlowLogEnsure"
+      responses:
+        "200":
+          description: FlowLog successfully updated.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FlowLogRead"
+        "201":
+          description: FlowLog successfully ensured.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FlowLogRead"
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/NotAllowed'
+        "409":
+          $ref: '#/components/responses/Conflict'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "415":
+          $ref: '#/components/responses/UnsupportedMediaType'
+        "422":
+          $ref: '#/components/responses/UnprocessableEntity'
+        "429":
+          $ref: '#/components/responses/TooManyRequests'
+        "500":
+          $ref: '#/components/responses/InternalError'
+        "503":
+          $ref: '#/components/responses/ServiceUnavailable'
+        default:
+          $ref: '#/components/responses/UnexpectedError'
+    delete:
+      operationId: flowlogsDelete
+      summary: Delete FlowLog
+      security:
+      - tokenAuth: []
+      tags:
+        - Flow Logs
+      description: Deletes the specified FlowLog.
+      parameters:
+        - $ref: "#/components/parameters/contractNumber"
+        - name: flowlogId
+          in: path
+          schema:
+            type: string
+            format: uuid
+          example: "8ef19972-2ea3-5618-8455-0c04a6051f58"
+          required: true
+          description: The ID (UUID) of the FlowLog.
+      responses:
+        "202":
+          description: Deleting FlowLog was successful.
         "400":
           $ref: '#/components/responses/BadRequest'
         "401":
@@ -3294,624 +3914,6 @@ paths:
           $ref: '#/components/responses/ServiceUnavailable'
         default:
           $ref: '#/components/responses/UnexpectedError'
-  /ipblocks:
-    get:
-      operationId: ipblocksGet
-      summary: Retrieve all IP Blocks
-      security:
-      - tokenAuth: []
-      description: |
-        This endpoint enables retrieving all IP Blocks using
-        pagination and optional filters.
-      parameters:
-        - $ref: "#/components/parameters/paginationOffset"
-        - $ref: "#/components/parameters/paginationLimit"
-        - $ref: "#/components/parameters/contractNumber"
-        - $ref: "#/components/parameters/vpc"
-        - $ref: "#/components/parameters/datacenter"
-      tags:
-        - IP Blocks
-      responses:
-        "200":
-          description: |
-            Returned all requested IP Blocks successfully.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/IpBlockReadList"
-        "400":
-          $ref: '#/components/responses/BadRequest'
-        "401":
-          $ref: '#/components/responses/Unauthorized'
-        "403":
-          $ref: '#/components/responses/NotAllowed'
-        "429":
-          $ref: '#/components/responses/TooManyRequests'
-        "500":
-          $ref: '#/components/responses/InternalError'
-        "503":
-          $ref: '#/components/responses/ServiceUnavailable'
-        default:
-          $ref: '#/components/responses/UnexpectedError'
-    post:
-      operationId: ipblocksPost
-      summary: Create IpBlock
-      security:
-      - tokenAuth: []
-      tags:
-        - IP Blocks
-      description: |
-        Creates a new IpBlock.
-        
-        The full IpBlock needs to be provided to create the object.
-        Optional data will be filled with defaults or left empty.
-      parameters:
-        - $ref: "#/components/parameters/contractNumber"
-      requestBody:
-        description: IpBlock to create.
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/IpBlockCreate"
-      responses:
-        "201":
-          description: IpBlock successfully created.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/IpBlockRead"
-        "400":
-          $ref: '#/components/responses/BadRequest'
-        "401":
-          $ref: '#/components/responses/Unauthorized'
-        "403":
-          $ref: '#/components/responses/NotAllowed'
-        "415":
-          $ref: '#/components/responses/UnsupportedMediaType'
-        "422":
-          $ref: '#/components/responses/UnprocessableEntity'
-        "429":
-          $ref: '#/components/responses/TooManyRequests'
-        "500":
-          $ref: '#/components/responses/InternalError'
-        "503":
-          $ref: '#/components/responses/ServiceUnavailable'
-        default:
-          $ref: '#/components/responses/UnexpectedError'
-  /ipblocks/{ipblockId}:
-    get:
-      operationId: ipblocksFindById
-      summary: Retrieve IpBlock
-      security:
-      - tokenAuth: []
-      tags:
-        - IP Blocks
-      description: Returns the IpBlock by ID.
-      parameters:
-        - $ref: "#/components/parameters/contractNumber"
-        - name: ipblockId
-          in: path
-          schema:
-            type: string
-            format: uuid
-          example: "a480b1c3-c104-589b-b1d4-e181f1d25069"
-          required: true
-          description: The ID (UUID) of the IpBlock.
-      responses:
-        "200":
-          description: Getting IpBlock was successful.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/IpBlockRead"
-        "400":
-          $ref: '#/components/responses/BadRequest'
-        "401":
-          $ref: '#/components/responses/Unauthorized'
-        "403":
-          $ref: '#/components/responses/NotAllowed'
-        "404":
-          $ref: '#/components/responses/NotFound'
-        "429":
-          $ref: '#/components/responses/TooManyRequests'
-        "500":
-          $ref: '#/components/responses/InternalError'
-        "503":
-          $ref: '#/components/responses/ServiceUnavailable'
-        default:
-          $ref: '#/components/responses/UnexpectedError'
-    put:
-      operationId: ipblocksPut
-      summary: Ensure IpBlock
-      security:
-      - tokenAuth: []
-      tags:
-        - IP Blocks
-      description: |
-        Ensures that the IpBlock with the provided ID is created or modified.
-        The full IpBlock needs to be provided to ensure
-        (either update or create) the IpBlock. Non present data will
-        only be filled with defaults or left empty, but not take
-        previous values into consideration.
-      parameters:
-        - $ref: "#/components/parameters/contractNumber"
-        - name: ipblockId
-          in: path
-          schema:
-            type: string
-            format: uuid
-          example: "a480b1c3-c104-589b-b1d4-e181f1d25069"
-          required: true
-          description: The ID (UUID) of the IpBlock.
-      requestBody:
-        description: update IpBlock
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/IpBlockEnsure"
-      responses:
-        "200":
-          description: IpBlock successfully updated.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/IpBlockRead"
-        "201":
-          description: IpBlock successfully ensured.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/IpBlockRead"
-        "400":
-          $ref: '#/components/responses/BadRequest'
-        "401":
-          $ref: '#/components/responses/Unauthorized'
-        "403":
-          $ref: '#/components/responses/NotAllowed'
-        "409":
-          $ref: '#/components/responses/Conflict'
-        "404":
-          $ref: '#/components/responses/NotFound'
-        "415":
-          $ref: '#/components/responses/UnsupportedMediaType'
-        "422":
-          $ref: '#/components/responses/UnprocessableEntity'
-        "429":
-          $ref: '#/components/responses/TooManyRequests'
-        "500":
-          $ref: '#/components/responses/InternalError'
-        "503":
-          $ref: '#/components/responses/ServiceUnavailable'
-        default:
-          $ref: '#/components/responses/UnexpectedError'
-    delete:
-      operationId: ipblocksDelete
-      summary: Delete IpBlock
-      security:
-      - tokenAuth: []
-      tags:
-        - IP Blocks
-      description: Deletes the specified IpBlock.
-      parameters:
-        - $ref: "#/components/parameters/contractNumber"
-        - name: ipblockId
-          in: path
-          schema:
-            type: string
-            format: uuid
-          example: "a480b1c3-c104-589b-b1d4-e181f1d25069"
-          required: true
-          description: The ID (UUID) of the IpBlock.
-      responses:
-        "202":
-          description: Deleting IpBlock was successful.
-        "400":
-          $ref: '#/components/responses/BadRequest'
-        "401":
-          $ref: '#/components/responses/Unauthorized'
-        "403":
-          $ref: '#/components/responses/NotAllowed'
-        "404":
-          $ref: '#/components/responses/NotFound'
-        "429":
-          $ref: '#/components/responses/TooManyRequests'
-        "500":
-          $ref: '#/components/responses/InternalError'
-        "503":
-          $ref: '#/components/responses/ServiceUnavailable'
-        default:
-          $ref: '#/components/responses/UnexpectedError'
-  /flowlogs:
-    get:
-      operationId: flowlogsGet
-      summary: Retrieve all Flow Logs
-      security:
-      - tokenAuth: []
-      description: |
-        This endpoint enables retrieving all Flow Logs using
-        pagination and optional filters.
-      parameters:
-        - $ref: "#/components/parameters/paginationOffset"
-        - $ref: "#/components/parameters/paginationLimit"
-        - $ref: "#/components/parameters/contractNumber"
-        - $ref: "#/components/parameters/vpc"
-        - $ref: "#/components/parameters/datacenter"
-        - $ref: "#/components/parameters/server"
-        - $ref: "#/components/parameters/nic"
-      tags:
-        - Flow Logs
-      responses:
-        "200":
-          description: |
-            Returned all requested Flow Logs successfully.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/FlowLogReadList"
-        "400":
-          $ref: '#/components/responses/BadRequest'
-        "401":
-          $ref: '#/components/responses/Unauthorized'
-        "403":
-          $ref: '#/components/responses/NotAllowed'
-        "429":
-          $ref: '#/components/responses/TooManyRequests'
-        "500":
-          $ref: '#/components/responses/InternalError'
-        "503":
-          $ref: '#/components/responses/ServiceUnavailable'
-        default:
-          $ref: '#/components/responses/UnexpectedError'
-    post:
-      operationId: flowlogsPost
-      summary: Create FlowLog
-      security:
-      - tokenAuth: []
-      tags:
-        - Flow Logs
-      description: |
-        Creates a new FlowLog.
-        
-        The full FlowLog needs to be provided to create the object.
-        Optional data will be filled with defaults or left empty.
-      parameters:
-        - $ref: "#/components/parameters/contractNumber"
-      requestBody:
-        description: FlowLog to create.
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/FlowLogCreate"
-      responses:
-        "201":
-          description: FlowLog successfully created.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/FlowLogRead"
-        "400":
-          $ref: '#/components/responses/BadRequest'
-        "401":
-          $ref: '#/components/responses/Unauthorized'
-        "403":
-          $ref: '#/components/responses/NotAllowed'
-        "415":
-          $ref: '#/components/responses/UnsupportedMediaType'
-        "422":
-          $ref: '#/components/responses/UnprocessableEntity'
-        "429":
-          $ref: '#/components/responses/TooManyRequests'
-        "500":
-          $ref: '#/components/responses/InternalError'
-        "503":
-          $ref: '#/components/responses/ServiceUnavailable'
-        default:
-          $ref: '#/components/responses/UnexpectedError'
-  /flowlogs/{flowlogId}:
-    get:
-      operationId: flowlogsFindById
-      summary: Retrieve FlowLog
-      security:
-      - tokenAuth: []
-      tags:
-        - Flow Logs
-      description: Returns the FlowLog by ID.
-      parameters:
-        - $ref: "#/components/parameters/contractNumber"
-        - name: flowlogId
-          in: path
-          schema:
-            type: string
-            format: uuid
-          example: "8ef19972-2ea3-5618-8455-0c04a6051f58"
-          required: true
-          description: The ID (UUID) of the FlowLog.
-      responses:
-        "200":
-          description: Getting FlowLog was successful.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/FlowLogRead"
-        "400":
-          $ref: '#/components/responses/BadRequest'
-        "401":
-          $ref: '#/components/responses/Unauthorized'
-        "403":
-          $ref: '#/components/responses/NotAllowed'
-        "404":
-          $ref: '#/components/responses/NotFound'
-        "429":
-          $ref: '#/components/responses/TooManyRequests'
-        "500":
-          $ref: '#/components/responses/InternalError'
-        "503":
-          $ref: '#/components/responses/ServiceUnavailable'
-        default:
-          $ref: '#/components/responses/UnexpectedError'
-    put:
-      operationId: flowlogsPut
-      summary: Ensure FlowLog
-      security:
-      - tokenAuth: []
-      tags:
-        - Flow Logs
-      description: |
-        Ensures that the FlowLog with the provided ID is created or modified.
-        The full FlowLog needs to be provided to ensure
-        (either update or create) the FlowLog. Non present data will
-        only be filled with defaults or left empty, but not take
-        previous values into consideration.
-      parameters:
-        - $ref: "#/components/parameters/contractNumber"
-        - name: flowlogId
-          in: path
-          schema:
-            type: string
-            format: uuid
-          example: "8ef19972-2ea3-5618-8455-0c04a6051f58"
-          required: true
-          description: The ID (UUID) of the FlowLog.
-      requestBody:
-        description: update FlowLog
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/FlowLogEnsure"
-      responses:
-        "200":
-          description: FlowLog successfully updated.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/FlowLogRead"
-        "201":
-          description: FlowLog successfully ensured.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/FlowLogRead"
-        "400":
-          $ref: '#/components/responses/BadRequest'
-        "401":
-          $ref: '#/components/responses/Unauthorized'
-        "403":
-          $ref: '#/components/responses/NotAllowed'
-        "409":
-          $ref: '#/components/responses/Conflict'
-        "404":
-          $ref: '#/components/responses/NotFound'
-        "415":
-          $ref: '#/components/responses/UnsupportedMediaType'
-        "422":
-          $ref: '#/components/responses/UnprocessableEntity'
-        "429":
-          $ref: '#/components/responses/TooManyRequests'
-        "500":
-          $ref: '#/components/responses/InternalError'
-        "503":
-          $ref: '#/components/responses/ServiceUnavailable'
-        default:
-          $ref: '#/components/responses/UnexpectedError'
-    delete:
-      operationId: flowlogsDelete
-      summary: Delete FlowLog
-      security:
-      - tokenAuth: []
-      tags:
-        - Flow Logs
-      description: Deletes the specified FlowLog.
-      parameters:
-        - $ref: "#/components/parameters/contractNumber"
-        - name: flowlogId
-          in: path
-          schema:
-            type: string
-            format: uuid
-          example: "8ef19972-2ea3-5618-8455-0c04a6051f58"
-          required: true
-          description: The ID (UUID) of the FlowLog.
-      responses:
-        "202":
-          description: Deleting FlowLog was successful.
-        "400":
-          $ref: '#/components/responses/BadRequest'
-        "401":
-          $ref: '#/components/responses/Unauthorized'
-        "403":
-          $ref: '#/components/responses/NotAllowed'
-        "404":
-          $ref: '#/components/responses/NotFound'
-        "429":
-          $ref: '#/components/responses/TooManyRequests'
-        "500":
-          $ref: '#/components/responses/InternalError'
-        "503":
-          $ref: '#/components/responses/ServiceUnavailable'
-        default:
-          $ref: '#/components/responses/UnexpectedError'
-  /metadata/locations:
-    get:
-      operationId: metadataLocationsGet
-      summary: Retrieve all Locations
-      security:
-      - tokenAuth: []
-      description: |
-        This endpoint enables retrieving all Locations using
-        pagination and optional filters.
-      parameters:
-        - $ref: "#/components/parameters/paginationOffset"
-        - $ref: "#/components/parameters/paginationLimit"
-        - $ref: "#/components/parameters/contractNumber"
-      tags:
-        - Locations
-      responses:
-        "200":
-          description: |
-            Returned all requested Locations successfully.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/LocationReadList"
-        "400":
-          $ref: '#/components/responses/BadRequest'
-        "401":
-          $ref: '#/components/responses/Unauthorized'
-        "403":
-          $ref: '#/components/responses/NotAllowed'
-        "429":
-          $ref: '#/components/responses/TooManyRequests'
-        "500":
-          $ref: '#/components/responses/InternalError'
-        "503":
-          $ref: '#/components/responses/ServiceUnavailable'
-        default:
-          $ref: '#/components/responses/UnexpectedError'
-  /metadata/locations/{locationId}:
-    get:
-      operationId: metadataLocationsFindById
-      summary: Retrieve Location
-      security:
-      - tokenAuth: []
-      tags:
-        - Locations
-      description: Returns the Location by ID.
-      parameters:
-        - $ref: "#/components/parameters/contractNumber"
-        - name: locationId
-          in: path
-          schema:
-            type: string
-            format: uuid
-          example: "f59e4bc2-6aff-5ecc-b745-321db2fdd071"
-          required: true
-          description: The ID (UUID) of the Location.
-      responses:
-        "200":
-          description: Getting Location was successful.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/LocationRead"
-        "400":
-          $ref: '#/components/responses/BadRequest'
-        "401":
-          $ref: '#/components/responses/Unauthorized'
-        "403":
-          $ref: '#/components/responses/NotAllowed'
-        "404":
-          $ref: '#/components/responses/NotFound'
-        "429":
-          $ref: '#/components/responses/TooManyRequests'
-        "500":
-          $ref: '#/components/responses/InternalError'
-        "503":
-          $ref: '#/components/responses/ServiceUnavailable'
-        default:
-          $ref: '#/components/responses/UnexpectedError'
-  /metadata/templates:
-    get:
-      operationId: metadataTemplatesGet
-      summary: Retrieve all Templates
-      security:
-      - tokenAuth: []
-      description: |
-        This endpoint enables retrieving all Templates using
-        pagination and optional filters.
-      parameters:
-        - $ref: "#/components/parameters/paginationOffset"
-        - $ref: "#/components/parameters/paginationLimit"
-        - $ref: "#/components/parameters/contractNumber"
-      tags:
-        - Templates
-      responses:
-        "200":
-          description: |
-            Returned all requested Templates successfully.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/TemplateReadList"
-        "400":
-          $ref: '#/components/responses/BadRequest'
-        "401":
-          $ref: '#/components/responses/Unauthorized'
-        "403":
-          $ref: '#/components/responses/NotAllowed'
-        "429":
-          $ref: '#/components/responses/TooManyRequests'
-        "500":
-          $ref: '#/components/responses/InternalError'
-        "503":
-          $ref: '#/components/responses/ServiceUnavailable'
-        default:
-          $ref: '#/components/responses/UnexpectedError'
-  /metadata/templates/{templateId}:
-    get:
-      operationId: metadataTemplatesFindById
-      summary: Retrieve Template
-      security:
-      - tokenAuth: []
-      tags:
-        - Templates
-      description: Returns the Template by ID.
-      parameters:
-        - $ref: "#/components/parameters/contractNumber"
-        - name: templateId
-          in: path
-          schema:
-            type: string
-            format: uuid
-          example: "5afb3086-5b37-5cc0-b126-075231c7bcb6"
-          required: true
-          description: The ID (UUID) of the Template.
-      responses:
-        "200":
-          description: Getting Template was successful.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/TemplateRead"
-        "400":
-          $ref: '#/components/responses/BadRequest'
-        "401":
-          $ref: '#/components/responses/Unauthorized'
-        "403":
-          $ref: '#/components/responses/NotAllowed'
-        "404":
-          $ref: '#/components/responses/NotFound'
-        "429":
-          $ref: '#/components/responses/TooManyRequests'
-        "500":
-          $ref: '#/components/responses/InternalError'
-        "503":
-          $ref: '#/components/responses/ServiceUnavailable'
-        default:
-          $ref: '#/components/responses/UnexpectedError'
   /restoresnapshots:
     post:
       operationId: restoresnapshotsPost
@@ -4018,17 +4020,233 @@ paths:
           $ref: '#/components/responses/UnexpectedError'
 components:
   schemas:
+    LocationReadList:
+      allOf:
+      - type: object
+        required:
+        - id
+        - href
+        properties:
+          id:
+            description: ID of the list of Location resources.
+            type: string
+            format: uuid
+            example: 4155ea15-b118-5132-87a4-4dff9bedd618
+          href:
+            description: The URL of the list of Location resources.
+            type: string
+            example: /metadata/locations
+          items:
+            description: The list of Location resources.
+            type: array
+            items:
+              $ref: '#/components/schemas/LocationRead'
+      - $ref: '#/components/schemas/Pagination'
+    LocationRead:
+      type: object
+      required:
+      - id
+      - href
+      - properties
+      properties:
+        id:
+          type: string
+          description: The ID (UUID) of the Location.
+          format: uuid
+          example: "f59e4bc2-6aff-5ecc-b745-321db2fdd071"
+        href:
+          description: The URL of the Location.
+          type: string
+          example: /metadata/locations/f59e4bc2-6aff-5ecc-b745-321db2fdd071
+        properties:
+          $ref: '#/components/schemas/Location'
+    TemplateReadList:
+      allOf:
+      - type: object
+        required:
+        - id
+        - href
+        properties:
+          id:
+            description: ID of the list of Template resources.
+            type: string
+            format: uuid
+            example: 0c7eeeda-156b-5814-b1af-6543f1c24c5b
+          href:
+            description: The URL of the list of Template resources.
+            type: string
+            example: /metadata/templates
+          items:
+            description: The list of Template resources.
+            type: array
+            items:
+              $ref: '#/components/schemas/TemplateRead'
+      - $ref: '#/components/schemas/Pagination'
+    TemplateRead:
+      type: object
+      required:
+      - id
+      - href
+      - properties
+      properties:
+        id:
+          type: string
+          description: The ID (UUID) of the Template.
+          format: uuid
+          example: "5afb3086-5b37-5cc0-b126-075231c7bcb6"
+        href:
+          description: The URL of the Template.
+          type: string
+          example: /metadata/templates/5afb3086-5b37-5cc0-b126-075231c7bcb6
+        properties:
+          $ref: '#/components/schemas/Template'
+    IpBlockReadList:
+      allOf:
+      - type: object
+        required:
+        - id
+        - href
+        properties:
+          id:
+            description: ID of the list of IpBlock resources.
+            type: string
+            format: uuid
+            example: 5b7131b8-7ab5-5840-b7ee-162a5dd3c492
+          href:
+            description: The URL of the list of IpBlock resources.
+            type: string
+            example: /ipblocks
+          items:
+            description: The list of IpBlock resources.
+            type: array
+            items:
+              $ref: '#/components/schemas/IpBlockRead'
+      - $ref: '#/components/schemas/Pagination'
+    IpBlockRead:
+      type: object
+      required:
+      - id
+      - href
+      - metadata
+      - properties
+      properties:
+        id:
+          type: string
+          description: The ID (UUID) of the IpBlock.
+          format: uuid
+          example: "a480b1c3-c104-589b-b1d4-e181f1d25069"
+        href:
+          description: The URL of the IpBlock.
+          type: string
+          example: /ipblocks/a480b1c3-c104-589b-b1d4-e181f1d25069
+        metadata:
+          $ref: '#/components/schemas/ElementMetadata'
+        properties:
+          $ref: '#/components/schemas/IpBlock'
+    IpBlockEnsure:
+      type: object
+      required:
+      - id
+      - properties
+      properties:
+        id:
+          type: string
+          description: The ID (UUID) of the IpBlock.
+          format: uuid
+          example: "a480b1c3-c104-589b-b1d4-e181f1d25069"
+        metadata:
+          description: Metadata
+          additionalProperties: true
+          example: {}
+        properties:
+          $ref: '#/components/schemas/IpBlock'
+    IpBlockCreate:
+      type: object
+      required:
+      - properties
+      properties:
+        metadata:
+          description: Metadata
+          additionalProperties: true
+          example: {}
+        properties:
+          $ref: '#/components/schemas/IpBlock'
+    ImageReadList:
+      allOf:
+      - type: object
+        required:
+        - id
+        - href
+        properties:
+          id:
+            description: ID of the list of Image resources.
+            type: string
+            format: uuid
+            example: 6e8d5f3e-dca1-5a0a-87f1-c8f9753ffa8a
+          href:
+            description: The URL of the list of Image resources.
+            type: string
+            example: /images
+          items:
+            description: The list of Image resources.
+            type: array
+            items:
+              $ref: '#/components/schemas/ImageRead'
+      - $ref: '#/components/schemas/Pagination'
+    ImageRead:
+      type: object
+      required:
+      - id
+      - href
+      - metadata
+      - properties
+      properties:
+        id:
+          type: string
+          description: The ID (UUID) of the Image.
+          format: uuid
+          example: "78916e89-f0ed-5816-b86d-5e55b6f2a884"
+        href:
+          description: The URL of the Image.
+          type: string
+          example: /images/78916e89-f0ed-5816-b86d-5e55b6f2a884
+        metadata:
+          $ref: '#/components/schemas/ElementMetadata'
+        properties:
+          $ref: '#/components/schemas/Image'
+    ImageEnsure:
+      type: object
+      required:
+      - id
+      - properties
+      properties:
+        id:
+          type: string
+          description: The ID (UUID) of the Image.
+          format: uuid
+          example: "78916e89-f0ed-5816-b86d-5e55b6f2a884"
+        metadata:
+          description: Metadata
+          additionalProperties: true
+          example: {}
+        properties:
+          $ref: '#/components/schemas/Image'
     VpcReadList:
       allOf:
       - type: object
         required:
         - id
+        - href
         properties:
           id:
             description: ID of the list of Vpc resources.
             type: string
             format: uuid
             example: e4d59efb-bffd-5f44-bd9a-b146ad0c2d77
+          href:
+            description: The URL of the list of Vpc resources.
+            type: string
+            example: /vpcs
           items:
             description: The list of Vpc resources.
             type: array
@@ -4039,6 +4257,7 @@ components:
       type: object
       required:
       - id
+      - href
       - metadata
       - properties
       properties:
@@ -4047,6 +4266,10 @@ components:
           description: The ID (UUID) of the Vpc.
           format: uuid
           example: "e50a7f27-79ce-53c6-8c2a-661949161972"
+        href:
+          description: The URL of the Vpc.
+          type: string
+          example: /vpcs/e50a7f27-79ce-53c6-8c2a-661949161972
         metadata:
           $ref: '#/components/schemas/ElementMetadata'
         properties:
@@ -4084,12 +4307,17 @@ components:
       - type: object
         required:
         - id
+        - href
         properties:
           id:
             description: ID of the list of Datacenter resources.
             type: string
             format: uuid
             example: f6ebba96-00d9-5acc-8454-d6213506c2ca
+          href:
+            description: The URL of the list of Datacenter resources.
+            type: string
+            example: /datacenters
           items:
             description: The list of Datacenter resources.
             type: array
@@ -4100,6 +4328,7 @@ components:
       type: object
       required:
       - id
+      - href
       - metadata
       - properties
       properties:
@@ -4108,6 +4337,10 @@ components:
           description: The ID (UUID) of the Datacenter.
           format: uuid
           example: "d6e4e4d9-e542-5089-96c6-0087a38fda91"
+        href:
+          description: The URL of the Datacenter.
+          type: string
+          example: /datacenters/d6e4e4d9-e542-5089-96c6-0087a38fda91
         metadata:
           $ref: '#/components/schemas/ElementMetadata'
         properties:
@@ -4145,12 +4378,17 @@ components:
       - type: object
         required:
         - id
+        - href
         properties:
           id:
             description: ID of the list of Server resources.
             type: string
             format: uuid
             example: 70330e63-425b-597f-91d7-f86c030a6a30
+          href:
+            description: The URL of the list of Server resources.
+            type: string
+            example: /servers
           items:
             description: The list of Server resources.
             type: array
@@ -4161,6 +4399,7 @@ components:
       type: object
       required:
       - id
+      - href
       - metadata
       - properties
       properties:
@@ -4169,6 +4408,10 @@ components:
           description: The ID (UUID) of the Server.
           format: uuid
           example: "10ac0074-96c1-5d50-8852-81bd6272cb18"
+        href:
+          description: The URL of the Server.
+          type: string
+          example: /servers/10ac0074-96c1-5d50-8852-81bd6272cb18
         metadata:
           $ref: '#/components/schemas/ElementMetadata'
         properties:
@@ -4206,12 +4449,17 @@ components:
       - type: object
         required:
         - id
+        - href
         properties:
           id:
             description: ID of the list of Volume resources.
             type: string
             format: uuid
             example: 4da5de3a-bebb-51b2-96a8-694a89c1b1e0
+          href:
+            description: The URL of the list of Volume resources.
+            type: string
+            example: /volumes
           items:
             description: The list of Volume resources.
             type: array
@@ -4222,6 +4470,7 @@ components:
       type: object
       required:
       - id
+      - href
       - metadata
       - properties
       properties:
@@ -4230,6 +4479,10 @@ components:
           description: The ID (UUID) of the Volume.
           format: uuid
           example: "21a4723d-bd52-5800-908d-d4fe55517b48"
+        href:
+          description: The URL of the Volume.
+          type: string
+          example: /volumes/21a4723d-bd52-5800-908d-d4fe55517b48
         metadata:
           $ref: '#/components/schemas/ElementMetadata'
         properties:
@@ -4267,12 +4520,17 @@ components:
       - type: object
         required:
         - id
+        - href
         properties:
           id:
             description: ID of the list of Snapshot resources.
             type: string
             format: uuid
             example: b9cb6c65-8997-58bb-b7d1-93e5da5a6525
+          href:
+            description: The URL of the list of Snapshot resources.
+            type: string
+            example: /snapshots
           items:
             description: The list of Snapshot resources.
             type: array
@@ -4283,6 +4541,7 @@ components:
       type: object
       required:
       - id
+      - href
       - metadata
       - properties
       properties:
@@ -4291,6 +4550,10 @@ components:
           description: The ID (UUID) of the Snapshot.
           format: uuid
           example: "a8784665-3d99-5464-af32-30a2967f58e7"
+        href:
+          description: The URL of the Snapshot.
+          type: string
+          example: /snapshots/a8784665-3d99-5464-af32-30a2967f58e7
         metadata:
           $ref: '#/components/schemas/ElementMetadata'
         properties:
@@ -4323,67 +4586,22 @@ components:
           example: {}
         properties:
           $ref: '#/components/schemas/Snapshot'
-    ImageReadList:
-      allOf:
-      - type: object
-        required:
-        - id
-        properties:
-          id:
-            description: ID of the list of Image resources.
-            type: string
-            format: uuid
-            example: 6e8d5f3e-dca1-5a0a-87f1-c8f9753ffa8a
-          items:
-            description: The list of Image resources.
-            type: array
-            items:
-              $ref: '#/components/schemas/ImageRead'
-      - $ref: '#/components/schemas/Pagination'
-    ImageRead:
-      type: object
-      required:
-      - id
-      - metadata
-      - properties
-      properties:
-        id:
-          type: string
-          description: The ID (UUID) of the Image.
-          format: uuid
-          example: "78916e89-f0ed-5816-b86d-5e55b6f2a884"
-        metadata:
-          $ref: '#/components/schemas/ElementMetadata'
-        properties:
-          $ref: '#/components/schemas/Image'
-    ImageEnsure:
-      type: object
-      required:
-      - id
-      - properties
-      properties:
-        id:
-          type: string
-          description: The ID (UUID) of the Image.
-          format: uuid
-          example: "78916e89-f0ed-5816-b86d-5e55b6f2a884"
-        metadata:
-          description: Metadata
-          additionalProperties: true
-          example: {}
-        properties:
-          $ref: '#/components/schemas/Image'
     NicReadList:
       allOf:
       - type: object
         required:
         - id
+        - href
         properties:
           id:
             description: ID of the list of Nic resources.
             type: string
             format: uuid
             example: 8d204bd4-3423-5f87-aa0c-a91c4def4b88
+          href:
+            description: The URL of the list of Nic resources.
+            type: string
+            example: /nics
           items:
             description: The list of Nic resources.
             type: array
@@ -4394,6 +4612,7 @@ components:
       type: object
       required:
       - id
+      - href
       - metadata
       - properties
       properties:
@@ -4402,6 +4621,10 @@ components:
           description: The ID (UUID) of the Nic.
           format: uuid
           example: "95e1de1e-dfe1-59f4-8da5-cb2ae5178fa9"
+        href:
+          description: The URL of the Nic.
+          type: string
+          example: /nics/95e1de1e-dfe1-59f4-8da5-cb2ae5178fa9
         metadata:
           $ref: '#/components/schemas/ElementMetadata'
         properties:
@@ -4439,12 +4662,17 @@ components:
       - type: object
         required:
         - id
+        - href
         properties:
           id:
             description: ID of the list of Lan resources.
             type: string
             format: uuid
             example: 0cf82afb-556f-53f3-af68-8f492a2effc2
+          href:
+            description: The URL of the list of Lan resources.
+            type: string
+            example: /lans
           items:
             description: The list of Lan resources.
             type: array
@@ -4455,6 +4683,7 @@ components:
       type: object
       required:
       - id
+      - href
       - metadata
       - properties
       properties:
@@ -4463,6 +4692,10 @@ components:
           description: The ID (UUID) of the Lan.
           format: uuid
           example: "3d52d3ec-da61-5b48-878e-461d604debdb"
+        href:
+          description: The URL of the Lan.
+          type: string
+          example: /lans/3d52d3ec-da61-5b48-878e-461d604debdb
         metadata:
           $ref: '#/components/schemas/ElementMetadata'
         properties:
@@ -4495,17 +4728,93 @@ components:
           example: {}
         properties:
           $ref: '#/components/schemas/Lan'
+    FlowLogReadList:
+      allOf:
+      - type: object
+        required:
+        - id
+        - href
+        properties:
+          id:
+            description: ID of the list of FlowLog resources.
+            type: string
+            format: uuid
+            example: 3c38d028-8e38-5554-84d6-93c124bb39e5
+          href:
+            description: The URL of the list of FlowLog resources.
+            type: string
+            example: /flowlogs
+          items:
+            description: The list of FlowLog resources.
+            type: array
+            items:
+              $ref: '#/components/schemas/FlowLogRead'
+      - $ref: '#/components/schemas/Pagination'
+    FlowLogRead:
+      type: object
+      required:
+      - id
+      - href
+      - metadata
+      - properties
+      properties:
+        id:
+          type: string
+          description: The ID (UUID) of the FlowLog.
+          format: uuid
+          example: "8ef19972-2ea3-5618-8455-0c04a6051f58"
+        href:
+          description: The URL of the FlowLog.
+          type: string
+          example: /flowlogs/8ef19972-2ea3-5618-8455-0c04a6051f58
+        metadata:
+          $ref: '#/components/schemas/ElementMetadata'
+        properties:
+          $ref: '#/components/schemas/FlowLog'
+    FlowLogEnsure:
+      type: object
+      required:
+      - id
+      - properties
+      properties:
+        id:
+          type: string
+          description: The ID (UUID) of the FlowLog.
+          format: uuid
+          example: "8ef19972-2ea3-5618-8455-0c04a6051f58"
+        metadata:
+          description: Metadata
+          additionalProperties: true
+          example: {}
+        properties:
+          $ref: '#/components/schemas/FlowLog'
+    FlowLogCreate:
+      type: object
+      required:
+      - properties
+      properties:
+        metadata:
+          description: Metadata
+          additionalProperties: true
+          example: {}
+        properties:
+          $ref: '#/components/schemas/FlowLog'
     NetworkAclReadList:
       allOf:
       - type: object
         required:
         - id
+        - href
         properties:
           id:
             description: ID of the list of NetworkAcl resources.
             type: string
             format: uuid
             example: b3becf8c-148b-5aef-bce6-166a0a8a6058
+          href:
+            description: The URL of the list of NetworkAcl resources.
+            type: string
+            example: /nacls
           items:
             description: The list of NetworkAcl resources.
             type: array
@@ -4516,6 +4825,7 @@ components:
       type: object
       required:
       - id
+      - href
       - metadata
       - properties
       properties:
@@ -4524,6 +4834,10 @@ components:
           description: The ID (UUID) of the NetworkAcl.
           format: uuid
           example: "f187bce3-4b78-59de-a3e7-10f2b61ad742"
+        href:
+          description: The URL of the NetworkAcl.
+          type: string
+          example: /nacls/f187bce3-4b78-59de-a3e7-10f2b61ad742
         metadata:
           $ref: '#/components/schemas/ElementMetadata'
         properties:
@@ -4561,12 +4875,17 @@ components:
       - type: object
         required:
         - id
+        - href
         properties:
           id:
             description: ID of the list of NetworkAclRule resources.
             type: string
             format: uuid
             example: 11815ad2-8e58-5fa6-bbe8-438d615994d7
+          href:
+            description: The URL of the list of NetworkAclRule resources.
+            type: string
+            example: /naclrules
           items:
             description: The list of NetworkAclRule resources.
             type: array
@@ -4577,6 +4896,7 @@ components:
       type: object
       required:
       - id
+      - href
       - metadata
       - properties
       properties:
@@ -4585,6 +4905,10 @@ components:
           description: The ID (UUID) of the NetworkAclRule.
           format: uuid
           example: "e775ab89-71e0-50e9-a7ab-db818d4323e7"
+        href:
+          description: The URL of the NetworkAclRule.
+          type: string
+          example: /naclrules/e775ab89-71e0-50e9-a7ab-db818d4323e7
         metadata:
           $ref: '#/components/schemas/ElementMetadata'
         properties:
@@ -4622,12 +4946,17 @@ components:
       - type: object
         required:
         - id
+        - href
         properties:
           id:
             description: ID of the list of RouteTable resources.
             type: string
             format: uuid
             example: 685d96e8-716e-5f61-8ffe-a14a3128aaf4
+          href:
+            description: The URL of the list of RouteTable resources.
+            type: string
+            example: /routetables
           items:
             description: The list of RouteTable resources.
             type: array
@@ -4638,6 +4967,7 @@ components:
       type: object
       required:
       - id
+      - href
       - metadata
       - properties
       properties:
@@ -4646,6 +4976,10 @@ components:
           description: The ID (UUID) of the RouteTable.
           format: uuid
           example: "82525854-b4ab-5360-b28b-174476941c7f"
+        href:
+          description: The URL of the RouteTable.
+          type: string
+          example: /routetables/82525854-b4ab-5360-b28b-174476941c7f
         metadata:
           $ref: '#/components/schemas/ElementMetadata'
         properties:
@@ -4683,12 +5017,17 @@ components:
       - type: object
         required:
         - id
+        - href
         properties:
           id:
             description: ID of the list of Route resources.
             type: string
             format: uuid
             example: f01a9077-8faa-5b64-8743-2b3ddba0c498
+          href:
+            description: The URL of the list of Route resources.
+            type: string
+            example: /routes
           items:
             description: The list of Route resources.
             type: array
@@ -4699,6 +5038,7 @@ components:
       type: object
       required:
       - id
+      - href
       - metadata
       - properties
       properties:
@@ -4707,6 +5047,10 @@ components:
           description: The ID (UUID) of the Route.
           format: uuid
           example: "50982018-bb17-5cb9-bcd4-97f8bbc7dc23"
+        href:
+          description: The URL of the Route.
+          type: string
+          example: /routes/50982018-bb17-5cb9-bcd4-97f8bbc7dc23
         metadata:
           $ref: '#/components/schemas/ElementMetadata'
         properties:
@@ -4744,12 +5088,17 @@ components:
       - type: object
         required:
         - id
+        - href
         properties:
           id:
             description: ID of the list of SecurityGroup resources.
             type: string
             format: uuid
             example: 85157506-8f11-5714-8daf-ff9f2750913c
+          href:
+            description: The URL of the list of SecurityGroup resources.
+            type: string
+            example: /securitygroups
           items:
             description: The list of SecurityGroup resources.
             type: array
@@ -4760,6 +5109,7 @@ components:
       type: object
       required:
       - id
+      - href
       - metadata
       - properties
       properties:
@@ -4768,6 +5118,10 @@ components:
           description: The ID (UUID) of the SecurityGroup.
           format: uuid
           example: "f2966c32-28d2-5a3f-9356-979d5ce2bf5d"
+        href:
+          description: The URL of the SecurityGroup.
+          type: string
+          example: /securitygroups/f2966c32-28d2-5a3f-9356-979d5ce2bf5d
         metadata:
           $ref: '#/components/schemas/ElementMetadata'
         properties:
@@ -4805,12 +5159,17 @@ components:
       - type: object
         required:
         - id
+        - href
         properties:
           id:
             description: ID of the list of SecurityGroupRule resources.
             type: string
             format: uuid
             example: 27e303a6-07f1-546e-ab95-24dec7fbb028
+          href:
+            description: The URL of the list of SecurityGroupRule resources.
+            type: string
+            example: /securitygrouprules
           items:
             description: The list of SecurityGroupRule resources.
             type: array
@@ -4821,6 +5180,7 @@ components:
       type: object
       required:
       - id
+      - href
       - metadata
       - properties
       properties:
@@ -4829,6 +5189,10 @@ components:
           description: The ID (UUID) of the SecurityGroupRule.
           format: uuid
           example: "37fa64f3-2ac2-5ae8-850d-63e3d9bd4cad"
+        href:
+          description: The URL of the SecurityGroupRule.
+          type: string
+          example: /securitygrouprules/37fa64f3-2ac2-5ae8-850d-63e3d9bd4cad
         metadata:
           $ref: '#/components/schemas/ElementMetadata'
         properties:
@@ -4861,188 +5225,6 @@ components:
           example: {}
         properties:
           $ref: '#/components/schemas/SecurityGroupRule'
-    IpBlockReadList:
-      allOf:
-      - type: object
-        required:
-        - id
-        properties:
-          id:
-            description: ID of the list of IpBlock resources.
-            type: string
-            format: uuid
-            example: 5b7131b8-7ab5-5840-b7ee-162a5dd3c492
-          items:
-            description: The list of IpBlock resources.
-            type: array
-            items:
-              $ref: '#/components/schemas/IpBlockRead'
-      - $ref: '#/components/schemas/Pagination'
-    IpBlockRead:
-      type: object
-      required:
-      - id
-      - metadata
-      - properties
-      properties:
-        id:
-          type: string
-          description: The ID (UUID) of the IpBlock.
-          format: uuid
-          example: "a480b1c3-c104-589b-b1d4-e181f1d25069"
-        metadata:
-          $ref: '#/components/schemas/ElementMetadata'
-        properties:
-          $ref: '#/components/schemas/IpBlock'
-    IpBlockEnsure:
-      type: object
-      required:
-      - id
-      - properties
-      properties:
-        id:
-          type: string
-          description: The ID (UUID) of the IpBlock.
-          format: uuid
-          example: "a480b1c3-c104-589b-b1d4-e181f1d25069"
-        metadata:
-          description: Metadata
-          additionalProperties: true
-          example: {}
-        properties:
-          $ref: '#/components/schemas/IpBlock'
-    IpBlockCreate:
-      type: object
-      required:
-      - properties
-      properties:
-        metadata:
-          description: Metadata
-          additionalProperties: true
-          example: {}
-        properties:
-          $ref: '#/components/schemas/IpBlock'
-    FlowLogReadList:
-      allOf:
-      - type: object
-        required:
-        - id
-        properties:
-          id:
-            description: ID of the list of FlowLog resources.
-            type: string
-            format: uuid
-            example: 3c38d028-8e38-5554-84d6-93c124bb39e5
-          items:
-            description: The list of FlowLog resources.
-            type: array
-            items:
-              $ref: '#/components/schemas/FlowLogRead'
-      - $ref: '#/components/schemas/Pagination'
-    FlowLogRead:
-      type: object
-      required:
-      - id
-      - metadata
-      - properties
-      properties:
-        id:
-          type: string
-          description: The ID (UUID) of the FlowLog.
-          format: uuid
-          example: "8ef19972-2ea3-5618-8455-0c04a6051f58"
-        metadata:
-          $ref: '#/components/schemas/ElementMetadata'
-        properties:
-          $ref: '#/components/schemas/FlowLog'
-    FlowLogEnsure:
-      type: object
-      required:
-      - id
-      - properties
-      properties:
-        id:
-          type: string
-          description: The ID (UUID) of the FlowLog.
-          format: uuid
-          example: "8ef19972-2ea3-5618-8455-0c04a6051f58"
-        metadata:
-          description: Metadata
-          additionalProperties: true
-          example: {}
-        properties:
-          $ref: '#/components/schemas/FlowLog'
-    FlowLogCreate:
-      type: object
-      required:
-      - properties
-      properties:
-        metadata:
-          description: Metadata
-          additionalProperties: true
-          example: {}
-        properties:
-          $ref: '#/components/schemas/FlowLog'
-    LocationReadList:
-      allOf:
-      - type: object
-        required:
-        - id
-        properties:
-          id:
-            description: ID of the list of Location resources.
-            type: string
-            format: uuid
-            example: 4155ea15-b118-5132-87a4-4dff9bedd618
-          items:
-            description: The list of Location resources.
-            type: array
-            items:
-              $ref: '#/components/schemas/LocationRead'
-      - $ref: '#/components/schemas/Pagination'
-    LocationRead:
-      type: object
-      required:
-      - id
-      - properties
-      properties:
-        id:
-          type: string
-          description: The ID (UUID) of the Location.
-          format: uuid
-          example: "f59e4bc2-6aff-5ecc-b745-321db2fdd071"
-        properties:
-          $ref: '#/components/schemas/Location'
-    TemplateReadList:
-      allOf:
-      - type: object
-        required:
-        - id
-        properties:
-          id:
-            description: ID of the list of Template resources.
-            type: string
-            format: uuid
-            example: 0c7eeeda-156b-5814-b1af-6543f1c24c5b
-          items:
-            description: The list of Template resources.
-            type: array
-            items:
-              $ref: '#/components/schemas/TemplateRead'
-      - $ref: '#/components/schemas/Pagination'
-    TemplateRead:
-      type: object
-      required:
-      - id
-      - properties
-      properties:
-        id:
-          type: string
-          description: The ID (UUID) of the Template.
-          format: uuid
-          example: "5afb3086-5b37-5cc0-b126-075231c7bcb6"
-        properties:
-          $ref: '#/components/schemas/Template'
     Vpc:
       required:
         - location
