@@ -39,11 +39,6 @@ tags:
     Retrieves Locations.
     
     This tag groups all operations for metadata.
-- name: Metadata
-  description: |
-    Retrieves Templates.
-    
-    This tag groups all operations for metadata.
 - name: IP Blocks
   description: |
     Creates and manages IP Blocks.
@@ -126,12 +121,7 @@ tags:
     This tag groups all operations for security group rules.
 - name: Operations
   description: |
-    Performs a snapshot restoration.
-    
-    This tag groups all operations for operations.
-- name: Operations
-  description: |
-    Performs various operations on Servers like STOP, START, SUSPEND, RESUME.
+    Performs various operations on resources like STOP, START, SUSPEND, RESUME, RESTORESNAPSHOT.
     
     This tag groups all operations for operations.
 paths:
@@ -3914,58 +3904,6 @@ paths:
           $ref: '#/components/responses/ServiceUnavailable'
         default:
           $ref: '#/components/responses/UnexpectedError'
-  /restoresnapshots:
-    post:
-      operationId: restoresnapshotsPost
-      summary: Post RestoreSnapshot
-      security:
-        - tokenAuth: []
-      tags:
-        - Operations
-      description: |
-        Post the operation RestoreSnapshot with the provided ID and tag.
-        The full RestoreSnapshot needs to be provided to ensure
-        (either update or create) the RestoreSnapshot. Non present data will
-        only be filled with defaults or left empty, but not take
-        previous values into consideration.
-      parameters:
-        - $ref: "#/components/parameters/contractNumber"
-      requestBody:
-        description: update RestoreSnapshot
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/RestoreSnapshot"
-      responses:
-        "201":
-          description: RestoreSnapshot successfully sent.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Snapshot"
-        "400":
-          $ref: '#/components/responses/BadRequest'
-        "401":
-          $ref: '#/components/responses/Unauthorized'
-        "403":
-          $ref: '#/components/responses/NotAllowed'
-        "409":
-          $ref: '#/components/responses/Conflict'
-        "404":
-          $ref: '#/components/responses/NotFound'
-        "415":
-          $ref: '#/components/responses/UnsupportedMediaType'
-        "422":
-          $ref: '#/components/responses/UnprocessableEntity'
-        "429":
-          $ref: '#/components/responses/TooManyRequests'
-        "500":
-          $ref: '#/components/responses/InternalError'
-        "503":
-          $ref: '#/components/responses/ServiceUnavailable'
-        default:
-          $ref: '#/components/responses/UnexpectedError'
   /serveroperations:
     post:
       operationId: serveroperationsPost
@@ -3996,6 +3934,58 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ServerOperationResponse"
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+        "403":
+          $ref: '#/components/responses/NotAllowed'
+        "409":
+          $ref: '#/components/responses/Conflict'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "415":
+          $ref: '#/components/responses/UnsupportedMediaType'
+        "422":
+          $ref: '#/components/responses/UnprocessableEntity'
+        "429":
+          $ref: '#/components/responses/TooManyRequests'
+        "500":
+          $ref: '#/components/responses/InternalError'
+        "503":
+          $ref: '#/components/responses/ServiceUnavailable'
+        default:
+          $ref: '#/components/responses/UnexpectedError'
+  /restoresnapshots:
+    post:
+      operationId: restoresnapshotsPost
+      summary: Post RestoreSnapshot
+      security:
+        - tokenAuth: []
+      tags:
+        - Operations
+      description: |
+        Post the operation RestoreSnapshot with the provided ID and tag.
+        The full RestoreSnapshot needs to be provided to ensure
+        (either update or create) the RestoreSnapshot. Non present data will
+        only be filled with defaults or left empty, but not take
+        previous values into consideration.
+      parameters:
+        - $ref: "#/components/parameters/contractNumber"
+      requestBody:
+        description: update RestoreSnapshot
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RestoreSnapshot"
+      responses:
+        "201":
+          description: RestoreSnapshot successfully sent.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Snapshot"
         "400":
           $ref: '#/components/responses/BadRequest'
         "401":
@@ -5225,6 +5215,132 @@ components:
           example: {}
         properties:
           $ref: '#/components/schemas/SecurityGroupRule'
+    ServerOperationReadList:
+      allOf:
+      - type: object
+        required:
+        - id
+        - href
+        properties:
+          id:
+            description: ID of the list of ServerOperation resources.
+            type: string
+            format: uuid
+            example: 80b0ba40-e922-5fd8-8488-afacb13a1e6a
+          href:
+            description: The URL of the list of ServerOperation resources.
+            type: string
+            example: /serveroperations
+          items:
+            description: The list of ServerOperation resources.
+            type: array
+            items:
+              $ref: '#/components/schemas/ServerOperationRead'
+      - $ref: '#/components/schemas/Pagination'
+    ServerOperationRead:
+      type: object
+      required:
+      - id
+      - href
+      - properties
+      properties:
+        id:
+          type: string
+          description: The ID (UUID) of the ServerOperation.
+          format: uuid
+          example: "0eade904-be77-54cf-ba4d-ac05a6562116"
+        href:
+          description: The URL of the ServerOperation.
+          type: string
+          example: /serveroperations/0eade904-be77-54cf-ba4d-ac05a6562116
+        properties:
+          $ref: '#/components/schemas/ServerOperation'
+    ServerOperationEnsure:
+      type: object
+      required:
+      - id
+      - properties
+      properties:
+        id:
+          type: string
+          description: The ID (UUID) of the ServerOperation.
+          format: uuid
+          example: "0eade904-be77-54cf-ba4d-ac05a6562116"
+        metadata:
+          description: Metadata
+          additionalProperties: true
+          example: {}
+        properties:
+          $ref: '#/components/schemas/ServerOperation'
+    ServerOperationCreate:
+      type: object
+      required:
+      - properties
+      properties:
+        metadata:
+          description: Metadata
+          additionalProperties: true
+          example: {}
+        properties:
+          $ref: '#/components/schemas/ServerOperation'
+    RestoreSnapshotReadList:
+      allOf:
+      - type: object
+        required:
+        - id
+        properties:
+          id:
+            description: ID of the list of RestoreSnapshot resources.
+            type: string
+            format: uuid
+            example: ac298405-8465-5f44-800f-05841582869b
+          items:
+            description: The list of RestoreSnapshot resources.
+            type: array
+            items:
+              $ref: '#/components/schemas/RestoreSnapshotRead'
+      - $ref: '#/components/schemas/Pagination'
+    RestoreSnapshotRead:
+      type: object
+      required:
+      - id
+      - properties
+      properties:
+        id:
+          type: string
+          description: The ID (UUID) of the RestoreSnapshot.
+          format: uuid
+          example: "f580c0e1-7b80-5803-ae94-96c428bf103c"
+        properties:
+          $ref: '#/components/schemas/RestoreSnapshot'
+    RestoreSnapshotEnsure:
+      type: object
+      required:
+      - id
+      - properties
+      properties:
+        id:
+          type: string
+          description: The ID (UUID) of the RestoreSnapshot.
+          format: uuid
+          example: "f580c0e1-7b80-5803-ae94-96c428bf103c"
+        metadata:
+          description: Metadata
+          additionalProperties: true
+          example: {}
+        properties:
+          $ref: '#/components/schemas/RestoreSnapshot'
+    RestoreSnapshotCreate:
+      type: object
+      required:
+      - properties
+      properties:
+        metadata:
+          description: Metadata
+          additionalProperties: true
+          example: {}
+        properties:
+          $ref: '#/components/schemas/RestoreSnapshot'
     Vpc:
       required:
         - location
