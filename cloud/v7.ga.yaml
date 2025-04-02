@@ -34,16 +34,16 @@ servers:
   - url: https://api.us-mci.ionos.com/cloudapi/v7
     description: Lenexa, United States
 tags:
-- name: Locations
+- name: Metadata
   description: |
     Retrieves Locations.
     
-    This tag groups all operations for locations.
-- name: Templates
+    This tag groups all operations for metadata.
+- name: Metadata
   description: |
     Retrieves Templates.
     
-    This tag groups all operations for templates.
+    This tag groups all operations for metadata.
 - name: IP Blocks
   description: |
     Creates and manages IP Blocks.
@@ -124,36 +124,36 @@ tags:
     Creates and manages Security Group Rules.
     
     This tag groups all operations for security group rules.
-- name: Restore Snaphots
+- name: Operations
   description: |
     Performs a snapshot restoration.
     
-    This tag groups all operations for restore snaphots.
-- name: Server Operations
+    This tag groups all operations for operations.
+- name: Operations
   description: |
     Performs various operations on Servers like STOP, START, SUSPEND, RESUME.
     
-    This tag groups all operations for server operations.
+    This tag groups all operations for operations.
 paths:
   /metadata/locations:
     get:
       operationId: metadataLocationsGet
-      summary: Retrieve all Locations
+      summary: Retrieve all Metadata
       security:
       - tokenAuth: []
       description: |
-        This endpoint enables retrieving all Locations using
+        This endpoint enables retrieving all Metadata using
         pagination and optional filters.
       parameters:
         - $ref: "#/components/parameters/paginationOffset"
         - $ref: "#/components/parameters/paginationLimit"
         - $ref: "#/components/parameters/contractNumber"
       tags:
-        - Locations
+        - Metadata
       responses:
         "200":
           description: |
-            Returned all requested Locations successfully.
+            Returned all requested Metadata successfully.
           content:
             application/json:
               schema:
@@ -179,7 +179,7 @@ paths:
       security:
       - tokenAuth: []
       tags:
-        - Locations
+        - Metadata
       description: Returns the Location by ID.
       parameters:
         - $ref: "#/components/parameters/contractNumber"
@@ -217,22 +217,22 @@ paths:
   /metadata/templates:
     get:
       operationId: metadataTemplatesGet
-      summary: Retrieve all Templates
+      summary: Retrieve all Metadata
       security:
       - tokenAuth: []
       description: |
-        This endpoint enables retrieving all Templates using
+        This endpoint enables retrieving all Metadata using
         pagination and optional filters.
       parameters:
         - $ref: "#/components/parameters/paginationOffset"
         - $ref: "#/components/parameters/paginationLimit"
         - $ref: "#/components/parameters/contractNumber"
       tags:
-        - Templates
+        - Metadata
       responses:
         "200":
           description: |
-            Returned all requested Templates successfully.
+            Returned all requested Metadata successfully.
           content:
             application/json:
               schema:
@@ -258,7 +258,7 @@ paths:
       security:
       - tokenAuth: []
       tags:
-        - Templates
+        - Metadata
       description: Returns the Template by ID.
       parameters:
         - $ref: "#/components/parameters/contractNumber"
@@ -3921,7 +3921,7 @@ paths:
       security:
         - tokenAuth: []
       tags:
-        - Restore Snaphots
+        - Operations
       description: |
         Post the operation RestoreSnapshot with the provided ID and tag.
         The full RestoreSnapshot needs to be provided to ensure
@@ -3973,7 +3973,7 @@ paths:
       security:
         - tokenAuth: []
       tags:
-        - Server Operations
+        - Operations
       description: |
         Post the operation ServerOperation with the provided ID and tag.
         The full ServerOperation needs to be provided to ensure
