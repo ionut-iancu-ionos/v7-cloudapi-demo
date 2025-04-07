@@ -128,11 +128,11 @@ paths:
   /metadata/locations:
     get:
       operationId: metadataLocationsGet
-      summary: Retrieve all Metadata
+      summary: Retrieve all locations
       security:
       - tokenAuth: []
       description: |
-        This endpoint enables retrieving all Metadata using
+        This endpoint enables retrieving all locations using
         pagination and optional filters.
       parameters:
         - $ref: "#/components/parameters/paginationOffset"
@@ -143,7 +143,7 @@ paths:
       responses:
         "200":
           description: |
-            Returned all requested Metadata successfully.
+            Returned all requested locations successfully.
           content:
             application/json:
               schema:
@@ -207,11 +207,11 @@ paths:
   /metadata/templates:
     get:
       operationId: metadataTemplatesGet
-      summary: Retrieve all Metadata
+      summary: Retrieve all templates
       security:
       - tokenAuth: []
       description: |
-        This endpoint enables retrieving all Metadata using
+        This endpoint enables retrieving all templates using
         pagination and optional filters.
       parameters:
         - $ref: "#/components/parameters/paginationOffset"
@@ -222,7 +222,7 @@ paths:
       responses:
         "200":
           description: |
-            Returned all requested Metadata successfully.
+            Returned all requested templates successfully.
           content:
             application/json:
               schema:
