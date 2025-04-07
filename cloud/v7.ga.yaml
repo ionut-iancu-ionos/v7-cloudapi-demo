@@ -36,7 +36,7 @@ servers:
 tags:
 - name: Metadata
   description: |
-    Retrieves Locations.
+    Retrieves Metadata.
     
     This tag groups all operations for metadata.
 - name: IP Blocks
@@ -128,11 +128,11 @@ paths:
   /metadata/locations:
     get:
       operationId: metadataLocationsGet
-      summary: Retrieve all locations
+      summary: Retrieve all Locations
       security:
       - tokenAuth: []
       description: |
-        This endpoint enables retrieving all locations using
+        This endpoint enables retrieving all Locations using
         pagination and optional filters.
       parameters:
         - $ref: "#/components/parameters/paginationOffset"
@@ -143,7 +143,7 @@ paths:
       responses:
         "200":
           description: |
-            Returned all requested locations successfully.
+            Returned all requested Locations successfully.
           content:
             application/json:
               schema:
@@ -207,11 +207,11 @@ paths:
   /metadata/templates:
     get:
       operationId: metadataTemplatesGet
-      summary: Retrieve all templates
+      summary: Retrieve all Templates
       security:
       - tokenAuth: []
       description: |
-        This endpoint enables retrieving all templates using
+        This endpoint enables retrieving all Templates using
         pagination and optional filters.
       parameters:
         - $ref: "#/components/parameters/paginationOffset"
@@ -222,7 +222,7 @@ paths:
       responses:
         "200":
           description: |
-            Returned all requested templates successfully.
+            Returned all requested Templates successfully.
           content:
             application/json:
               schema:
@@ -5215,132 +5215,6 @@ components:
           example: {}
         properties:
           $ref: '#/components/schemas/SecurityGroupRule'
-    ServerOperationReadList:
-      allOf:
-      - type: object
-        required:
-        - id
-        - href
-        properties:
-          id:
-            description: ID of the list of ServerOperation resources.
-            type: string
-            format: uuid
-            example: 80b0ba40-e922-5fd8-8488-afacb13a1e6a
-          href:
-            description: The URL of the list of ServerOperation resources.
-            type: string
-            example: /serveroperations
-          items:
-            description: The list of ServerOperation resources.
-            type: array
-            items:
-              $ref: '#/components/schemas/ServerOperationRead'
-      - $ref: '#/components/schemas/Pagination'
-    ServerOperationRead:
-      type: object
-      required:
-      - id
-      - href
-      - properties
-      properties:
-        id:
-          type: string
-          description: The ID (UUID) of the ServerOperation.
-          format: uuid
-          example: "0eade904-be77-54cf-ba4d-ac05a6562116"
-        href:
-          description: The URL of the ServerOperation.
-          type: string
-          example: /serveroperations/0eade904-be77-54cf-ba4d-ac05a6562116
-        properties:
-          $ref: '#/components/schemas/ServerOperation'
-    ServerOperationEnsure:
-      type: object
-      required:
-      - id
-      - properties
-      properties:
-        id:
-          type: string
-          description: The ID (UUID) of the ServerOperation.
-          format: uuid
-          example: "0eade904-be77-54cf-ba4d-ac05a6562116"
-        metadata:
-          description: Metadata
-          additionalProperties: true
-          example: {}
-        properties:
-          $ref: '#/components/schemas/ServerOperation'
-    ServerOperationCreate:
-      type: object
-      required:
-      - properties
-      properties:
-        metadata:
-          description: Metadata
-          additionalProperties: true
-          example: {}
-        properties:
-          $ref: '#/components/schemas/ServerOperation'
-    RestoreSnapshotReadList:
-      allOf:
-      - type: object
-        required:
-        - id
-        properties:
-          id:
-            description: ID of the list of RestoreSnapshot resources.
-            type: string
-            format: uuid
-            example: ac298405-8465-5f44-800f-05841582869b
-          items:
-            description: The list of RestoreSnapshot resources.
-            type: array
-            items:
-              $ref: '#/components/schemas/RestoreSnapshotRead'
-      - $ref: '#/components/schemas/Pagination'
-    RestoreSnapshotRead:
-      type: object
-      required:
-      - id
-      - properties
-      properties:
-        id:
-          type: string
-          description: The ID (UUID) of the RestoreSnapshot.
-          format: uuid
-          example: "f580c0e1-7b80-5803-ae94-96c428bf103c"
-        properties:
-          $ref: '#/components/schemas/RestoreSnapshot'
-    RestoreSnapshotEnsure:
-      type: object
-      required:
-      - id
-      - properties
-      properties:
-        id:
-          type: string
-          description: The ID (UUID) of the RestoreSnapshot.
-          format: uuid
-          example: "f580c0e1-7b80-5803-ae94-96c428bf103c"
-        metadata:
-          description: Metadata
-          additionalProperties: true
-          example: {}
-        properties:
-          $ref: '#/components/schemas/RestoreSnapshot'
-    RestoreSnapshotCreate:
-      type: object
-      required:
-      - properties
-      properties:
-        metadata:
-          description: Metadata
-          additionalProperties: true
-          example: {}
-        properties:
-          $ref: '#/components/schemas/RestoreSnapshot'
     Vpc:
       required:
         - location
@@ -5388,6 +5262,14 @@ components:
             type: string
             example: 2001:db8:b06d:8f00::/56
           x-prerelease: true
+        routetables:
+          type: array
+          description: >-
+            List containing details of the route tables assigned to this vpc.
+          items:
+            type: string
+            format: uuid
+            example: a6ea70df-071c-4400-a497-9a08d69b97df
         defaultRouteTable:
           type: string
           description: UUID of the default route table for this vpc.
@@ -5401,7 +5283,7 @@ components:
           items:
             type: string
             format: uuid
-            example: '15f67991-0f51-4efc-a8ad-ef1fb31a480c'
+            example: 15f67991-0f51-4efc-a8ad-ef1fb31a480c
         defaultSecurityGroup:
           description: >-
             This will become the default security group for the vpc, replacing the old one if already exists.
@@ -5409,7 +5291,7 @@ components:
             Provide this field only if the `createDefaultSecurityGroup` field is missing. You cannot provide both of them
           type: string
           format: uuid
-          example: '15f67991-0f51-4efc-a8ad-ef1fb31a480c'
+          example: 15f67991-0f51-4efc-a8ad-ef1fb31a480c
         createDefaultSecurityGroup:
           type: boolean
           description: >-
@@ -5419,6 +5301,14 @@ components:
             Provide this field only if the `defaultSecurityGroup` field is missing. You cannot provide both of them
           example: true
           writeOnly: true
+        naclrules:
+          type: array
+          description: >-
+            List containing details of the Network ACL rules assigned to this vpc.
+          items:
+            type: string
+            format: uuid
+            example: 757b0228-ea4c-4210-ace5-395db0b8ac26
     Datacenter:
       required:
         - location
@@ -5540,7 +5430,7 @@ components:
           items:
             type: string
             format: uuid
-            example: '15f67991-0f51-4efc-a8ad-ef1fb31a480c'
+            example: 15f67991-0f51-4efc-a8ad-ef1fb31a480c
         bootCdrom:
           $ref: '#/components/schemas/ResourceReference'
         bootVolume:
@@ -5563,9 +5453,10 @@ components:
           description: The id of the datacenter to be attached to
           example: a4c6c98b-45b4-4b30-95c7-fab73eeb3089
         placementGroupId:
-          type: "string"
-          description: "The placement group ID that belongs to this server; Requires system privileges, for internal usage
-            only"
+          type: string
+          description: >-
+            The placement group ID that belongs to this server; Requires system privileges,
+            for internal usage only
           x-internal: true
           example: null
         nicMultiQueue:
@@ -5585,7 +5476,7 @@ components:
           items:
             type: string
             format: uuid
-            example: '15f67991-0f51-4efc-a8ad-ef1fb31a480c'
+            example: 15f67991-0f51-4efc-a8ad-ef1fb31a480c
     Volume:
       required:
         - size
@@ -5944,7 +5835,7 @@ components:
           items:
             type: string
             format: uuid
-            example: '15f67991-0f51-4efc-a8ad-ef1fb31a480c'
+            example: 15f67991-0f51-4efc-a8ad-ef1fb31a480c
         routerId:
           $ref: '#/components/schemas/ResourceReference'
         vni:
@@ -6064,7 +5955,7 @@ components:
           items:
             type: string
             format: uuid
-            example: '15f67991-0f51-4efc-a8ad-ef1fb31a480c'
+            example: 15f67991-0f51-4efc-a8ad-ef1fb31a480c
         deviceNumber:
           type: integer
           description: >-
@@ -6265,7 +6156,7 @@ components:
           items:
             type: string
             format: uuid
-            example: '15f67991-0f51-4efc-a8ad-ef1fb31a480c'
+            example: 15f67991-0f51-4efc-a8ad-ef1fb31a480c
         nics:
           type: array
           description: >-
@@ -6274,7 +6165,7 @@ components:
           items:
             type: string
             format: uuid
-            example: '15f67991-0f51-4efc-a8ad-ef1fb31a480c'
+            example: 15f67991-0f51-4efc-a8ad-ef1fb31a480c
     Route:
       required:
         - prefix
@@ -6781,7 +6672,7 @@ components:
         id:
           type: string
           description: The resource's unique identifier.
-          example: '15f67991-0f51-4efc-a8ad-ef1fb31a480c'
+          example: 15f67991-0f51-4efc-a8ad-ef1fb31a480c
     Error:
       description: |
         The Error object is used to represent an error response from the API.
@@ -7082,7 +6973,7 @@ components:
     routetable:
       name: "filter.routetable"
       in: query
-      description: Filter resources by routetable.
+      description: Filter resources by route table.
       required: false
       schema:
         type: string
@@ -7096,7 +6987,7 @@ components:
     nacl:
       name: "filter.nacl"
       in: query
-      description: Filter resources by NetworkAcl.
+      description: Filter resources by network acl.
       required: false
       schema:
         type: string
