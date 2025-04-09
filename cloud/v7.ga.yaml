@@ -5309,6 +5309,14 @@ components:
             type: string
             format: uuid
             example: 757b0228-ea4c-4210-ace5-395db0b8ac26
+        defaultNaclRule:
+          description: >-
+            This will become the default Network ACL rule for the vpc, replacing the old one if already exists.
+            This Network ACL rule must already exists prior to this request.
+          type: string
+          format: uuid
+          readOnly: true
+          example: 15f67991-0f51-4efc-a8ad-ef1fb31a480c
     Datacenter:
       required:
         - location
