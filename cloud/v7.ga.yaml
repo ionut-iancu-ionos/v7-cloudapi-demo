@@ -11,34 +11,39 @@ info:
   version: '7.0.1'
   x-sdk-patch-level: 5
 servers:
-  - url: https://api.de-fra.ionos.com/cloudapi/v7
+  - url: https://api.de-fra.ionos.com/v7
     description: Frankfurt, Germany
-  - url: https://api.de-fkb.ionos.com/cloudapi/v7
+  - url: https://api.de-fkb.ionos.com/v7
     description: Karlsruhe, Germany
-  - url: https://api.de-txl.ionos.com/cloudapi/v7
+  - url: https://api.de-txl.ionos.com/v7
     description: Berlin, Germany
-  - url: https://api.es-vit.ionos.com/cloudapi/v7
+  - url: https://api.es-vit.ionos.com/v7
     description: Logrono, Spain
-  - url: https://api.fr-nbz.ionos.com/cloudapi/v7
+  - url: https://api.fr-nbz.ionos.com/v7
     description: Niederlauterbach, France
-  - url: https://api.fr-par.ionos.com/cloudapi/v7
+  - url: https://api.fr-par.ionos.com/v7
     description: Paris, France
-  - url: https://api.gb-bhx.ionos.com/cloudapi/v7
+  - url: https://api.gb-bhx.ionos.com/v7
     description: Worcester, Great Britain
-  - url: https://api.gb-lhr.ionos.com/cloudapi/v7
+  - url: https://api.gb-lhr.ionos.com/v7
     description: London, Great Britain
-  - url: https://api.us-ewr.ionos.com/cloudapi/v7
+  - url: https://api.us-ewr.ionos.com/v7
     description: Newark, United States
-  - url: https://api.us-las.ionos.com/cloudapi/v7
+  - url: https://api.us-las.ionos.com/v7
     description: Las Vegas, United States
-  - url: https://api.us-mci.ionos.com/cloudapi/v7
+  - url: https://api.us-mci.ionos.com/v7
     description: Lenexa, United States
 tags:
-- name: Metadata
+- name: Locations
   description: |
-    Retrieves Metadata.
+    Retrieves Locations.
     
-    This tag groups all operations for metadata.
+    This tag groups all operations for locations.
+- name: Templates
+  description: |
+    Retrieves Templates.
+    
+    This tag groups all operations for templates.
 - name: IP Blocks
   description: |
     Creates and manages IP Blocks.
@@ -121,13 +126,13 @@ tags:
     This tag groups all operations for security group rules.
 - name: Operations
   description: |
-    Performs various operations on resources like STOP, START, SUSPEND, RESUME, RESTORESNAPSHOT.
+    Performs various operations on servers like STOP, START, SUSPEND, RESUME, etc.
     
     This tag groups all operations for operations.
 paths:
-  /metadata/locations:
+  /locations:
     get:
-      operationId: metadataLocationsGet
+      operationId: locationsGet
       summary: Retrieve all Locations
       security:
       - tokenAuth: []
@@ -139,7 +144,7 @@ paths:
         - $ref: "#/components/parameters/paginationLimit"
         - $ref: "#/components/parameters/contractNumber"
       tags:
-        - Metadata
+        - Locations
       responses:
         "200":
           description: |
@@ -162,14 +167,14 @@ paths:
           $ref: '#/components/responses/ServiceUnavailable'
         default:
           $ref: '#/components/responses/UnexpectedError'
-  /metadata/locations/{locationId}:
+  /locations/{locationId}:
     get:
-      operationId: metadataLocationsFindById
+      operationId: locationsFindById
       summary: Retrieve Location
       security:
       - tokenAuth: []
       tags:
-        - Metadata
+        - Locations
       description: Returns the Location by ID.
       parameters:
         - $ref: "#/components/parameters/contractNumber"
@@ -204,9 +209,9 @@ paths:
           $ref: '#/components/responses/ServiceUnavailable'
         default:
           $ref: '#/components/responses/UnexpectedError'
-  /metadata/templates:
+  /templates:
     get:
-      operationId: metadataTemplatesGet
+      operationId: templatesGet
       summary: Retrieve all Templates
       security:
       - tokenAuth: []
@@ -218,7 +223,7 @@ paths:
         - $ref: "#/components/parameters/paginationLimit"
         - $ref: "#/components/parameters/contractNumber"
       tags:
-        - Metadata
+        - Templates
       responses:
         "200":
           description: |
@@ -241,14 +246,14 @@ paths:
           $ref: '#/components/responses/ServiceUnavailable'
         default:
           $ref: '#/components/responses/UnexpectedError'
-  /metadata/templates/{templateId}:
+  /templates/{templateId}:
     get:
-      operationId: metadataTemplatesFindById
+      operationId: templatesFindById
       summary: Retrieve Template
       security:
       - tokenAuth: []
       tags:
-        - Metadata
+        - Templates
       description: Returns the Template by ID.
       parameters:
         - $ref: "#/components/parameters/contractNumber"
@@ -3904,9 +3909,9 @@ paths:
           $ref: '#/components/responses/ServiceUnavailable'
         default:
           $ref: '#/components/responses/UnexpectedError'
-  /serveroperations:
+  /servers/{serverId}/operations:
     post:
-      operationId: serveroperationsPost
+      operationId: serversOperationsPost
       summary: Post ServerOperation
       security:
         - tokenAuth: []
@@ -3914,11 +3919,15 @@ paths:
         - Operations
       description: |
         Post the operation ServerOperation with the provided ID and tag.
-        The full ServerOperation needs to be provided to ensure
-        (either update or create) the ServerOperation. Non present data will
-        only be filled with defaults or left empty, but not take
-        previous values into consideration.
       parameters:
+        - name: serverId
+          in: path
+          schema:
+            type: string
+            format: uuid
+          example: "0eade904-be77-54cf-ba4d-ac05a6562116"
+          required: true
+          description: The ID (UUID) of the ServerOperation.
         - $ref: "#/components/parameters/contractNumber"
       requestBody:
         description: update ServerOperation
@@ -3956,36 +3965,40 @@ paths:
           $ref: '#/components/responses/ServiceUnavailable'
         default:
           $ref: '#/components/responses/UnexpectedError'
-  /restoresnapshots:
+  /volumes/{volumeId}/operations:
     post:
-      operationId: restoresnapshotsPost
-      summary: Post RestoreSnapshot
+      operationId: volumesOperationsPost
+      summary: Post VolumeOperation
       security:
         - tokenAuth: []
       tags:
         - Operations
       description: |
-        Post the operation RestoreSnapshot with the provided ID and tag.
-        The full RestoreSnapshot needs to be provided to ensure
-        (either update or create) the RestoreSnapshot. Non present data will
-        only be filled with defaults or left empty, but not take
-        previous values into consideration.
+        Post the operation VolumeOperation with the provided ID and tag.
       parameters:
+        - name: volumeId
+          in: path
+          schema:
+            type: string
+            format: uuid
+          example: "b7e64e54-4d4e-5634-85f3-e2d2e61ad7f6"
+          required: true
+          description: The ID (UUID) of the VolumeOperation.
         - $ref: "#/components/parameters/contractNumber"
       requestBody:
-        description: update RestoreSnapshot
+        description: update VolumeOperation
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/RestoreSnapshot"
+              $ref: "#/components/schemas/VolumeOperation"
       responses:
         "201":
-          description: RestoreSnapshot successfully sent.
+          description: VolumeOperation successfully sent.
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Snapshot"
+                $ref: "#/components/schemas/VolumeOperationResponse"
         "400":
           $ref: '#/components/responses/BadRequest'
         "401":
@@ -4015,17 +4028,23 @@ components:
       - type: object
         required:
         - id
+        - type
         - href
         properties:
           id:
             description: ID of the list of Location resources.
             type: string
             format: uuid
-            example: 4155ea15-b118-5132-87a4-4dff9bedd618
+            example: aac85277-e672-55ff-8ba9-e9925612f7a6
+          type:
+            description: The type of the resource.
+            type: string
+            enum:
+            - collection
           href:
             description: The URL of the list of Location resources.
             type: string
-            example: /metadata/locations
+            example: /locations
           items:
             description: The list of Location resources.
             type: array
@@ -4036,7 +4055,9 @@ components:
       type: object
       required:
       - id
+      - type
       - href
+      - metadata
       - properties
       properties:
         id:
@@ -4044,10 +4065,17 @@ components:
           description: The ID (UUID) of the Location.
           format: uuid
           example: "f59e4bc2-6aff-5ecc-b745-321db2fdd071"
+        type:
+          description: The type of the resource.
+          type: string
+          enum:
+          - location
         href:
           description: The URL of the Location.
           type: string
-          example: /metadata/locations/f59e4bc2-6aff-5ecc-b745-321db2fdd071
+          example: /locations/f59e4bc2-6aff-5ecc-b745-321db2fdd071
+        metadata:
+          $ref: '#/components/schemas/Metadata'
         properties:
           $ref: '#/components/schemas/Location'
     TemplateReadList:
@@ -4055,17 +4083,23 @@ components:
       - type: object
         required:
         - id
+        - type
         - href
         properties:
           id:
             description: ID of the list of Template resources.
             type: string
             format: uuid
-            example: 0c7eeeda-156b-5814-b1af-6543f1c24c5b
+            example: 49acfe43-b021-5d78-ad46-33d9b7215a0c
+          type:
+            description: The type of the resource.
+            type: string
+            enum:
+            - collection
           href:
             description: The URL of the list of Template resources.
             type: string
-            example: /metadata/templates
+            example: /templates
           items:
             description: The list of Template resources.
             type: array
@@ -4076,7 +4110,9 @@ components:
       type: object
       required:
       - id
+      - type
       - href
+      - metadata
       - properties
       properties:
         id:
@@ -4084,10 +4120,17 @@ components:
           description: The ID (UUID) of the Template.
           format: uuid
           example: "5afb3086-5b37-5cc0-b126-075231c7bcb6"
+        type:
+          description: The type of the resource.
+          type: string
+          enum:
+          - template
         href:
           description: The URL of the Template.
           type: string
-          example: /metadata/templates/5afb3086-5b37-5cc0-b126-075231c7bcb6
+          example: /templates/5afb3086-5b37-5cc0-b126-075231c7bcb6
+        metadata:
+          $ref: '#/components/schemas/Metadata'
         properties:
           $ref: '#/components/schemas/Template'
     IpBlockReadList:
@@ -4095,6 +4138,7 @@ components:
       - type: object
         required:
         - id
+        - type
         - href
         properties:
           id:
@@ -4102,6 +4146,11 @@ components:
             type: string
             format: uuid
             example: 5b7131b8-7ab5-5840-b7ee-162a5dd3c492
+          type:
+            description: The type of the resource.
+            type: string
+            enum:
+            - collection
           href:
             description: The URL of the list of IpBlock resources.
             type: string
@@ -4116,6 +4165,7 @@ components:
       type: object
       required:
       - id
+      - type
       - href
       - metadata
       - properties
@@ -4125,6 +4175,11 @@ components:
           description: The ID (UUID) of the IpBlock.
           format: uuid
           example: "a480b1c3-c104-589b-b1d4-e181f1d25069"
+        type:
+          description: The type of the resource.
+          type: string
+          enum:
+          - ipblock
         href:
           description: The URL of the IpBlock.
           type: string
@@ -4166,6 +4221,7 @@ components:
       - type: object
         required:
         - id
+        - type
         - href
         properties:
           id:
@@ -4173,6 +4229,11 @@ components:
             type: string
             format: uuid
             example: 6e8d5f3e-dca1-5a0a-87f1-c8f9753ffa8a
+          type:
+            description: The type of the resource.
+            type: string
+            enum:
+            - collection
           href:
             description: The URL of the list of Image resources.
             type: string
@@ -4187,6 +4248,7 @@ components:
       type: object
       required:
       - id
+      - type
       - href
       - metadata
       - properties
@@ -4196,6 +4258,11 @@ components:
           description: The ID (UUID) of the Image.
           format: uuid
           example: "78916e89-f0ed-5816-b86d-5e55b6f2a884"
+        type:
+          description: The type of the resource.
+          type: string
+          enum:
+          - image
         href:
           description: The URL of the Image.
           type: string
@@ -4226,6 +4293,7 @@ components:
       - type: object
         required:
         - id
+        - type
         - href
         properties:
           id:
@@ -4233,6 +4301,11 @@ components:
             type: string
             format: uuid
             example: e4d59efb-bffd-5f44-bd9a-b146ad0c2d77
+          type:
+            description: The type of the resource.
+            type: string
+            enum:
+            - collection
           href:
             description: The URL of the list of Vpc resources.
             type: string
@@ -4247,6 +4320,7 @@ components:
       type: object
       required:
       - id
+      - type
       - href
       - metadata
       - properties
@@ -4256,6 +4330,11 @@ components:
           description: The ID (UUID) of the Vpc.
           format: uuid
           example: "e50a7f27-79ce-53c6-8c2a-661949161972"
+        type:
+          description: The type of the resource.
+          type: string
+          enum:
+          - vpc
         href:
           description: The URL of the Vpc.
           type: string
@@ -4297,6 +4376,7 @@ components:
       - type: object
         required:
         - id
+        - type
         - href
         properties:
           id:
@@ -4304,6 +4384,11 @@ components:
             type: string
             format: uuid
             example: f6ebba96-00d9-5acc-8454-d6213506c2ca
+          type:
+            description: The type of the resource.
+            type: string
+            enum:
+            - collection
           href:
             description: The URL of the list of Datacenter resources.
             type: string
@@ -4318,6 +4403,7 @@ components:
       type: object
       required:
       - id
+      - type
       - href
       - metadata
       - properties
@@ -4327,6 +4413,11 @@ components:
           description: The ID (UUID) of the Datacenter.
           format: uuid
           example: "d6e4e4d9-e542-5089-96c6-0087a38fda91"
+        type:
+          description: The type of the resource.
+          type: string
+          enum:
+          - datacenter
         href:
           description: The URL of the Datacenter.
           type: string
@@ -4368,6 +4459,7 @@ components:
       - type: object
         required:
         - id
+        - type
         - href
         properties:
           id:
@@ -4375,6 +4467,11 @@ components:
             type: string
             format: uuid
             example: 70330e63-425b-597f-91d7-f86c030a6a30
+          type:
+            description: The type of the resource.
+            type: string
+            enum:
+            - collection
           href:
             description: The URL of the list of Server resources.
             type: string
@@ -4389,6 +4486,7 @@ components:
       type: object
       required:
       - id
+      - type
       - href
       - metadata
       - properties
@@ -4398,6 +4496,11 @@ components:
           description: The ID (UUID) of the Server.
           format: uuid
           example: "10ac0074-96c1-5d50-8852-81bd6272cb18"
+        type:
+          description: The type of the resource.
+          type: string
+          enum:
+          - server
         href:
           description: The URL of the Server.
           type: string
@@ -4439,6 +4542,7 @@ components:
       - type: object
         required:
         - id
+        - type
         - href
         properties:
           id:
@@ -4446,6 +4550,11 @@ components:
             type: string
             format: uuid
             example: 4da5de3a-bebb-51b2-96a8-694a89c1b1e0
+          type:
+            description: The type of the resource.
+            type: string
+            enum:
+            - collection
           href:
             description: The URL of the list of Volume resources.
             type: string
@@ -4460,6 +4569,7 @@ components:
       type: object
       required:
       - id
+      - type
       - href
       - metadata
       - properties
@@ -4469,6 +4579,11 @@ components:
           description: The ID (UUID) of the Volume.
           format: uuid
           example: "21a4723d-bd52-5800-908d-d4fe55517b48"
+        type:
+          description: The type of the resource.
+          type: string
+          enum:
+          - volume
         href:
           description: The URL of the Volume.
           type: string
@@ -4510,6 +4625,7 @@ components:
       - type: object
         required:
         - id
+        - type
         - href
         properties:
           id:
@@ -4517,6 +4633,11 @@ components:
             type: string
             format: uuid
             example: b9cb6c65-8997-58bb-b7d1-93e5da5a6525
+          type:
+            description: The type of the resource.
+            type: string
+            enum:
+            - collection
           href:
             description: The URL of the list of Snapshot resources.
             type: string
@@ -4531,6 +4652,7 @@ components:
       type: object
       required:
       - id
+      - type
       - href
       - metadata
       - properties
@@ -4540,6 +4662,11 @@ components:
           description: The ID (UUID) of the Snapshot.
           format: uuid
           example: "a8784665-3d99-5464-af32-30a2967f58e7"
+        type:
+          description: The type of the resource.
+          type: string
+          enum:
+          - snapshot
         href:
           description: The URL of the Snapshot.
           type: string
@@ -4581,6 +4708,7 @@ components:
       - type: object
         required:
         - id
+        - type
         - href
         properties:
           id:
@@ -4588,6 +4716,11 @@ components:
             type: string
             format: uuid
             example: 8d204bd4-3423-5f87-aa0c-a91c4def4b88
+          type:
+            description: The type of the resource.
+            type: string
+            enum:
+            - collection
           href:
             description: The URL of the list of Nic resources.
             type: string
@@ -4602,6 +4735,7 @@ components:
       type: object
       required:
       - id
+      - type
       - href
       - metadata
       - properties
@@ -4611,6 +4745,11 @@ components:
           description: The ID (UUID) of the Nic.
           format: uuid
           example: "95e1de1e-dfe1-59f4-8da5-cb2ae5178fa9"
+        type:
+          description: The type of the resource.
+          type: string
+          enum:
+          - nic
         href:
           description: The URL of the Nic.
           type: string
@@ -4652,6 +4791,7 @@ components:
       - type: object
         required:
         - id
+        - type
         - href
         properties:
           id:
@@ -4659,6 +4799,11 @@ components:
             type: string
             format: uuid
             example: 0cf82afb-556f-53f3-af68-8f492a2effc2
+          type:
+            description: The type of the resource.
+            type: string
+            enum:
+            - collection
           href:
             description: The URL of the list of Lan resources.
             type: string
@@ -4673,6 +4818,7 @@ components:
       type: object
       required:
       - id
+      - type
       - href
       - metadata
       - properties
@@ -4682,6 +4828,11 @@ components:
           description: The ID (UUID) of the Lan.
           format: uuid
           example: "3d52d3ec-da61-5b48-878e-461d604debdb"
+        type:
+          description: The type of the resource.
+          type: string
+          enum:
+          - lan
         href:
           description: The URL of the Lan.
           type: string
@@ -4723,6 +4874,7 @@ components:
       - type: object
         required:
         - id
+        - type
         - href
         properties:
           id:
@@ -4730,6 +4882,11 @@ components:
             type: string
             format: uuid
             example: 3c38d028-8e38-5554-84d6-93c124bb39e5
+          type:
+            description: The type of the resource.
+            type: string
+            enum:
+            - collection
           href:
             description: The URL of the list of FlowLog resources.
             type: string
@@ -4744,6 +4901,7 @@ components:
       type: object
       required:
       - id
+      - type
       - href
       - metadata
       - properties
@@ -4753,6 +4911,11 @@ components:
           description: The ID (UUID) of the FlowLog.
           format: uuid
           example: "8ef19972-2ea3-5618-8455-0c04a6051f58"
+        type:
+          description: The type of the resource.
+          type: string
+          enum:
+          - flowlog
         href:
           description: The URL of the FlowLog.
           type: string
@@ -4794,6 +4957,7 @@ components:
       - type: object
         required:
         - id
+        - type
         - href
         properties:
           id:
@@ -4801,6 +4965,11 @@ components:
             type: string
             format: uuid
             example: b3becf8c-148b-5aef-bce6-166a0a8a6058
+          type:
+            description: The type of the resource.
+            type: string
+            enum:
+            - collection
           href:
             description: The URL of the list of NetworkAcl resources.
             type: string
@@ -4815,6 +4984,7 @@ components:
       type: object
       required:
       - id
+      - type
       - href
       - metadata
       - properties
@@ -4824,6 +4994,11 @@ components:
           description: The ID (UUID) of the NetworkAcl.
           format: uuid
           example: "f187bce3-4b78-59de-a3e7-10f2b61ad742"
+        type:
+          description: The type of the resource.
+          type: string
+          enum:
+          - networkacl
         href:
           description: The URL of the NetworkAcl.
           type: string
@@ -4865,6 +5040,7 @@ components:
       - type: object
         required:
         - id
+        - type
         - href
         properties:
           id:
@@ -4872,6 +5048,11 @@ components:
             type: string
             format: uuid
             example: 11815ad2-8e58-5fa6-bbe8-438d615994d7
+          type:
+            description: The type of the resource.
+            type: string
+            enum:
+            - collection
           href:
             description: The URL of the list of NetworkAclRule resources.
             type: string
@@ -4886,6 +5067,7 @@ components:
       type: object
       required:
       - id
+      - type
       - href
       - metadata
       - properties
@@ -4895,6 +5077,11 @@ components:
           description: The ID (UUID) of the NetworkAclRule.
           format: uuid
           example: "e775ab89-71e0-50e9-a7ab-db818d4323e7"
+        type:
+          description: The type of the resource.
+          type: string
+          enum:
+          - networkaclrule
         href:
           description: The URL of the NetworkAclRule.
           type: string
@@ -4936,6 +5123,7 @@ components:
       - type: object
         required:
         - id
+        - type
         - href
         properties:
           id:
@@ -4943,6 +5131,11 @@ components:
             type: string
             format: uuid
             example: 685d96e8-716e-5f61-8ffe-a14a3128aaf4
+          type:
+            description: The type of the resource.
+            type: string
+            enum:
+            - collection
           href:
             description: The URL of the list of RouteTable resources.
             type: string
@@ -4957,6 +5150,7 @@ components:
       type: object
       required:
       - id
+      - type
       - href
       - metadata
       - properties
@@ -4966,6 +5160,11 @@ components:
           description: The ID (UUID) of the RouteTable.
           format: uuid
           example: "82525854-b4ab-5360-b28b-174476941c7f"
+        type:
+          description: The type of the resource.
+          type: string
+          enum:
+          - routetable
         href:
           description: The URL of the RouteTable.
           type: string
@@ -5007,6 +5206,7 @@ components:
       - type: object
         required:
         - id
+        - type
         - href
         properties:
           id:
@@ -5014,6 +5214,11 @@ components:
             type: string
             format: uuid
             example: f01a9077-8faa-5b64-8743-2b3ddba0c498
+          type:
+            description: The type of the resource.
+            type: string
+            enum:
+            - collection
           href:
             description: The URL of the list of Route resources.
             type: string
@@ -5028,6 +5233,7 @@ components:
       type: object
       required:
       - id
+      - type
       - href
       - metadata
       - properties
@@ -5037,6 +5243,11 @@ components:
           description: The ID (UUID) of the Route.
           format: uuid
           example: "50982018-bb17-5cb9-bcd4-97f8bbc7dc23"
+        type:
+          description: The type of the resource.
+          type: string
+          enum:
+          - route
         href:
           description: The URL of the Route.
           type: string
@@ -5078,6 +5289,7 @@ components:
       - type: object
         required:
         - id
+        - type
         - href
         properties:
           id:
@@ -5085,6 +5297,11 @@ components:
             type: string
             format: uuid
             example: 85157506-8f11-5714-8daf-ff9f2750913c
+          type:
+            description: The type of the resource.
+            type: string
+            enum:
+            - collection
           href:
             description: The URL of the list of SecurityGroup resources.
             type: string
@@ -5099,6 +5316,7 @@ components:
       type: object
       required:
       - id
+      - type
       - href
       - metadata
       - properties
@@ -5108,6 +5326,11 @@ components:
           description: The ID (UUID) of the SecurityGroup.
           format: uuid
           example: "f2966c32-28d2-5a3f-9356-979d5ce2bf5d"
+        type:
+          description: The type of the resource.
+          type: string
+          enum:
+          - securitygroup
         href:
           description: The URL of the SecurityGroup.
           type: string
@@ -5149,6 +5372,7 @@ components:
       - type: object
         required:
         - id
+        - type
         - href
         properties:
           id:
@@ -5156,6 +5380,11 @@ components:
             type: string
             format: uuid
             example: 27e303a6-07f1-546e-ab95-24dec7fbb028
+          type:
+            description: The type of the resource.
+            type: string
+            enum:
+            - collection
           href:
             description: The URL of the list of SecurityGroupRule resources.
             type: string
@@ -5170,6 +5399,7 @@ components:
       type: object
       required:
       - id
+      - type
       - href
       - metadata
       - properties
@@ -5179,6 +5409,11 @@ components:
           description: The ID (UUID) of the SecurityGroupRule.
           format: uuid
           example: "37fa64f3-2ac2-5ae8-850d-63e3d9bd4cad"
+        type:
+          description: The type of the resource.
+          type: string
+          enum:
+          - securitygrouprule
         href:
           description: The URL of the SecurityGroupRule.
           type: string
@@ -5245,7 +5480,6 @@ components:
           type: array
           description: >-
             It contains the list of private IPv4 CIDR blocks on this virtual private cloud.
-            This property is a read only property.
           nullable: true
           items:
             type: string
@@ -5336,6 +5570,13 @@ components:
           format: uuid
           description: The vpc where the datacenter exists.
           example: c031d885-937d-4dc1-b3e1-95085c7046e2
+        ipv4CidrBlock:
+          type: string
+          description: >-
+            It contains the IPv4 CIDR block on this datacenter.
+          nullable: true
+          example: 10.8.130.0/23
+          x-prerelease: true
         location:
           type: string
           description: >-
@@ -5844,7 +6085,7 @@ components:
             type: string
             format: uuid
             example: 15f67991-0f51-4efc-a8ad-ef1fb31a480c
-        routerId:
+        routeTableId:
           $ref: '#/components/schemas/ResourceReference'
         vni:
           type: integer
@@ -5986,7 +6227,7 @@ components:
             for internal usage only
           x-internal: true
           example: null
-        router:
+        routeTable:
           $ref: '#/components/schemas/ResourceReference'
     FlowLog:
       required:
@@ -6077,30 +6318,30 @@ components:
     Snapshot:
       allOf:
         - $ref: '#/components/schemas/Image'
-    RestoreSnapshot:
+    VolumeOperation:
       type: object
+      required:
+        - operation
       properties:
+        operation:
+          type: string
+          description: The requested operation
+          example: RESTORESNAPSHOT
+          enum:
+            - RESTORESNAPSHOT
         snapshotId:
           type: string
           format: uuid
           description: The id of the volume
           example: eb297fb4-7e08-4709-940c-cdd0f3e3385c
-        volumeId:
-          type: string
-          format: uuid
-          description: The uuid of the volume
-          example: a4c6c98b-45b4-4b30-95c7-fab73eeb3089
+    VolumeOperationResponse:
+      allOf:
+        - $ref: '#/components/schemas/Snapshot'
     ServerOperation:
       required:
-        - serverId
         - operation
       type: object
       properties:
-        serverId:
-          type: string
-          format: uuid
-          description: The uuid of the server
-          example: a4c6c98b-45b4-4b30-95c7-fab73eeb3089
         operation:
           type: string
           description: The requested operation
@@ -6153,7 +6394,7 @@ components:
           type: boolean
           description: >-
             Indicates if the route table is the default route table of the vpc.
-            There can be only one default router in a vpc.
+            There can be only one default route table in a vpc.
           example: true
           default: false
         lans:
@@ -6913,7 +7154,7 @@ components:
     paginationOffset:
       name: offset
       in: query
-      description: The first element (of the total list of elements) to include in the response. Use together with limit for pagination.
+      description: The first element (of the total list of elements) to include in the response. Use this parameter together with the limit for pagination.
       required: false
       schema:
         type: integer
@@ -6924,7 +7165,7 @@ components:
     paginationLimit:
       name: limit
       in: query
-      description: The maximum number of elements to return. Use together with offset for pagination.
+      description: The maximum number of elements to return. Use this parameter together with the offset for pagination.
       required: false
       schema:
         type: integer
